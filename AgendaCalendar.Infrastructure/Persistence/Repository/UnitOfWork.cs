@@ -6,7 +6,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
     {
         private AppDbContext _dbContext;
         private Lazy<IRepository<Calendar>> _calendarRepository;
-        private Lazy<IRepository<IEvent>> _eventRepository;
+        private Lazy<IRepository<Event>> _eventRepository;
         private Lazy<IRepository<Reminder>> _reminderRepository;
         private Lazy<IRepository<User>> _userRepository;
         public UnitOfWork(AppDbContext dbContext)
@@ -20,7 +20,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
         }
         public IRepository<Calendar> CalendarRepository => _calendarRepository.Value;
 
-        public IRepository<IEvent> EventRepository => _eventRepository.Value;
+        public IRepository<Event> EventRepository => _eventRepository.Value;
 
         public IRepository<Reminder> ReminderRepository => _reminderRepository.Value;
 
@@ -38,7 +38,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
 
         public async Task SaveAllAsync()
         {
-            await _dbContext.SaveChanges();
+            await _dbContext.SaveAllChanges();
         }
     }
 }

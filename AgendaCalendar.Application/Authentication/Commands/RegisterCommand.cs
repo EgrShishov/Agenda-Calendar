@@ -18,7 +18,14 @@ namespace AgendaCalendar.Application
                 Password = request.password, 
                 Email = request.email 
             };
-            await unitOfWork.UserRepository.AddAsync(newUser);
+            var user = await unitOfWork.UserRepository.AddAsync(newUser);
+            var userCalendar = new Calendar()
+            {
+                Title = request.userName,
+                CalendarDescription = $"Basic calendar, which belongs to {request.userName}",
+                AuthorId = user.Id
+            };
+            await unitOfWork.CalendarRepository.AddAsync(userCalendar);
             await unitOfWork.SaveAllAsync();
 
             //var token = jwtTokenGenerator.GenerateToken(newUser.Id, newUser.UserName, newUser.Password);

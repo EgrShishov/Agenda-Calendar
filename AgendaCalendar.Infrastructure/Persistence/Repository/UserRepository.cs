@@ -1,7 +1,6 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using AgendaCalendar.Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaCalendar.Infrastructure.Persistence.Repository
 {
@@ -14,14 +13,15 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
             _dbContext = dbContext;
         }
 
-        public async Task AddAsync(User user, CancellationToken cancellationToken = default)
+        public async Task<User> AddAsync(User user, CancellationToken cancellationToken = default)
         {
-            _dbContext.Users.Add(user);
+            var new_user = await _dbContext.Users.AddAsync(user);
+            return new_user.Entity;
         }
 
         public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            var userToDelete = _dbContext.Users.Find(x => x.Id == id);
+            var userToDelete = _dbContext.Users.First(x => x.Id.Equals(id));
             _dbContext.Users.Remove(userToDelete);
         }
 
@@ -32,8 +32,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
 
         public async Task<IReadOnlyList<User>> GetListAsync(CancellationToken cancellationToken = default)
         {
-            // var query = _dbContext.Users.AsQueryable();
-            return _dbContext.Users.ToList().AsReadOnly();
+            return await _dbContext.Users.AsNoTracking().ToListAsync(cancellationToken);
         }
 
         public async Task<IReadOnlyList<User>> ListAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken = default)
@@ -41,14 +40,13 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
             var query = _dbContext.Users.AsQueryable();
             if (filter != null) query = query.Where(filter);
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
         public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
-            var myUser = _dbContext.Users.FirstOrDefault(x => x.Id == user.Id);
-            myUser = user;
-            return myUser;
+            _dbContext.Entry(user).State = EntityState.Modified;
+            return user;
         }
     }
 }

@@ -10,5 +10,5 @@ namespace AgendaCalendar.Application.Calendars.Commands
             using HttpClient client = new();
             throw new NotImplementedException();
         }
-    }
+      }
 }

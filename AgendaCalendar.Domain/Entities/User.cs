@@ -1,9 +1,9 @@
-﻿
+﻿using Microsoft.AspNetCore.Identity;
+
 namespace AgendaCalendar.Domain.Entities
 {
-    public class User : Entity
+    public class User : Entity// IdentityUser<int>
     {
-        public User() { }
         public string UserName { get; set; }
 
         public string Password { get; set; }

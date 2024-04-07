@@ -1,13 +1,11 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Events.Queries
 {
-    public sealed record EventListByDateQuery(int calendarId, DateTime date) : IRequest<IEnumerable<IEvent>> { }
+    public sealed record EventListByDateQuery(int calendarId, DateTime date) : IRequest<IEnumerable<Event>> { }
 
-    public class EventListByDateQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<EventListByDateQuery, IEnumerable<IEvent>>
+    public class EventListByDateQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<EventListByDateQuery, IEnumerable<Event>>
     {
-        public async Task<IEnumerable<IEvent>> Handle(EventListByDateQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Event>> Handle(EventListByDateQuery request, CancellationToken cancellationToken)
         {
             var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.calendarId);
             if (calendar is not null)

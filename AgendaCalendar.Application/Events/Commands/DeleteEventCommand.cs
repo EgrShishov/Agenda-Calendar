@@ -1,22 +1,22 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Events.Commands
 {
-    public sealed record DeleteEventCommand(int calednarId, IEvent @event) : IRequest<IEvent> { }
+    public sealed record DeleteEventCommand(int eventId) : IRequest<Event> { }
 
-    public class DeleteEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteEventCommand, IEvent>
+    public class DeleteEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteEventCommand, Event>
     {
-        public async Task<IEvent> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
+        public async Task<Event> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
         {
-            var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.calednarId);
+            var @event = await unitOfWork.EventRepository.GetByIdAsync(request.eventId);
+            if (@event == null) return null;
+            var calendar = await unitOfWork.CalendarRepository.ListAsync(c => c.Events.Contains(@event));
             if (calendar == null) return null;
-            calendar.Events.Remove(request.@event);
+            calendar[0].Events.Remove(@event);
 
-            await unitOfWork.CalendarRepository.UpdateAsync(calendar);
-            await unitOfWork.EventRepository.DeleteAsync(request.@event.Id);
+            await unitOfWork.CalendarRepository.UpdateAsync(calendar[0]);
+            await unitOfWork.EventRepository.DeleteAsync(request.eventId);
             await unitOfWork.SaveAllAsync();
-            return request.@event;
+            return @event;
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Users.Commands
 {
     public sealed record DeleteUserCommand(int userId) : IRequest<User> { }
@@ -12,7 +9,7 @@ namespace AgendaCalendar.Application.Users.Commands
         {
             var user = await unitOfWork.UserRepository.GetByIdAsync(request.userId);
             if (user == null) return null;
-            await unitOfWork.UserRepository.DeleteAsync(user.Id);
+            //await unitOfWork.UserRepository.DeleteAsync(user.Id);
             await unitOfWork.SaveAllAsync();
             return user;
         }

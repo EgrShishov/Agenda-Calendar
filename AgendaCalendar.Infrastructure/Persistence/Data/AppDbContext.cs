@@ -1,85 +1,49 @@
-﻿using System.Text.Json;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaCalendar.Infrastructure.Persistence.Data
 {
-    public class AppDbContext
-    {
-        private FileStream? CalendarDbContext;
-        private FileStream? UserDbContext;
-        private FileStream? ReminderDbContext;
-        private FileStream? EventDbContext;
-
-        public AppDbContext()
+    public class AppDbContext : DbContext//IdentityDbContext<User, IdentityRole<int>, int>
+    {   
+        public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
-            CreateDatabase();
+            Database.EnsureCreated();
         }
 
-        public Task SaveChanges()
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            UserDbContext = new("UserTable.txt", FileMode.OpenOrCreate);
-            ReminderDbContext = new("ReminderTable.txt", FileMode.OpenOrCreate);
+            modelBuilder.Entity<Event>()
+                .OwnsOne<RecurrenceRule>(e => e.ReccurenceRules, e =>
+                {
+                    e.WithOwner();
+                    e.OwnsOne<List<TimePeriod>>(e => e.RecurrenceDates);
+                });
+  
+            modelBuilder.Entity<Event>()
+                .OwnsOne<List<EventParticipant>>(e => e.EventParticipants);
 
-            UserDbContext.SetLength(0);
-            ReminderDbContext.SetLength(0);
+            modelBuilder.ApplyUtcDateTimeConverter();
 
-            var calendarJson = JsonConvert.SerializeObject(Calendars, Formatting.Indented,
-            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            var userJson = System.Text.Json.JsonSerializer.Serialize<List<User>>(Users,
-                 new JsonSerializerOptions { WriteIndented = true });
-            var eventJson = JsonConvert.SerializeObject(Events, Formatting.Indented,
-            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            var reminderJson = System.Text.Json.JsonSerializer.Serialize<List<Reminder>>(Reminders,
-                 new JsonSerializerOptions { WriteIndented = true });
-
-            using (StreamWriter sw = new(UserDbContext))
-            {
-                sw.WriteLine(userJson);
-            }
-            using (StreamWriter sw = new(ReminderDbContext))
-            {
-                sw.WriteLine(reminderJson);
-            }
-            File.WriteAllText("CalendarTable.txt", calendarJson);
-            File.WriteAllText("EventTable.txt", eventJson);
-            return Task.CompletedTask;
+        }
+        public async Task SaveAllChanges()
+        {
+            await SaveChangesAsync();
         }
 
-        public Task DeleteDatabase()
+        public async Task DeleteDatabase()
         {
-            Calendars.Clear();
-            Events.Clear();
-            Users.Clear();
-            Reminders.Clear();
-            return Task.CompletedTask;
+            await Database.EnsureDeletedAsync();
         }
 
-        public Task CreateDatabase()
+        public async Task CreateDatabase()
         {
-            Calendars = new();
-            Reminders = new();
-            Events = new();
-            Users = new();
-            //CalendarDbContext = new("CalendarTable.txt", FileMode.OpenOrCreate);
-            UserDbContext = new("UserTable.txt", FileMode.OpenOrCreate);
-            ReminderDbContext = new("ReminderTable.txt", FileMode.OpenOrCreate);
-
-            Calendars = JsonConvert.DeserializeObject<List<Calendar>>(File.ReadAllText("CalendarTable.txt"),
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            Users = System.Text.Json.JsonSerializer.Deserialize<List<User>>(UserDbContext);
-            Events = JsonConvert.DeserializeObject<List<IEvent>>(File.ReadAllText("EventTable.txt"),
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            Reminders = System.Text.Json.JsonSerializer.Deserialize<List<Reminder>>(ReminderDbContext);
-
-            //CalendarDbContext.Close();
-            UserDbContext.Close();
-            ReminderDbContext.Close();
-            return Task.CompletedTask;
+            await Database.EnsureCreatedAsync();
         }
 
-        public List<Calendar>? Calendars { get; set; }
-        public List<IEvent>? Events { get; set; }
-        public List<Reminder>? Reminders { get; set; }
-        public List<User>? Users { get; set; }
+        public DbSet<Calendar> Calendars { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Reminder>? Reminders { get; set; }
+        public DbSet<User>? Users { get; set; }
     }
 }

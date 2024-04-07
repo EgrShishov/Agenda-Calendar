@@ -1,17 +1,15 @@
 ﻿using AgendaCalendar.Application.Common.Interfaces;
 using AgendaCalendar.Infrastructure.Authentication;
 using AgendaCalendar.Infrastructure.Email;
-using AgendaCalendar.Infrastructure.Hangfire;
 using AgendaCalendar.Infrastructure.Persistence.Data;
 using AgendaCalendar.Infrastructure.Persistence.Repository;
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaCalendar.Infrastructure
 {
@@ -23,7 +21,7 @@ namespace AgendaCalendar.Infrastructure
             )
         {
             services.AddAuth(configuration)
-                    .AddPersistence()
+                    .AddPersistence(configuration)
                     .AddBackgroundJob()
                     .AddEmail(configuration);
             return services;
@@ -31,12 +29,18 @@ namespace AgendaCalendar.Infrastructure
 
         public static IServiceCollection AddPersistence(this IServiceCollection services)
         {
-            services.AddSingleton<IUnitOfWork, UnitOfWork>()
-                    .AddSingleton<AppDbContext>()
-                    .AddSingleton<ReminderRepository>()
-                    .AddSingleton<UsersRepository>()
-                    .AddSingleton<EventsRepository>()
-                    .AddSingleton<CalendarRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            return services;
+        }
+
+        public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+        {
+            Console.WriteLine(configuration.GetConnectionString("AgendaCalendarDb"));
+            services.AddPersistence()
+                    .AddDbContext<AppDbContext>(
+                        options =>
+                            options.UseNpgsql(
+                                configuration.GetConnectionString("AgendaCalendarDb")));
             return services;
         }
 

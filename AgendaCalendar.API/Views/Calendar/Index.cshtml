@@ -1,0 +1,86 @@
+﻿@model AgendaCalendar.API.ViewModels.Calendar.CalendarViewModel
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Calendar";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="~/css/site.css" />
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    events: @Html.Raw(ViewData["Events"]),
+                    headerToolbar: {
+                        end: 'today,timeGridDay,dayGridWeek,dayGridMonth,multiMonthYear',
+                        center: 'title',
+                        start: 'prev,next'
+                    },
+                    eventClick: function (info) {
+                        displayEventDetailsPopover(info.event);
+                    }
+                });
+                calendar.render();
+
+                function displayEventDetailsPopover(event){
+                    
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <script src="/_framework/aspnetcore-browser-refresh.js"></script>
+        <div class="main-container d-flex">
+             <div class="sidebar" id="side_nav">
+                 <a asp-controller="Event" asp-action="Create" class="btn btn-primary">Create</a>
+                <hr>
+                <ul>
+                    <li class="active">Home</li>
+                    <li>Calendar</li>
+                    <li>Tasks</li>
+                    <li>Settings</li>
+                    <li>Help & Feedback</li>
+                </ul>
+                <div>
+                    <input type="text" placeholder="Search">
+                </div>
+                <hr />
+                <label>My calendars: </label>
+                <ul>
+                    @if (ViewData["Calendars"] is IEnumerable<Domain.Entities.Calendar> calendars)
+                    {
+                        foreach (var calendar in calendars)
+                        {
+                            <li>@calendar.Title</li>
+                        }
+                    }
+                    else
+                    {
+                        <li>You doesnt have any calendars</li>
+                    }
+                </ul>
+                <label>Upcoming events!</label>
+                <ul>
+                    @if(ViewData["UpcomingEvents"] is IEnumerable<Domain.Entities.Event> events)
+                    {
+                        foreach(var evnt in events)
+                        {
+                            <li>@evnt.Title @evnt.Description @evnt.StartTime</li>
+                        }
+                    }
+                    else
+                    {
+                        <li>There are no upcoming events</li>
+                    }
+                </ul>
+             </div>
+             <div class="content" style="width:100%;">
+                 <div class="container-fluid">
+                    <div id="calendar" class="fullcalendar-container"></div>
+                 </div>
+             </div>
+        </div>
+    </body>
+</html>

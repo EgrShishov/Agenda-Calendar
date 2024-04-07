@@ -1,10 +1,10 @@
-﻿using AgendaCalendar.Domain.Abstractions;
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgendaCalendar.Domain.Entities
 {
-    public class Event : Entity, IEvent
+    public class Event : Entity
     {
-        public Event() { }
         public string Title { get; set; }
 
         public DateTime StartTime { get; set; }
@@ -18,6 +18,8 @@ namespace AgendaCalendar.Domain.Entities
         public List<EventParticipant> EventParticipants { get; set; } = new();
 
         public string Location { get; set; }
+
+        public RecurrenceRule ReccurenceRules { get; set; } = new();
 
         public override string ToString()
         {
@@ -33,5 +35,6 @@ namespace AgendaCalendar.Domain.Entities
         {
             if (participant != null) EventParticipants.Remove(participant);
         }
+
     }
 }

@@ -1,5 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-
+﻿
 namespace AgendaCalendar.Domain.Entities
 {
     public class Calendar : Entity
@@ -12,7 +11,7 @@ namespace AgendaCalendar.Domain.Entities
 
         public string CalendarDescription { get; set; }
 
-        public List<IEvent> Events { get; set; } = new();
+        public List<Event> Events { get; set; } = new();
 
         public List<Reminder> Reminders { get; set; } = new();
 

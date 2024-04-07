@@ -13,6 +13,7 @@ namespace AgendaCalendar.Application.Calendars.Commands
             var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.calendarId);
             if (calendar == null) return null;
             await unitOfWork.CalendarRepository.DeleteAsync(calendar.Id);
+            await unitOfWork.SaveAllAsync();
             return calendar;
         }
     }

@@ -5,7 +5,7 @@ namespace AgendaCalendar.Domain.Abstractions
     public interface IUnitOfWork
     {
         IRepository<Calendar> CalendarRepository { get; }
-        IRepository<IEvent> EventRepository { get; }
+        IRepository<Event> EventRepository { get; }
         IRepository<Reminder> ReminderRepository { get; }
         IRepository<User> UserRepository { get; }
         public Task DeleteDataBaseAsync();

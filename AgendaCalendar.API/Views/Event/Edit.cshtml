@@ -1,0 +1,58 @@
+﻿@model AgendaCalendar.API.ViewModels.Event.EditEventViewModel
+@{
+    ViewData["Title"] = "Editting event";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Edditing event</h1>
+<hr />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post" asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" value="SelectedCalendarId" name="oldCalendarId"/>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Title</label>
+                    <input asp-for="Title" class="form-control" name="title" placeholder="Enter title" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StartTime" class="control-label">StartTime</label>
+                    <input type="date" asp-for="StartTime" class="form-control" name="start-time" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndTime" class="control-label">EndTime</label>
+                    <input type="date" asp-for="EndTime" class="form-control" name="end-time" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Description</label>
+                    <input asp-for="Description" class="form-control" name="description" placeholder="Enter event description" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Location" class="control-label">Location</label>
+                    <input asp-for="Location" class="form-control" name="location" placeholder="Enter location" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+              @*   <div class="form-group">
+                    <label class="control-label">Calendar</label>
+                    <select asp-for="SelectedCalendarId" asp-items="Model.UserCalendars" class="form-control" name="calendarId">
+                        <option value="">-- Select Calendar --</option>
+                    </select>
+                </div> *@
+                @*             <div class="form-group">
+                <label asp-for="EventParticipants" class="control-label"></label>
+                <input asp-for="EventParticipants" class="form-control" name="participants"/>
+                <span asp-validation-for="EventParticipants" class="text-danger"></span>
+                </div> *@
+                <div class="form-group">
+                    <input type="submit" value="Confirm" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

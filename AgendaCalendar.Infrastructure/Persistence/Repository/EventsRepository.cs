@@ -1,10 +1,10 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using AgendaCalendar.Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaCalendar.Infrastructure.Persistence.Repository
 {
-    public class EventsRepository : IRepository<IEvent>
+    public class EventsRepository : IRepository<Event>
     {
         private readonly AppDbContext _dbContext;
 
@@ -12,41 +12,40 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
         {
             _dbContext = dbContext;
         }
-        public async Task AddAsync(IEvent ev, CancellationToken cancellationToken = default)
+        public async Task<Event> AddAsync(Event ev, CancellationToken cancellationToken = default)
         {
-            _dbContext.Events.Add(ev);
+            var @event = await _dbContext.Events.AddAsync(ev);
+            return @event.Entity;
         }
 
         public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            var eventToDelete = _dbContext.Events.Find(x => x.Id == id);
+            var eventToDelete = _dbContext.Events.First(x => x.Id.Equals(id));
             _dbContext.Events.Remove(eventToDelete);
         }
 
-        public async Task<IEvent> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Event> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return _dbContext.Events.FirstOrDefault(x => x.Id == id);
+            return await _dbContext.Events.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public async Task<IReadOnlyList<IEvent>> GetListAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Event>> GetListAsync(CancellationToken cancellationToken = default)
         {
-            return _dbContext.Events.ToList().AsReadOnly();
+            return await _dbContext.Events.ToListAsync();
         }
 
-        public async Task<IReadOnlyList<IEvent>> ListAsync(Expression<Func<IEvent, bool>> filter, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Event>> ListAsync(Expression<Func<Event, bool>> filter, CancellationToken cancellationToken = default)
         {
             var query = _dbContext.Events.AsQueryable();
             if (filter != null) query = query.Where(filter);
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
-        public async Task<IEvent> UpdateAsync(IEvent ev, CancellationToken cancellationToken = default)
+        public async Task<Event> UpdateAsync(Event ev, CancellationToken cancellationToken = default)
         {
-            var MyEvent = _dbContext.Events.FirstOrDefault(x => x.Id == ev.Id);
-            MyEvent = ev;
-            return MyEvent;
-            //state modified
+            _dbContext.Entry(ev).State = EntityState.Modified;
+            return ev;
         }
     }
 }

@@ -1,10 +1,7 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Events.Commands
 {
-    public sealed record AddEventCommand(int calednarId, IEvent @event): IRequest<Calendar> { }
+    public sealed record AddEventCommand(int calednarId, Event @event): IRequest<Calendar> { }
     public class AddEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddEventCommand, Calendar>
     {
         public async Task<Calendar> Handle(AddEventCommand request, CancellationToken cancellationToken)

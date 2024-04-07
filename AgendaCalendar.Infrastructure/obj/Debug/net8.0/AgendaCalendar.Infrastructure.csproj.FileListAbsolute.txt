@@ -1,4 +1,5 @@
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Infrastructure.deps.json
+C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Infrastructure.runtimeconfig.json
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Infrastructure.dll
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Infrastructure.pdb
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Application.dll
@@ -17,4 +18,5 @@ C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCa.3038DD
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.dll
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\refint\AgendaCalendar.Infrastructure.dll
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.pdb
+C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.genruntimeconfig.cache
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\ref\AgendaCalendar.Infrastructure.dll
