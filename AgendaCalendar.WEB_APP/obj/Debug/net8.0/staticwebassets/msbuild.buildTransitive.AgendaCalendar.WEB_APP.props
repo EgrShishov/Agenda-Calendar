@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\AgendaCalendar.WEB_APP.props" />
-</Project>
