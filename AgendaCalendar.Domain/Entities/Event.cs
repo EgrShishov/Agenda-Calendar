@@ -1,10 +1,9 @@
 ﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AgendaCalendar.Domain.Entities
 {
     public class Event : Entity
     {
+        public int CalendarId { get; set; }
         public string Title { get; set; }
 
         public DateTime StartTime { get; set; }

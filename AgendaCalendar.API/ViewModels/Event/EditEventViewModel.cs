@@ -4,8 +4,8 @@ namespace AgendaCalendar.API.ViewModels.Event
 {
     public class EditEventViewModel
     {
-        public int Id { get; set; }
-        public int SelectedCalendarId { get; set; }
+        public string Id { get; set; }
+        public string SelectedCalendarId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime StartTime { get; set; } = DateTime.Now;

@@ -11,10 +11,10 @@ namespace AgendaCalendar.Application.Calendars.Commands
             var user = await unitOfWork.UserRepository.GetByIdAsync(request.userId);
             if (calendar == null || user == null) return null;
 
-            calendar.Subscribers.Remove(user.Id);
+            calendar.SubscribersId.Remove(user.Id);
             await unitOfWork.CalendarRepository.UpdateAsync(calendar);
             await unitOfWork.SaveAllAsync();
-
+            
             return calendar;
         }
     }

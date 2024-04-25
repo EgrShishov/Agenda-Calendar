@@ -5,6 +5,7 @@ using AgendaCalendar.Application.Calendars.Queries;
 using AgendaCalendar.Application.Events.Queries;
 using AgendaCalendar.Application.Reminders.Commands;
 using AgendaCalendar.Application.Users.Queries.AgendaCalendar.Application.Users.Queries;
+using AgendaCalendar.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,23 +19,37 @@ namespace AgendaCalendar.API.Controllers
         {
             _mediator = mediator;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            int userId = 1;
-            int calendarId = 1;
-            var events = await _mediator.Send(new EventListQuery(calendarId));
+            var userId = "e4019057-c887-4add-9961-a2651e328b85";
+            var calendarId = "1";
             var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
+            List<Event> events = new();
+            foreach(var calendar in userCalendars)
+            {
+                events = events.Concat(calendar.Events).ToList();
+            }
             var upcomingEvents = await _mediator.Send(new EventListByDateQuery(calendarId, DateTime.Now));
 
-            ViewData["Events"] = JsonConverter.GetJsonEventList(events);
-            ViewData["Calendars"] = userCalendars;
-            ViewData["UpcomingEvents"] = upcomingEvents.Take(3);
+            if(events.Any())
+            {
+                ViewData["Events"] = JsonConverter.GetJsonEventList(events);
+            }
+            if(userCalendars.Any())
+            {
+                ViewData["Calendars"] = userCalendars;
+            }
+            if(upcomingEvents.Any())
+            {
+                ViewData["UpcomingEvents"] = upcomingEvents.Take(3);
+            }
             return View();
         }
 
         [HttpGet("Export")]
-        public async Task<IActionResult> Export(int id) 
+        public async Task<IActionResult> Export(string id) 
         {
             var bytes = await _mediator.Send(new ExportCalendarCommand(id));
             var calendar = await _mediator.Send(new CalendarByIdQuery(id));
@@ -45,7 +60,7 @@ namespace AgendaCalendar.API.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Import(IFormFile file)
         {
-            int user_id = 1;
+            string user_id = "1";
             string filename = Path.GetFileName(file.FileName);
             using MemoryStream mstream = new();
             await file.CopyToAsync(mstream);
@@ -81,7 +96,7 @@ namespace AgendaCalendar.API.Controllers
         }
 
         [HttpGet("Edit")]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
             var calendar = await _mediator.Send(new CalendarByIdQuery(id));
             if (calendar == null) return View();
@@ -95,23 +110,23 @@ namespace AgendaCalendar.API.Controllers
 
         [HttpPost("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditCalendarViewModel calendarViewModel)
+        public async Task<IActionResult> Edit(string id, EditCalendarViewModel calendarViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return View(calendarViewModel);
             }
-            var new_calendar = await _mediator.Send(new UpdateCalendarCommand(calendarViewModel.Id, calendarViewModel.Description, calendarViewModel.Title));
+            var new_calendar = await _mediator.Send(new UpdateCalendarCommand(id, calendarViewModel.Description, calendarViewModel.Title));
             if(new_calendar is  null)
             {
-                return View();
+                return View(calendarViewModel);
             }
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var calendar = await _mediator.Send(new CalendarByIdQuery(id));
             if (calendar == null) return View();
@@ -122,14 +137,14 @@ namespace AgendaCalendar.API.Controllers
 
         [HttpPost("Subscribe")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Subscribe(int id)
+        public async Task<IActionResult> Subscribe(string id)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost("Unsubscribe")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Unsubscribe(int id)
+        public async Task<IActionResult> Unsubscribe(string id)
         {
             throw new NotImplementedException();
         }
@@ -142,14 +157,14 @@ namespace AgendaCalendar.API.Controllers
 
         [HttpPost("Reminders/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateReminder(int id)
+        public async Task<IActionResult> CreateReminder(string id)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost("Reminders/Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteReminder(int id)
+        public async Task<IActionResult> DeleteReminder(string id)
         {
             var reminder = await _mediator.Send(new DeleteReminderCommand(id));
             if (reminder == null) return View("Error");
@@ -157,14 +172,14 @@ namespace AgendaCalendar.API.Controllers
         }
 
         [HttpGet("Reminders/Edit")]
-        public IActionResult EditReminder(int id)
+        public IActionResult EditReminder(string id)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost("Reminders/Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditReminder(int id, IFormCollection form)
+        public async Task<IActionResult> EditReminder(string id, IFormCollection form)
         {
             throw new NotImplementedException();
         }

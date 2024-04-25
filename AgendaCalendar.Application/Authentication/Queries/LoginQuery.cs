@@ -1,19 +1,31 @@
-﻿using AgendaCalendar.Application.Common.Interfaces;
+﻿using AgendaCalendar.Application.Authentication.Common;
+using AgendaCalendar.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using AgendaCalendar.Domain.Common.Errors;
+using ErrorOr;
 
 namespace AgendaCalendar.Application
 {
-    public sealed record LoginQuery(string userName, string password) : IRequest<User> { }
+    public sealed record LoginQuery(string Email, string Password) : IRequest<ErrorOr<AuthenticationResult>> { }
 
-    public class LoginQueryHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator) : IRequestHandler<LoginQuery, User>
+    public class LoginQueryHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator, UserManager<User> userManager) : IRequestHandler<LoginQuery, ErrorOr<AuthenticationResult>>
     {
-        public async Task<User> Handle(LoginQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var users = await unitOfWork.UserRepository.ListAsync(
-                user => user.UserName == request.userName && user.Password == request.password);
-            if (users is null) return null;
-            var user = users.First();
-            //var token = jwtTokenGenerator.GenerateToken(user.Id, user.UserName, user.Email);
-            return user;
+            var user = await userManager.FindByEmailAsync(request.Email);
+            if(user is null)
+            {
+                return Errors.User.NotFound;
+            }
+            var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
+            if (!isPasswordValid)
+            {
+                return Errors.Authentication.InvalidCredentials;
+            }
+            var token = jwtTokenGenerator.GenerateToken(user.Id, user.UserName, user.Email);
+            return new AuthenticationResult(
+                user,
+                token);
         }
     }
 }

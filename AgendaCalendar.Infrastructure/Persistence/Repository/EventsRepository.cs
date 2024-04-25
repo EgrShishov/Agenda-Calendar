@@ -26,7 +26,8 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
 
         public async Task<Event> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Events.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var query = _dbContext.Events.AsQueryable();
+            return await query.FirstAsync(x => x.Id.Equals(id));
         }
 
         public async Task<IReadOnlyList<Event>> GetListAsync(CancellationToken cancellationToken = default)

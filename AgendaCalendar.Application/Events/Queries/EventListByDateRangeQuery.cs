@@ -1,6 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Events.Queries
 {
     public sealed record EventListByDateRangeQuery(int calendarId, DateTime startDate, DateTime endDate) : IRequest<IEnumerable<Event>> { }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgendaCalendar.Infrastructure.Persistence.Data
 {
-    public class AppDbContext : DbContext//IdentityDbContext<User, IdentityRole<int>, int>
+    public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {   
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -23,22 +23,14 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
             modelBuilder.Entity<Event>()
                 .OwnsOne<List<EventParticipant>>(e => e.EventParticipants);
 
+            modelBuilder.Entity<IdentityUserLogin<int>>()
+                .HasKey(u => u.UserId);
+            modelBuilder.Entity<IdentityUserRole<int>>()
+                .HasKey(u => u.UserId);
+            modelBuilder.Entity<IdentityUserToken<int>>()
+                .HasKey(u => u.UserId);
             modelBuilder.ApplyUtcDateTimeConverter();
 
-        }
-        public async Task SaveAllChanges()
-        {
-            await SaveChangesAsync();
-        }
-
-        public async Task DeleteDatabase()
-        {
-            await Database.EnsureDeletedAsync();
-        }
-
-        public async Task CreateDatabase()
-        {
-            await Database.EnsureCreatedAsync();
         }
 
         public DbSet<Calendar> Calendars { get; set; }

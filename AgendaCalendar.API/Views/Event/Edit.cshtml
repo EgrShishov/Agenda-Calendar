@@ -11,7 +11,7 @@
         <div class="col-md-4">
             <form method="post" asp-action="Edit" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" value="SelectedCalendarId" name="oldCalendarId"/>
+                <input type="hidden" value="@Model.Id" id="@Model.Id" name="id" />
                 <div class="form-group">
                     <label asp-for="Title" class="control-label">Title</label>
                     <input asp-for="Title" class="form-control" name="title" placeholder="Enter title" />
@@ -19,12 +19,12 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="StartTime" class="control-label">StartTime</label>
-                    <input type="date" asp-for="StartTime" class="form-control" name="start-time" />
+                    <input type="date" asp-for="StartTime" class="form-control" name="startTime" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="EndTime" class="control-label">EndTime</label>
-                    <input type="date" asp-for="EndTime" class="form-control" name="end-time" />
+                    <input type="date" asp-for="EndTime" class="form-control" name="endTime" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -37,12 +37,12 @@
                     <input asp-for="Location" class="form-control" name="location" placeholder="Enter location" />
                     <span asp-validation-for="Location" class="text-danger"></span>
                 </div>
-              @*   <div class="form-group">
+                <div class="form-group">
                     <label class="control-label">Calendar</label>
-                    <select asp-for="SelectedCalendarId" asp-items="Model.UserCalendars" class="form-control" name="calendarId">
+                    <select asp-for="SelectedCalendarId" asp-items="@Model.UserCalendars" class="form-control" name="selectedCalendarId">
                         <option value="">-- Select Calendar --</option>
                     </select>
-                </div> *@
+                </div>
                 @*             <div class="form-group">
                 <label asp-for="EventParticipants" class="control-label"></label>
                 <input asp-for="EventParticipants" class="form-control" name="participants"/>

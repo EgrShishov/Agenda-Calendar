@@ -18,10 +18,28 @@ namespace AgendaCalendar.API.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet("Details")]
+        public async Task<IActionResult> Details(string id)
+        {
+            var @event = await _mediator.Send(new EventByIdQuery(id));
+            var calendar = await _mediator.Send(new CalendarByIdQuery(@event.CalendarId));
+            if (@event is null) return View();
+            return PartialView("Details", new EventDetailsViewModel()
+            {
+                Id = @event.Id,
+                Title = @event.Title,
+                Description = @event.Description,
+                StartTime = @event.StartTime,
+                EndTime = @event.EndTime,
+                Calendar = calendar.Title,
+                Location = @event.Location
+            });
+        }
+
         [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
-            int userId = 1;
+            string userId = "1";
             var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
             var selectedListItems = userCalendars.Select(c => new SelectListItem
             {
@@ -31,7 +49,7 @@ namespace AgendaCalendar.API.Controllers
             var eventViewModel = new CreateEventViewModel
             {
                 UserCalendars = selectedListItems,
-                SelectedCalendarId = 0
+                SelectedCalendarId = "0"
             };
             return View(eventViewModel);
         }
@@ -42,7 +60,7 @@ namespace AgendaCalendar.API.Controllers
         {
 /*            if (!ModelState.IsValid)
             {
-                return View(eventViewModel); //user calendar field is required
+                return View(eventViewModel);
             }*/
             var @event = new Event()
             {
@@ -58,9 +76,9 @@ namespace AgendaCalendar.API.Controllers
         }
 
         [HttpGet("Edit")]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            int userId = 1;
+            string userId = "1";
             var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
             var selectedListItems = userCalendars.Select(c => new SelectListItem
             {
@@ -71,12 +89,13 @@ namespace AgendaCalendar.API.Controllers
             if (@event == null) return View();
             var editEventViewModel = new EditEventViewModel()
             {
+                Id = id,
                 Title = @event.Title,
                 Description = @event.Description,
                 StartTime = @event.StartTime,
                 EndTime = @event.EndTime,
                 Location = @event.Location,
-                SelectedCalendarId = 0,
+                SelectedCalendarId = @event.CalendarId,
                 UserCalendars = selectedListItems
             };
             return View(editEventViewModel);
@@ -84,27 +103,28 @@ namespace AgendaCalendar.API.Controllers
 
         [HttpPost("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditEventViewModel eventViewModel)
+        public async Task<IActionResult> Edit(string id, EditEventViewModel eventViewModel)
         {
-/*            if (!ModelState.IsValid)
-            {
-                return View(eventViewModel); //user calendar is required
-            }*/
+            /*            if (!ModelState.IsValid)
+                        {
+                            return View(eventViewModel); //user calendar is required
+                        }*/
             var editedEvent = new Event()
             {
-                Id = eventViewModel.Id,
+                Id = id,
                 Description = eventViewModel.Description,
                 Title = eventViewModel.Title,
                 StartTime = eventViewModel.StartTime,
                 EndTime = eventViewModel.EndTime,
                 Location = eventViewModel.Location,
+                CalendarId = eventViewModel.SelectedCalendarId
             };
-            var updatedEvent = await _mediator.Send(new UpdateEventCommand(editedEvent));
+            await _mediator.Send(new UpdateEventCommand(editedEvent));
             return RedirectToAction("Index", "Calendar");
         }
 
-        [HttpGet("Delete")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost("Delete")]
+        public async Task<IActionResult> Delete(string id)
         {
             _ = await _mediator.Send(new DeleteEventCommand(id));
             return RedirectToAction("Index", "Calendar");

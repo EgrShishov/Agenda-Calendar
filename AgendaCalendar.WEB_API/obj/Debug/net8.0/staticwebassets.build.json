@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "7xMxSENwvhLTkhaItfRZGWEGoUNR990aM1eBqZVI+CA=",
+  "Source": "AgendaCalendar.WEB_API",
+  "BasePath": "_content/AgendaCalendar.WEB_API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

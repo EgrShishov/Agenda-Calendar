@@ -11,11 +11,12 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("e8444999-a0b2-4c20-b509-8412e7d8a2eb")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53047ecc9c1fbfabc2b527fc914eec1a8536abb9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd602d1d2e42622636b3f541acb2c3431ac78667")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,10 +1,7 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Reminders.Commands
 {
-    public sealed record AddReminderCommand(string desc, DateTime time, string emailAdress, int eventId) : IRequest<Reminder> { }
+    public sealed record AddReminderCommand(string desc, DateTime time, string emailAdress, int eventId, TimeSpan interval) : IRequest<Reminder> { }
 
     public class AddReminderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddReminderCommand, Reminder>
     {
@@ -12,10 +9,11 @@ namespace AgendaCalendar.Application.Reminders.Commands
         {
             var reminder = new Reminder()
             {
-                Description = request.desc, 
-                ReminderTime = request.time, 
-                Email = request.emailAdress, 
-                EventId = request.eventId
+                Description = request.desc,
+                ReminderTime = request.time,
+                Email = request.emailAdress,
+                EventId = request.eventId,
+                NotificationInterval = request.interval
             };
             await unitOfWork.ReminderRepository.AddAsync(reminder);
             await unitOfWork.SaveAllAsync();

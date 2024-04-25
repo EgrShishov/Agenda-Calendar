@@ -3,8 +3,6 @@ namespace AgendaCalendar.Domain.Entities
 {
     public class Calendar : Entity
     {
-        public Calendar() { }
-
         public int AuthorId { get; set; }
 
         public string Title { get; set; }
@@ -15,6 +13,6 @@ namespace AgendaCalendar.Domain.Entities
 
         public List<Reminder> Reminders { get; set; } = new();
 
-        public List<int> Subscribers { get; set; } = new();
+        public List<int> SubscribersId { get; set; } = new();
     }
 }

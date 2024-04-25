@@ -1,0 +1,158 @@
+﻿
+@model AgendaCalendar.WEB_APP.ViewModels.Calendar.CalendarViewModel
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Calendar";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="~/css/site.css" />
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+        <script>
+            var calendar;
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    events: @Html.Raw(ViewData["Events"]),
+                    headerToolbar: {
+                        end: 'today,timeGridDay,dayGridWeek,dayGridMonth,multiMonthYear',
+                        center: 'title',
+                        start: 'prev,next'
+                    },
+                    eventClick: function (eventClickInfo) {
+                        var eventId = eventClickInfo.event.id;
+                        $.ajax({
+                            url: '/Event/Details',
+                            type: 'GET',
+                            data: { id: eventId },
+                            success: function (response) {
+                                $('#event-details-modal').html(response);
+                                $('#event-details-modal').css('display', 'block');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    },
+                    eventChange: function (changeInfo) {
+                        var eventId = changeInfo.event.id;
+                        var changedEvent = {
+                            Id: changeInfo.event.id,
+                            Title: changeInfo.event.title,
+                            Description: changeInfo.event.extendedProps.description,
+                            StartTime: changeInfo.event.start,
+                            EndTime: changeInfo.event.end,
+                            Location: changeInfo.event.extendedProps.location,
+                            SelectedCalendarId: changeInfo.event.extendedProps.calendarId,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        };
+                        $.ajax({
+                            url: '/Event/Edit',
+                            type: 'POST',
+                            data: JSON.stringify({ id: eventId, eventViewModel: changedEvent }),
+                            contentType: 'application/json', // Correct content type for JSON data
+                            success: function (response) {
+                                console.log(response);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    }
+                });
+
+                calendar.render();
+            });
+        </script>
+    </head>
+    <body>
+        <script src="/_framework/aspnetcore-browser-refresh.js"></script>
+        <div class="main-container">
+             <div class="sidebar" id="side_nav">
+                 <a asp-controller="Event" asp-action="Create" class="btn btn-primary">Create</a>
+                <hr>
+                <div>
+                    <input type="text" placeholder="Search">
+                </div>
+                <hr />
+                <div class="calendar-menu">
+                    <label>My calendars: </label>
+                    <ul>
+                        @if (ViewData["Calendars"] is IEnumerable<Calendar> calendars)
+                        {
+                            foreach (var calendar in calendars)
+                            {
+                                <li>
+                                    <input type="checkbox" id="calendar-@calendar.Id" onclick="handleCheckboxClick('@calendar.Id')" checked>
+                                    <label for="calendar-@calendar.Id">@calendar.Title</label>
+                                    <a class="edit-btn btn-primary" asp-controller="Calendar" asp-action="Edit" asp-route-id="@calendar.Id">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <form method="post" asp-controller="Calendar" asp-action="Delete" asp-route-id="@calendar.Id">
+                                        <button type="submit" class="delete-btn btn-primary">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>You doesnt have any calendars</li>
+                        }
+                    </ul>
+                </div>
+                <hr />
+                <div class="other-calendars-menu">
+                    <label>Shared calendars:</label>
+                    <ul>
+                        @if(ViewData["other_calendars"] is IEnumerable<Calendar> other_calendars)
+                        {
+                            foreach(var calendar in other_calendars)
+                            {
+                                <li>
+                                    <input type="checkbox" id="calendar-@calendar.Id" onclick="handleCheckboxClick('@calendar.Id')" checked>
+                                    <label for="calendar-@calendar.Id">@calendar.Title</label>
+                                    <form method="post" asp-controller="Calendar" asp-action="Unsubscribe" asp-route-id="@calendar.Id">
+                                        <button type="submit" class="delete-btn btn-primary">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>You dont have shared calendars</li>
+                        }
+                    </ul>
+                </div>
+                <label>Upcoming events!</label>
+                <ul>
+                    @if(ViewData["UpcomingEvents"] is IEnumerable<Event> events)
+                    {
+                        foreach(var evnt in events)
+                        {
+                            <li>@evnt.Title @evnt.Description @evnt.StartTime</li>
+                        }
+                    }
+                    else
+                    {
+                        <li>There are no upcoming events</li>
+                    }
+                </ul>
+             </div>
+             <div class="content" style="width:100%;">
+                 <div class="container-fluid">
+                    <div id="calendar" class="fullcalendar-container"></div>
+
+                    <!-- template for details card (inner html?)-->
+                    <div id="event-details-modal" class="eventIfnormationCard modal">
+                 </div>
+             </div>
+        </div>
+    <script src="~/js/calendar.js"></script>
+    <script src="~/js/site.js"></script>
+    </body>
+</html>

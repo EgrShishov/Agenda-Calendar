@@ -1,7 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Reminders.Queries
 {
     public sealed record ReminderListQuery() : IRequest<IReadOnlyList<Reminder>> { }

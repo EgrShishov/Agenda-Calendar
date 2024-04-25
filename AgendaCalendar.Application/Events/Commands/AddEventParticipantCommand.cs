@@ -1,7 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Events.Commands
 {
     public sealed record AddEventParticipantCommand(int eventId, EventParticipant eventParticipant) : IRequest<Event> { }

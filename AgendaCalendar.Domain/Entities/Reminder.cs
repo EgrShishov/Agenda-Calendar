@@ -3,7 +3,6 @@ namespace AgendaCalendar.Domain.Entities
 {
     public class Reminder : Entity
     {
-        public Reminder() { }
         public string Description { get; set; }
 
         public DateTime ReminderTime { get; set; }

@@ -11,7 +11,7 @@
     <div class="col-md-4">
         <form method="post" asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" value="Id" id="Id" name="calendarId"/>
+            <input type="hidden" value="@Model.Id" id="@Model.Id" name="id"/>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" name="title" />

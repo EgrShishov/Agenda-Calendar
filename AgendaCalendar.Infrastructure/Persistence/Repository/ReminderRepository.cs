@@ -27,7 +27,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
 
         public async Task<Reminder> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return _dbContext.Reminders.FirstOrDefault(x => x.Id.Equals(id));
+            return await _dbContext.Reminders.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<IReadOnlyList<Reminder>> GetListAsync(CancellationToken cancellationToken = default)

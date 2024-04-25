@@ -1,0 +1,34 @@
+﻿@model AgendaCalendar.WEB_APP.ViewModels.Calendar.CreateCalendarViewModel
+@{
+    ViewData["Title"] = "New calendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Create calendar</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-action="Create" enctype="multipart/form-data">
+            <label>Create a new calendar!</label>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" name="title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" name="description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OwnerEmail" class="control-label"></label>
+                <input asp-for="OwnerEmail" class="form-control" name="ownerEmail" />
+                <span asp-validation-for="OwnerEmail" class="email"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create new calendar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+

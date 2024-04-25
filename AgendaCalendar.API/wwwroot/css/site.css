@@ -14,7 +14,6 @@ html {
 
 html {
   position: relative;
-  min-height: 100%;
 }
 
 body {
@@ -65,6 +64,52 @@ body {
 .main-container{
     display: flex;
     height: 100vh;
+}
+
+.calendar-menu{
+
+}
+
+.calendar-menu ul{
+
+}
+
+.calendar-menu li{
+
+}
+
+.edit-btn, .delete-btn{
+    margin-right: 10px;
+}
+
+
+.eventIfnormationCard {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: auto;
+    overflow: hidden;
+    width: fit-content;
+    height: fit-content;
+    max-width: 600px;
+    max-height: 600px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    height: 80%;
+    box-shadow: #eeeeee 5px 5px;
+}
+
+.event-card-btn-group{
+}
+
+.edit-event-btn {
+    display: none;
 }
 
 @media(max-width: 767px) {

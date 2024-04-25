@@ -1,30 +1,16 @@
 using AgendaCalendar.API;
-using AgendaCalendar.API.Data;
 using AgendaCalendar.Application;
 using AgendaCalendar.Infrastructure;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddInfrastructure(builder.Configuration)
+                .AddApplication()
+                .AddPresentation();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddPresentation()
-                .AddApplication()
-                .AddInfrastructure(builder.Configuration);
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.AddRazorPages();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
-});
 
 builder.Services.AddAuthentication().AddGoogle(
     googleOptions =>
@@ -36,7 +22,6 @@ builder.Services.AddAuthentication().AddGoogle(
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -51,19 +36,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapRazorPages();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-});
-
-app.UseEndpoints(endpoints => endpoints.MapControllers()) ;
-
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 app.Run();

@@ -10,7 +10,7 @@ namespace AgendaCalendar.Application.Calendars.Queries
             var user = await unitOfWork.UserRepository.GetByIdAsync(request.userId);
             if (user == null) return null;
 
-            var subscribed_calendars = await unitOfWork.CalendarRepository.ListAsync(x => x.Subscribers.Contains(request.userId));
+            var subscribed_calendars = await unitOfWork.CalendarRepository.ListAsync(x => x.SubscribersId.Contains(request.userId));
             if (subscribed_calendars == null) return null;
             return subscribed_calendars;
         }

@@ -10,6 +10,10 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 namespace AgendaCalendar.Infrastructure
 {
@@ -20,9 +24,10 @@ namespace AgendaCalendar.Infrastructure
             ConfigurationManager configuration
             )
         {
-            services.AddAuth(configuration)
-                    .AddPersistence(configuration)
-                    .AddBackgroundJob()
+            services.AddPersistence(configuration)
+                    .AddIdentity()
+                    .AddAuth(configuration)
+                    .AddBackgroundJob(configuration)
                     .AddEmail(configuration);
             return services;
         }
@@ -48,41 +53,51 @@ namespace AgendaCalendar.Infrastructure
             this IServiceCollection services,
             ConfigurationManager configuration) 
         {
-            var jwtSettings = new JwtSettings();//for ASP .NET project
+            var jwtSettings = new JwtSettings();
             configuration.Bind(JwtSettings.SectionName, jwtSettings);
-            
-            //services.AddOptions<JwtSettings>().Bind(configuration.GetSection(JwtSettings.SectionName));
-            //services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             
             services.AddSingleton(Options.Create(jwtSettings));
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
-                    .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-            opt.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings.Issuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-            });
+                    .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(opt =>
+                        opt.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidateIssuer = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = jwtSettings.Issuer,
+                            ValidAudience = jwtSettings.Audience,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                        });
             return services;
         }
 
-        public static IServiceCollection AddBackgroundJob(this IServiceCollection services)
+        public static IServiceCollection AddBackgroundJob(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddHangfire(conf => conf.UsePostgreSqlStorage("User ID=postgres;Password=rootroot;Host=localhost;Port=5432;Database=hangfire;")) for asp.net core
-                    //.AddSingleton<HangfireBackgroundJobService>()
-                    //.AddHangfireServer();
+           /* services.AddHangfire(conf => conf.UsePostgreSqlStorage(configuration.GetConnectionString("HangfireDb")))
+                    .AddSingleton<HangfireBackgroundJobService>()
+                    .AddHangfireServer();*/
             return services;
         }
 
         public static IServiceCollection AddEmail(this IServiceCollection services, IConfigurationManager configuration)
         {
-            //var emailSettings = new EmailSettings();
-            //configuration.Bind(EmailSettings.SectionName, emailSettings);
+            var emailSettings = new EmailSettings();
+            configuration.Bind(EmailSettings.SectionName, emailSettings);
 
-            //services.AddSingleton(Options.Create(emailSettings));
+            services.AddSingleton(Options.Create(emailSettings));
             services.AddSingleton<IEmailSender, EmailSender>();
+            return services;
+        }
+
+        public static IServiceCollection AddIdentity(this IServiceCollection services)
+        {
+            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddEntityFrameworkStores<AppDbContext>()
+                    .AddUserManager<UserManager<User>>()
+                    .AddDefaultTokenProviders();
+
             return services;
         }
     }

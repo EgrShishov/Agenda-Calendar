@@ -1,4 +1,13 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
+﻿document.addEventListener('DOMContentLoaded', function () {
+    var openSidebarBtn = document.getElementById('sidebar-open-btn');
+    var sidebar = document.getElementById('side_nav');
+    openSidebarBtn.addEventListener('click', function () {
+        if (sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        } else {
+            sidebar.classList.add('active');
+        }
+        console.log("Button:", openSidebarBtn);
+        console.log("Sidebar:", sidebar);
+    });
+});

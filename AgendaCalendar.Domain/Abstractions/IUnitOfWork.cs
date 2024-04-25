@@ -7,7 +7,7 @@ namespace AgendaCalendar.Domain.Abstractions
         IRepository<Calendar> CalendarRepository { get; }
         IRepository<Event> EventRepository { get; }
         IRepository<Reminder> ReminderRepository { get; }
-        IRepository<User> UserRepository { get; }
+        IUserRepository UserRepository { get; }
         public Task DeleteDataBaseAsync();
         public Task CreateDataBaseAsync();
         public Task SaveAllAsync();

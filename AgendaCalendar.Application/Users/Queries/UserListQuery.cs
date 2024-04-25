@@ -1,7 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Users.Queries
 {
     public sealed record UserListQuery() : IRequest<IReadOnlyList<User>> { }

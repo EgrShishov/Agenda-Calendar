@@ -1,7 +1,4 @@
-﻿using AgendaCalendar.Domain.Abstractions;
-using AgendaCalendar.Domain.Entities;
-using MediatR;
-
+﻿
 namespace AgendaCalendar.Application.Calendars.Commands
 {
     public sealed record DeleteCalendarCommand(int calendarId) : IRequest<Calendar> { }

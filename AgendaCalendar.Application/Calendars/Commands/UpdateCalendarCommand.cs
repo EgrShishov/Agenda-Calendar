@@ -12,15 +12,10 @@ namespace AgendaCalendar.Application.Calendars.Commands
         {
             var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.calendarId);
             if (calendar == null) return null;
-            var newCalendar = new Calendar()
-            {
-                Title = request.title,
-                CalendarDescription = request.description,
-                Events = calendar.Events ?? new List<Event>(),
-                Reminders = calendar.Reminders ?? new List<Reminder>(),
-                Subscribers = calendar.Subscribers ?? new List<int>(),
-            };
-            calendar = newCalendar;
+
+            calendar.Title = request.title;
+            calendar.CalendarDescription = request.description;
+
             await unitOfWork.CalendarRepository.UpdateAsync(calendar);
             await unitOfWork.SaveAllAsync();
             return calendar;

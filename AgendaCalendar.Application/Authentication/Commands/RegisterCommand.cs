@@ -1,36 +1,46 @@
-﻿using AgendaCalendar.Application.Common.Interfaces;
+﻿using AgendaCalendar.Application.Authentication.Common;
+using AgendaCalendar.Application.Common.Interfaces;
+using AgendaCalendar.Domain.Common.Errors;
+using ErrorOr;
 
 namespace AgendaCalendar.Application
 {
-    public sealed record RegisterCommand(string userName, string password, string email) : IRequest<User> { }
+    public sealed record RegisterCommand(string Username, string Password, string Email, DateTime BirthdayDate) : IRequest<ErrorOr<AuthenticationResult>> { }
 
-    public class RegisterCommandHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator) : IRequestHandler<RegisterCommand, User>
+    public class RegisterCommandHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator) : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResult>>
     {
-        public async Task<User> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<AuthenticationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var users = await unitOfWork.UserRepository.ListAsync(
-                user => user.UserName == request.userName && user.Password == request.password);
-            if (users is not null) return null;
-
-            var newUser = new User() 
+            var userWithEmail = await unitOfWork.UserRepository.GetUserByEmailAsync(request.Email);
+            if (userWithEmail != null)
             {
-                UserName = request.userName, 
-                Password = request.password, 
-                Email = request.email 
+                return Errors.User.DuplicateEmail;
+            }
+            var userWithUsername = await unitOfWork.UserRepository.GetUserByUsernameAsync(request.Username);
+            if(userWithUsername != null)
+            {
+                return Errors.User.DuplicateUsername;
+            }
+            var newUser = new User
+            {
+                UserName = request.Username,
+                Email = request.Email,
+                BirthdayDate = request.BirthdayDate
             };
-            var user = await unitOfWork.UserRepository.AddAsync(newUser);
-            var userCalendar = new Calendar()
+            var user = await unitOfWork.UserRepository.AddAsync(newUser, request.Password);
+            var userCalendar = new Calendar
             {
-                Title = request.userName,
-                CalendarDescription = $"Basic calendar, which belongs to {request.userName}",
+                Title = request.Username,
+                CalendarDescription = $"Basic calendar, which belongs to {request.Username}",
                 AuthorId = user.Id
             };
             await unitOfWork.CalendarRepository.AddAsync(userCalendar);
             await unitOfWork.SaveAllAsync();
 
-            //var token = jwtTokenGenerator.GenerateToken(newUser.Id, newUser.UserName, newUser.Password);
-            //return token with result
-            return newUser;
+            var token = jwtTokenGenerator.GenerateToken(newUser.Id, newUser.UserName, newUser.Email);
+            return new AuthenticationResult(
+                user,
+                token);
         }
     }
 }

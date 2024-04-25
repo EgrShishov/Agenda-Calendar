@@ -1,0 +1,7 @@
+@AgendaCalendar.WEB_API_HostAddress = http://localhost:5025
+
+
+
+GET {{AgendaCalendar.WEB_API_HostAddress}}/api/calendar/reminders/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQW1pa28iLCJlbWFpbCI6Im1hbWFwYXBhQHlhbmRleC5ydSIsImp0aSI6IjczNzNiZDQwLTJkMzgtNDM1Ny1hYTY1LTJjZjc1MThjNDkwZSIsInN1YiI6IjExIiwiZXhwIjoxNzEzOTkxNTE0LCJpc3MiOiJBZ2VuZGFDYWxlbmRhciIsImF1ZCI6IkFnZW5kYUNhbGVuZGFyIn0.pJlMuFqE69Z1Z7eegePbEPbmXYcmk58f3FAlaU6OeYs
+###

@@ -1,24 +1,53 @@
 ﻿
 namespace AgendaCalendar.Application.Events.Commands
 {
-    public sealed record UpdateEventCommand(Event @event) : IRequest<Event> { }
+    public sealed record UpdateEventCommand(
+        int EventId,
+        int AuthorId,
+        int CalendarId,
+        string Title,
+        string Description,
+        string Location,
+        DateTime StartTime,
+        DateTime EndTime,
+        RecurrenceRule RecurrenceRule
+        ) : IRequest<Event> { }
 
     public class UpdateEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateEventCommand, Event>
     {
         public async Task<Event> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.EventRepository.UpdateAsync(request.@event);
-            var calendars = await unitOfWork.CalendarRepository.ListAsync(x => x.Events.Contains(request.@event));
+            var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.CalendarId);
+            if (calendar is null) return null;
+            var existingEvent = calendar.Events.FirstOrDefault(e => e.Id == request.EventId);
 
-            var calendar = calendars.First();
-            var index = calendar.Events.FindIndex(x => x.Id.Equals(request.@event.Id));
-            if (index != -1)
-                calendar.Events[index] = request.@event;
-
-            var updatedEvent = await unitOfWork.EventRepository.UpdateAsync(request.@event);
+            if (existingEvent is not null)
+            {
+                existingEvent.Title = request.Title;
+                existingEvent.Description = request.Description;
+                existingEvent.Location = request.Location;
+                existingEvent.StartTime = request.StartTime;
+                existingEvent.EndTime = request.EndTime;
+                existingEvent.ReccurenceRules = request.RecurrenceRule;
+            }
+            else
+            {
+                var newEvent = new Event
+                {
+                    Title = request.Title,
+                    Description = request.Description,
+                    Location = request.Location,
+                    StartTime = request.StartTime,
+                    EndTime = request.EndTime,
+                    ReccurenceRules = request.RecurrenceRule,
+                    AuthorId = request.AuthorId
+                };
+                calendar.Events.Add(newEvent);
+            }
             await unitOfWork.CalendarRepository.UpdateAsync(calendar);
             await unitOfWork.SaveAllAsync();
-            return updatedEvent;
+
+            return existingEvent;
         }
     }
 }

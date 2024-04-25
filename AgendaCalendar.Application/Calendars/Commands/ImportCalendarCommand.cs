@@ -10,14 +10,13 @@ namespace AgendaCalendar.Application.Calendars.Commands
         public async Task<Calendar> Handle(ImportCalendarCommand request, CancellationToken cancellationToken)
         {
             var ical_format = Encoding.UTF8.GetString(request.calendar_bytes);
-            Console.WriteLine(ical_format);
             Calendar calendar = IcalConverter.Deserialize(ical_format);
-            if (calendar == null) return null;
+            if (calendar == null) throw new Exception("Error in deserializing calendar");
+            Console.WriteLine(calendar.Title);
             calendar.AuthorId = request.author_id;
             await unitOfWork.CalendarRepository.AddAsync(calendar);
             await unitOfWork.SaveAllAsync();
             //added version comparing, if author and name and uid are equal(also in deserialization lib)
-
             return calendar;
         }
     }
