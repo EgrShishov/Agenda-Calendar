@@ -2,10 +2,8 @@
 using AgendaCalendar.Application.Calendars.Commands;
 using AgendaCalendar.Application.Calendars.Queries;
 using AgendaCalendar.Application.Events.Queries;
-using AgendaCalendar.Application.Reminders.Commands;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Calendars;
-using AgendaCalendar.WEB_API.Contracts.Reminders;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -117,32 +115,6 @@ namespace AgendaCalendar.WEB_API.Controllers
         {
             throw new NotImplementedException();
         }
-
-/*        [HttpPost("create")]
-        public async Task<IActionResult> CreateReminder(CreateReminderRequest request, int id)
-        {
-            var command = _mapper.Map<AddReminderCommand>((request, id));
-            var createReminderResult = await _mediator.Send(command);
-
-            return Ok(_mapper.Map<ReminderResponse>(createReminderResult));
-        }
-
-        [HttpPost("delete")]
-        public async Task<IActionResult> DeleteReminder(int id)
-        {
-            var reminder = await _mediator.Send(new DeleteReminderCommand(id));
-            if (reminder == null) return NotFound();
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost("edit")]
-        public async Task<IActionResult> EditReminder(EditReminderRequest request, int id)
-        {
-            var command = _mapper.Map<UpdateReminderCommand>((request, id));
-            var editReminderResult = await _mediator.Send(command);
-
-            return Ok(_mapper.Map<ReminderResponse>(editReminderResult));
-        }*/
 
     }
 }

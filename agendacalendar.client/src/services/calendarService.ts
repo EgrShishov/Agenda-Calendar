@@ -94,11 +94,31 @@ export class CalendarService{
         }
     }
 
-    async subscribeToCalenar(calendarId: number){
+    async subscribeToCalendar(calendarId: number){
+        const response = await fetch(`${this.baseUrl}/calendar/subscribe?id=${calendarId}`,{
+            method: 'GET',
+            headers:{
+                'Content-type': 'application/json'
+            }
+        });
 
+        if(response.ok){
+            const data = await response.json();
+            return data;
+        }
     }
 
     async unsubscribeFromCalendar(calendarId: number){
+        const response = await fetch(`${this.baseUrl}/calendar/unsubscribe?id=${calendarId}`,{
+            method: 'GET',
+            headers:{
+                'Content-type': 'application/json'
+            }
+        });
 
+        if(response.ok){
+            const data = await response.json();
+            return data;
+        }
     }
 }
