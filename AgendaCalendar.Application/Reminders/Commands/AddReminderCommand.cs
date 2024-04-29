@@ -1,11 +1,12 @@
 ﻿
 namespace AgendaCalendar.Application.Reminders.Commands
 {
-    public sealed record AddReminderCommand(string desc, DateTime time, string emailAdress, int eventId, TimeSpan interval) : IRequest<Reminder> { }
+    public sealed record AddReminderCommand(string desc, DateTime time, string emailAdress, int eventId, TimeSpan interval)
+        : IRequest<ErrorOr<Reminder>> { }
 
-    public class AddReminderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddReminderCommand, Reminder>
+    public class AddReminderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddReminderCommand, ErrorOr<Reminder>>
     {
-        public async Task<Reminder> Handle(AddReminderCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Reminder>> Handle(AddReminderCommand request, CancellationToken cancellationToken)
         {
             var reminder = new Reminder()
             {

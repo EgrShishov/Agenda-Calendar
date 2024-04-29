@@ -292,3 +292,4 @@ C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Mapster.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Mapster.Core.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Mapster.DependencyInjection.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\ErrorOr.dll
+C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll

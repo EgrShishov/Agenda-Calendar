@@ -10,13 +10,16 @@ namespace AgendaCalendar.Application.Events.Commands
         DateTime StartTime,
         DateTime EndTiem,
         RecurrenceRule RecurrenceRule
-        ) : IRequest<Calendar> { }
-    public class AddEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddEventCommand, Calendar>
+        ) : IRequest<ErrorOr<Calendar>> { }
+    public class AddEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddEventCommand, ErrorOr<Calendar>>
     {
-        public async Task<Calendar> Handle(AddEventCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Calendar>> Handle(AddEventCommand request, CancellationToken cancellationToken)
         {
             var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.CalednarId);
-            if (calendar == null) return null;
+            if (calendar == null)
+            {
+                return Errors.Calendar.NotFound;
+            }
 
             var newEvent = new Event
             {

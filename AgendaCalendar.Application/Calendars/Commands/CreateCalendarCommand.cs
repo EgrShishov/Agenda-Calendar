@@ -1,13 +1,14 @@
-﻿
+﻿using ErrorOr;
+
 namespace AgendaCalendar.Application.Calendars.Commands
 {
     public sealed record CreateCalendarCommand(string title, 
         string description,
-        int authorId) : IRequest<Calendar>
+        int authorId) : IRequest<ErrorOr<Calendar>>
     { }
-    public class CreateCalendarCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateCalendarCommand, Calendar>
+    public class CreateCalendarCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateCalendarCommand, ErrorOr<Calendar>>
     {
-        public async Task<Calendar> Handle(CreateCalendarCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Calendar>> Handle(CreateCalendarCommand request, CancellationToken cancellationToken)
         {
             var new_calendar = new Calendar()
             {

@@ -1,0 +1,15 @@
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace AgendaCalendar.API.ViewModels.Event
+{
+    public class CreateEventViewModel
+    {
+        public string SelectedCalendarId { get; set; }
+        public string Description { get; set; }
+        public string Title { get; set; }
+        public DateTime StartTime { get; set; } = DateTime.Now;
+        public DateTime EndTime { get; set; } = DateTime.Now.AddDays(1);
+        public string Location { get; set; }
+        public IEnumerable<SelectListItem> UserCalendars { get; set; }
+    }
+}

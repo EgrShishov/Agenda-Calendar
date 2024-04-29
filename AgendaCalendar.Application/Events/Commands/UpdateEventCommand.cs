@@ -11,14 +11,17 @@ namespace AgendaCalendar.Application.Events.Commands
         DateTime StartTime,
         DateTime EndTime,
         RecurrenceRule RecurrenceRule
-        ) : IRequest<Event> { }
+        ) : IRequest<ErrorOr<Event>> { }
 
-    public class UpdateEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateEventCommand, Event>
+    public class UpdateEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateEventCommand, ErrorOr<Event>>
     {
-        public async Task<Event> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Event>> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
         {
             var calendar = await unitOfWork.CalendarRepository.GetByIdAsync(request.CalendarId);
-            if (calendar is null) return null;
+            if (calendar is null)
+            {
+                return Errors.Calendar.NotFound;
+            }
             var existingEvent = calendar.Events.FirstOrDefault(e => e.Id == request.EventId);
 
             if (existingEvent is not null)

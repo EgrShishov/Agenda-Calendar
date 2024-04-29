@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "F4uOVb6oiY6mFf7MNd1/mygrGYmw+WlY3CYzgtPP/StNVgf5KNadL9Z7uoKbyijSDPXooy+vTWWhyxlwedaowA==",
+  "dgSpecHash": "5PeiEc4abDNe7O+4SG9pMURamZgFFJTjZJ+XTOXCgnprDEZ755xpeJ4rfv/WrEfKr53g8YdorLZb314jkRThDw==",
   "success": true,
   "projectFilePath": "C:\\AgendaCalendar\\AgendaCalendar.WEB_API\\AgendaCalendar.WEB_API.csproj",
   "expectedPackageFiles": [
@@ -75,6 +75,7 @@
     "C:\\Users\\Егор\\.nuget\\packages\\mapster.dependencyinjection\\1.0.1\\mapster.dependencyinjection.1.0.1.nupkg.sha512",
     "C:\\Users\\Егор\\.nuget\\packages\\mediatr\\12.2.0\\mediatr.12.2.0.nupkg.sha512",
     "C:\\Users\\Егор\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\Егор\\.nuget\\packages\\microsoft.aspnetcore.authentication.google\\8.0.4\\microsoft.aspnetcore.authentication.google.8.0.4.nupkg.sha512",
     "C:\\Users\\Егор\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.3\\microsoft.aspnetcore.authentication.jwtbearer.8.0.3.nupkg.sha512",
     "C:\\Users\\Егор\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.4\\microsoft.aspnetcore.cryptography.internal.8.0.4.nupkg.sha512",
     "C:\\Users\\Егор\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.4\\microsoft.aspnetcore.cryptography.keyderivation.8.0.4.nupkg.sha512",

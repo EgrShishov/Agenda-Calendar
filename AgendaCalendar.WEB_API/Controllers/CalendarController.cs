@@ -28,17 +28,14 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<ActionResult<IEnumerable<Event>>> GetCalendars(int userId)
         {
             var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
-            if(userCalendars is null)
-            {
-                return NotFound();
-            }
+
             List<Event> events = new List<Event>();
             List<Event> upcomingEvents = new List<Event>();
-            foreach (var calendar in userCalendars)
+            foreach (var calendar in userCalendars.Value)
             {
                 events = events.Concat(calendar.Events).ToList();
-                var calendarsUpcoming = await _mediator.Send(new EventListByDateQuery(calendar.Id, DateTime.Now));
-                upcomingEvents = upcomingEvents.Concat(calendarsUpcoming).ToList();
+                var calendarsUpcomingResult = await _mediator.Send(new EventListByDateQuery(calendar.Id, DateTime.Now));
+                upcomingEvents = upcomingEvents.Concat(calendarsUpcomingResult.Value).ToList();
             }
             var icalEvents = JsonConverter.GetJsonEventList(events);
             return Ok(icalEvents);
@@ -48,8 +45,12 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Export(int id) 
         {
             var bytes = await _mediator.Send(new ExportCalendarCommand(id));
+
             var calendar = await _mediator.Send(new CalendarByIdQuery(id));
-            return File(bytes, "text/plain", $"{calendar.Title}.ics");
+
+            return bytes.Match(
+                bytes => File(bytes, "text/plain", $"{calendar.Value.Title}.ics"),
+                errors => Problem(errors));
         }
 
         [HttpPost("import")]
@@ -57,39 +58,52 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Import(IFormFile file, int id)
         {
             string filename = Path.GetFileName(file.FileName);
+
             using MemoryStream mstream = new();
             await file.CopyToAsync(mstream);
             byte[] calendar_bytes = mstream.ToArray();
-            var calendar = await _mediator.Send(new ImportCalendarCommand(calendar_bytes, id));
-            return RedirectToAction(nameof(Index));
+
+            var calendarImportResult = await _mediator.Send(new ImportCalendarCommand(calendar_bytes, id));
+
+            return calendarImportResult.Match(
+                calendarImportResult => RedirectToAction(nameof(Index)),
+                errors => Problem(errors));
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> Create(CreateCalendarRequest request, int id)
         {
             var command = _mapper.Map<CreateCalendarCommand>((request, id));
+
             var createCalendarResult = await _mediator.Send(command);
 
-            return Ok(_mapper.Map<CalendarResponse>(createCalendarResult));
+            return createCalendarResult.Match(
+                crateCalendarResult => Ok(_mapper.Map<CalendarResponse>(createCalendarResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("edit")]
         public async Task<IActionResult> Edit(EditCalendarRequest request, int id)
         {
             var command = _mapper.Map<EditCalendarCommand>((request, id));
+
             var editCalendarResult = await _mediator.Send(command);
 
-            return Ok(_mapper.Map<CalendarResponse>(editCalendarResult));
+            return editCalendarResult.Match(
+                editCalendarResult => Ok(_mapper.Map<CalendarResponse>(editCalendarResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var calendar = await _mediator.Send(new CalendarByIdQuery(id));
-            if (calendar == null) return NotFound();
-            calendar = await _mediator.Send(new DeleteCalendarCommand(id));
-            if (calendar is null) return NotFound();
-            return RedirectToAction(nameof(Index));
+
+            var calendarDeleteResult = await _mediator.Send(new DeleteCalendarCommand(id));
+
+            return calendarDeleteResult.Match(
+                _ => RedirectToAction(nameof(Index)),
+                errors => Problem(errors));
         }
 
         [HttpPost("subscribe")]

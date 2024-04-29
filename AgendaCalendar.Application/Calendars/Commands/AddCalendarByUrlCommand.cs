@@ -1,11 +1,12 @@
-﻿
+﻿using ErrorOr;
+
 namespace AgendaCalendar.Application.Calendars.Commands
 {
-    public sealed record AddCalendarByUrlCommand(string url): IRequest<Calendar> { }
+    public sealed record AddCalendarByUrlCommand(string url): IRequest<ErrorOr<Calendar>> { }
 
-    public class AddCalendarByUrlCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddCalendarByUrlCommand, Calendar>
+    public class AddCalendarByUrlCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddCalendarByUrlCommand, ErrorOr<Calendar>>
     {
-        public Task<Calendar> Handle(AddCalendarByUrlCommand request, CancellationToken cancellationToken)
+        public Task<ErrorOr<Calendar>> Handle(AddCalendarByUrlCommand request, CancellationToken cancellationToken)
         {
             using HttpClient client = new();
             throw new NotImplementedException();

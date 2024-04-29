@@ -1,4 +1,6 @@
 ﻿using AgendaCalendar.Application.Events.Commands;
+using AgendaCalendar.Application.Events.Queries;
+using AgendaCalendar.Domain.Common.Errors;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Events;
 using MapsterMapper;
@@ -28,6 +30,7 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Create(CreateEventRequest request, int calendarId, int authorId)
         {
             var command = _mapper.Map<AddEventCommand>((request, calendarId, authorId));
+
             var createEventResult = await _mediator.Send(command);
 
             return Ok(_mapper.Map<EventResponse>(createEventResult));
@@ -37,6 +40,7 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Edit(EditEventRequest request, int eventId, int authorId)
         {
             var command = _mapper.Map<UpdateEventCommand>((request, eventId, authorId));
+
             var editEventResult = await _mediator.Send(command);
 
             return Ok(_mapper.Map<EventResponse>(editEventResult));
@@ -46,17 +50,20 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deleteEventResult = await _mediator.Send(new DeleteEventCommand(id));
-            if (deleteEventResult is not null)
-            {
-                return Ok();
-            }
-            return NotFound();
+
+            return deleteEventResult.Match(
+                deleteEventResult => Ok(_mapper.Map<EventResponse>(deleteEventResult)),
+                errors => Problem(errors));
         }
 
         [HttpGet("upcoming")]
-        public async Task<IEnumerable<Event>> UpcomingEvents(int calendarId)
+        public async Task<IActionResult> UpcomingEvents(int calendarId)
         {
-            throw new NotImplementedException();
+            var upcomingEventsResult = await _mediator.Send(new EventListQuery(calendarId));
+
+            return upcomingEventsResult.Match(
+                upcomingEventsResult => Ok(_mapper.Map<List<EventResponse>>(upcomingEventsResult.Take(5))),
+                errors => Problem(errors));
         }
     }
 }

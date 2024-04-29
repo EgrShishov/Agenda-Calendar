@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace AgendaCalendar.WEB_API.Controllers
 {
     [ApiController]
-    [Authorize]
     public class ApiController : ControllerBase
     {
         protected IActionResult Problem(List<Error> errors)

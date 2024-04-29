@@ -1,7 +1,5 @@
 ﻿using AgendaCalendar.Application.Authentication.Common;
 using AgendaCalendar.Application.Common.Interfaces;
-using AgendaCalendar.Domain.Common.Errors;
-using ErrorOr;
 
 namespace AgendaCalendar.Application
 {

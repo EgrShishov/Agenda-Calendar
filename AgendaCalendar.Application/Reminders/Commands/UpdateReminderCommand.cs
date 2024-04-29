@@ -8,14 +8,17 @@ namespace AgendaCalendar.Application.Reminders.Commands
         string Email,
         DateTime ReminderTime,
         TimeSpan NotificationInterval
-        ) : IRequest<Reminder> { }
+        ) : IRequest<ErrorOr<Reminder>> { }
 
-    public class EditReminderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateReminderCommand, Reminder>
+    public class EditReminderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<UpdateReminderCommand, ErrorOr<Reminder>>
     {
-        public async Task<Reminder> Handle(UpdateReminderCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Reminder>> Handle(UpdateReminderCommand request, CancellationToken cancellationToken)
         {
             var reminder = await unitOfWork.ReminderRepository.GetByIdAsync(request.ReminderId);
-            if (reminder == null) return null;
+            if (reminder == null)
+            {
+                return Errors.Reminder.NotFound;
+            }
 
             reminder.Description = request.Description;
             reminder.ReminderTime = request.ReminderTime;

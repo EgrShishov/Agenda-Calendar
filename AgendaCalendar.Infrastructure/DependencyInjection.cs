@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Hangfire;
 using Hangfire.PostgreSql;
+using AgendaCalendar.Infrastructure.Authorization;
 
 namespace AgendaCalendar.Infrastructure
 {
@@ -55,8 +56,13 @@ namespace AgendaCalendar.Infrastructure
         {
             var jwtSettings = new JwtSettings();
             configuration.Bind(JwtSettings.SectionName, jwtSettings);
+
+            var googleOAuthSettings = new GoogleOAuthSettings();
+            configuration.Bind(GoogleOAuthSettings.SectionName, googleOAuthSettings);
             
             services.AddSingleton(Options.Create(jwtSettings));
+            services.AddSingleton(Options.Create(googleOAuthSettings));
+
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
                     .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(opt =>
@@ -70,6 +76,14 @@ namespace AgendaCalendar.Infrastructure
                             IssuerSigningKey = new SymmetricSecurityKey(
                                 Encoding.UTF8.GetBytes(jwtSettings.Secret))
                         });
+
+            services.AddAuthentication().AddGoogle(
+                googleOptions =>
+                {
+                    googleOptions.ClientId = googleOAuthSettings.ClientId;
+                    googleOptions.ClientSecret = googleOAuthSettings.Secret;
+                });
+
             return services;
         }
 
