@@ -1,1 +1,0 @@
-C:\AgendaCalendar\AgendaCalendar.Client\obj\Debug\agendacalendar.client.esproj.CoreCompileInputs.cache
