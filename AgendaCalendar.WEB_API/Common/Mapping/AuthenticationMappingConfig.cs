@@ -9,7 +9,7 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<RegisterRequest, RegisterCommand>();
+            config.NewConfig<RegisterRequest, SignUpCommand>();
 
             config.NewConfig<LoginRequest, LoginQuery>();
 

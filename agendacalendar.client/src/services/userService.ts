@@ -1,4 +1,5 @@
 import {environment} from "../environments/environment.development.ts";
+import axios from '../../axios-config.ts';
 
 export class UserService{
     baseUrl = environment.apiUrl;
@@ -8,35 +9,14 @@ export class UserService{
     }
 
     async register(model: any){
-        const response = await fetch(`${this.baseUrl}/account/register`,{
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(model)
-        });
-
-        if(response.ok){
-            const data = await response.json();
-            localStorage.setItem('JWT', data['token'])
-            return data;
-        }
+        const response = await axios.post(`${this.baseUrl}account/register`,
+            model);
+        return response.data;
     }
 
     async login(model: any){
-        const response = await fetch(`${this.baseUrl}/account/login`,{
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(model)
-        });
-
-        if(response.ok){
-            const data = await response.json();
-            localStorage.setItem('JWT', data['token'])
-            return data;
-        }
+        const response = await axios.post(`${this.baseUrl}account/login`, model);
+        return response.data;
     }
 
     async logout(){

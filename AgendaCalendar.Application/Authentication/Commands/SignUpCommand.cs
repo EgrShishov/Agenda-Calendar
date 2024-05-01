@@ -3,11 +3,11 @@ using AgendaCalendar.Application.Common.Interfaces;
 
 namespace AgendaCalendar.Application
 {
-    public sealed record RegisterCommand(string Username, string Password, string Email, DateTime BirthdayDate) : IRequest<ErrorOr<AuthenticationResult>> { }
+    public sealed record SignUpCommand(string Username, string Password, string Email, DateTime BirthdayDate) : IRequest<ErrorOr<AuthenticationResult>> { }
 
-    public class RegisterCommandHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator) : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResult>>
+    public class SignupCommandHandler(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator) : IRequestHandler<SignUpCommand, ErrorOr<AuthenticationResult>>
     {
-        public async Task<ErrorOr<AuthenticationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<AuthenticationResult>> Handle(SignUpCommand request, CancellationToken cancellationToken)
         {
             var userWithEmail = await unitOfWork.UserRepository.GetUserByEmailAsync(request.Email);
             if (userWithEmail != null)

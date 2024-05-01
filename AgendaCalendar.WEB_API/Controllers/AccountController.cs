@@ -6,6 +6,7 @@ using MediatR;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using AgendaCalendar.Domain.Common.Errors;
+using AgendaCalendar.Application.Authentication.Queries;
 
 namespace AgendaCalendar.WEB_API.Controllers
 {
@@ -24,7 +25,7 @@ namespace AgendaCalendar.WEB_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            var command = _mapper.Map<RegisterCommand>(request);
+            var command = _mapper.Map<SignUpCommand>(request);
             ErrorOr<AuthenticationResult> authResult = await _mediator.Send(command);
 
             return authResult.Match(
@@ -47,6 +48,15 @@ namespace AgendaCalendar.WEB_API.Controllers
 
             return authResult.Match(
                 authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+                errors => Problem(errors));
+        }
+
+        [HttpGet("google-signin")]
+        public async Task<IActionResult> GoogleSignIn(string token)
+        {
+            var userSignInResult = await _mediator.Send(new GoogleSigninQuery(token));
+            return userSignInResult.Match(
+                userSignInResult => Ok(_mapper.Map<AuthenticationResponse>(userSignInResult)),
                 errors => Problem(errors));
         }
     }

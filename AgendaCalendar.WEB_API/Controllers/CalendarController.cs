@@ -6,12 +6,14 @@ using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Calendars;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace AgendaCalendar.WEB_API.Controllers
 {
     [Route("api/calendar")]
+    [Authorize]
     public class CalendarController : ApiController
     {
         private readonly IMediator _mediator;
@@ -38,6 +40,15 @@ namespace AgendaCalendar.WEB_API.Controllers
             var icalEvents = JsonConverter.GetJsonEventList(events);
             return Ok(icalEvents);
         }
+
+        [HttpGet("calendars")]
+        public async Task<IActionResult> Calendars(int userId)
+        {
+            var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
+            return userCalendarsResult.Match(
+                userCalendarResult => Ok(_mapper.Map<List<CalendarResponse>>(userCalendarResult)),
+                errors => Problem(errors));
+        } 
 
         [HttpGet("export")]
         public async Task<IActionResult> Export(int id) 

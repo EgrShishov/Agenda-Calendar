@@ -77,6 +77,7 @@ namespace AgendaCalendar.Infrastructure
                                 Encoding.UTF8.GetBytes(jwtSettings.Secret))
                         });
 
+            services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
             services.AddAuthentication().AddGoogle(
                 googleOptions =>
                 {

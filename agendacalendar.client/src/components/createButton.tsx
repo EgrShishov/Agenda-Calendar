@@ -1,36 +1,14 @@
-import {useEffect, useState} from "react";
-import {CalendarService} from "../services/calendarService.ts";
-import {CalendarModel} from "../models/calendarModel.ts";
+import {useContext} from "react";
+import GlobalContext from "../context/globalContext.ts";
 
 const CreateButton = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const calendarService = new CalendarService();
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
+    const { setShowEventDetails } = useContext(GlobalContext)
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
-    useEffect(() => {
-        const createCalendar = async () => {
-            const calendar: CalendarModel = {
-                title: 'New Calendar',
-                calendarDescription: 'Calendar description',
-            };
-            const response = await calendarService.createCalendar(calendar, 13);
-            if(response.ok){
-                const data = await response.json();
-                return data;
-            }
-        };
-        createCalendar();
-    }, [CalendarService]);
+    const onClickHandler = () => setShowEventDetails(true);
 
     return (
         <button
-            onClick={openModal}
+            onClick={onClickHandler}
             className="text-orange-400 font-bold border p-2 rounded-full flex items-center shadow-md hover:shadow-2xl bg-white">
             <span className="material-icons-outlined w-7 h-7">
                 add

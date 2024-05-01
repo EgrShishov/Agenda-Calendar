@@ -35,6 +35,7 @@ namespace AgendaCalendar.Infrastructure.Authentication
                 expires: DateTime.Now.AddMinutes(jwtSettings.ExpiryMinutes), 
                 claims: claims, 
                 signingCredentials: signingCredentials);
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
