@@ -8,7 +8,7 @@ namespace AgendaCalendar.Application.Events.Commands
         string Description,
         string Location,
         DateTime StartTime,
-        DateTime EndTiem,
+        DateTime EndTime,
         RecurrenceRule RecurrenceRule
         ) : IRequest<ErrorOr<Calendar>> { }
     public class AddEventCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<AddEventCommand, ErrorOr<Calendar>>
@@ -29,7 +29,7 @@ namespace AgendaCalendar.Application.Events.Commands
                 Description = request.Description,
                 Location = request.Location,
                 StartTime = request.StartTime,
-                EndTime = request.EndTiem,
+                EndTime = request.EndTime,
                 ReccurenceRules = request.RecurrenceRule,
                 EventParticipants = new(),
             };

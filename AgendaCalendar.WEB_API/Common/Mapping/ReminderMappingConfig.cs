@@ -9,12 +9,12 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<(CreateReminderRequest request, int eventId), AddReminderCommand>()
-                .Map(dest => dest.desc, src => src.request.Description)
-                .Map(dest => dest.emailAdress, src => src.request.Email)
+            config.NewConfig<CreateReminderRequest, AddReminderCommand>()
+                .Map(dest => dest.desc, src => src.Description)
+                .Map(dest => dest.emailAdress, src => src.Email)
                 .Map(dest => dest.eventId, src => src.eventId)
-                .Map(dest => dest.time, src => src.request.ReminderTime)
-                .Map(dest => dest.interval, src => src.request.NotificationInterval);
+                .Map(dest => dest.time, src => src.ReminderTime)
+                .Map(dest => dest.interval, src => src.NotificationInterval);
 
             config.NewConfig<(EditReminderRequest request, int reminderId), UpdateReminderCommand>()
                 .Map(dest => dest.Description, src => src.request.Description)

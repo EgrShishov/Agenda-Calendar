@@ -1,8 +1,7 @@
 ﻿using AgendaCalendar.Application.Events.Commands;
 using AgendaCalendar.Application.Events.Queries;
-using AgendaCalendar.Domain.Common.Errors;
-using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Events;
+using AgendaCalendar.WEB_API.Extensions;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,23 +26,29 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateEventRequest request, int calendarId, int authorId)
+        public async Task<IActionResult> Create(CreateEventRequest request, int calendarId)
         {
+            int authorId = User.GetUserId();
             var command = _mapper.Map<AddEventCommand>((request, calendarId, authorId));
 
             var createEventResult = await _mediator.Send(command);
 
-            return Ok(_mapper.Map<EventResponse>(createEventResult));
+            return createEventResult.Match(
+                createEventResult => Ok(_mapper.Map<EventResponse>(createEventResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("edit")]
-        public async Task<IActionResult> Edit(EditEventRequest request, int eventId, int authorId)
+        public async Task<IActionResult> Edit(EditEventRequest request, int eventId)
         {
+            int authorId = User.GetUserId();
             var command = _mapper.Map<UpdateEventCommand>((request, eventId, authorId));
 
             var editEventResult = await _mediator.Send(command);
 
-            return Ok(_mapper.Map<EventResponse>(editEventResult));
+            return editEventResult.Match(
+                editEventResult => Ok(_mapper.Map<EventResponse>(editEventResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("delete")]

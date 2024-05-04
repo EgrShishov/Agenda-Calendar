@@ -34,6 +34,10 @@ namespace AgendaCalendar.Infrastructure.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("CalendarColor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CalendarDescription")
                         .IsRequired()
                         .HasColumnType("text");

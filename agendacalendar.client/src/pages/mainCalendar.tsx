@@ -4,24 +4,30 @@ import Sidebar from "../components/sidebar.tsx";
 import Calendar from "../components/calendar.tsx";
 import EventDetails from "../components/eventDetails.tsx";
 import GlobalContext from "../context/globalContext.ts";
+import CalendarModal from "../components/calendarModal.tsx";
+import ReminderModal from "../components/reminderModal.tsx";
 
 const MainCalendar = () => {
-    const {showEventDetails} = useContext(GlobalContext);
+    const {showEventDetails, showCalendarModal, showReminderModal} = useContext(GlobalContext);
 
     return (
         <React.Fragment>
-            {showEventDetails && <EventDetails />}
-            <div className="w-full h-screen grid-cols-2 grid-rows-1">
-                <div>
-                    <CalendarHeader/>
-                </div>
-                <div className="flex flex-2">
-                    <Sidebar/>
-                    <Calendar/>
+            {showEventDetails && <EventDetails/>}
+            {showCalendarModal && <CalendarModal/>}
+            {showReminderModal && <ReminderModal/>}
+            <div className="h-screen w-full flex flex-col">
+                <CalendarHeader/>
+                <div className="flex-1 grid grid-cols-5">
+                    <div className="col-span-1">
+                        <Sidebar/>
+                    </div>
+                    <div className="col-span-4 items-center">
+                        <Calendar/>
+                    </div>
                 </div>
             </div>
         </React.Fragment>
     );
-};
+}
 
 export default MainCalendar;

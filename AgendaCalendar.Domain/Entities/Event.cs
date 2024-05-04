@@ -16,7 +16,7 @@ namespace AgendaCalendar.Domain.Entities
 
         public List<EventParticipant> EventParticipants { get; set; } = new();
 
-        public string Location { get; set; }
+        public string Location { get; set; } = "";
 
         public RecurrenceRule ReccurenceRules { get; set; } = new();
 

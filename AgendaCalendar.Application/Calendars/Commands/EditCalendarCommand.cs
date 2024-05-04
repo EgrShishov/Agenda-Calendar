@@ -1,9 +1,8 @@
-﻿using AgendaCalendar.Domain.Common.Errors;
-using ErrorOr;
-
+﻿
 namespace AgendaCalendar.Application.Calendars.Commands
 {
     public sealed record EditCalendarCommand(string title,
+            string calendarColor,
             string description,
             int calendarId
             ) : IRequest<ErrorOr<Calendar>>
@@ -17,6 +16,7 @@ namespace AgendaCalendar.Application.Calendars.Commands
             {
                 calendar.Title = request.title;
                 calendar.CalendarDescription = request.description;
+                calendar.CalendarColor = request.calendarColor;
             }
             else 
             {

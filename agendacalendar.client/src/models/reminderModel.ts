@@ -1,7 +1,10 @@
 
 export interface Reminder {
-    authorId: number,
     eventId: number,
     description: string,
-    time: Date,
+    email: string
+    reminderTime: Date,
+    notificationInterval: {
+        ticks: number
+    }
 }

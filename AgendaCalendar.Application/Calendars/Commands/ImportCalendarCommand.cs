@@ -1,6 +1,4 @@
-﻿using AgendaCalendar.Domain.Common.Errors;
-using ErrorOr;
-using _De_SerializationLib;
+﻿using _De_SerializationLib;
 using System.Text;
 
 namespace AgendaCalendar.Application.Calendars.Commands
@@ -25,10 +23,10 @@ namespace AgendaCalendar.Application.Calendars.Commands
             }
 
             calendar.AuthorId = request.author_id;
-            await unitOfWork.CalendarRepository.AddAsync(calendar);
+            var addedCalendar = await unitOfWork.CalendarRepository.AddAsync(calendar);
             await unitOfWork.SaveAllAsync();
             //added version comparing, if author and name and uid are equal(also in deserialization lib)
-            return calendar;
+            return addedCalendar;
         }
     }
 }

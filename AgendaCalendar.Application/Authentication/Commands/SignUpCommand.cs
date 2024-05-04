@@ -30,7 +30,8 @@ namespace AgendaCalendar.Application
             {
                 Title = request.Username,
                 CalendarDescription = $"Basic calendar, which belongs to {request.Username}",
-                AuthorId = user.Id
+                AuthorId = user.Id,
+                CalendarColor = "orange"
             };
             await unitOfWork.CalendarRepository.AddAsync(userCalendar);
             await unitOfWork.SaveAllAsync();

@@ -1,13 +1,23 @@
 import React from 'react';
 
 const GlobalContext = React.createContext({
-    calendarsList: [],
-    setCalendarsList: () => {},
+    isAuthenticated: false,
+    setIsAuthenticated: () => {},
+    showEventDetails: false,
+    setShowEventDetails: () => {},
+    showCalendarModal: false,
+    setShowCalendarModal: () => {},
+    showReminderModal: false,
+    setShowReminderModal: () => {},
     selectedEvent: null,
     setSelectedEvent: () => {},
-    showEventDetails: false,
-    setShowEventDetails: (showEventDetails: boolean) => {},
-    // filteredEvents: [],
+    labels: [],
+    setLabels: () => {},
+    updateLabel: () => {},
+    filteredEvents: [],
+    setFilteredEvents: () => {},
+    calendarsList: [],
+    setCalendarsList: () => {},
 });
 
 export default GlobalContext;

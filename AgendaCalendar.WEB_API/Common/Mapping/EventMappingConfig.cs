@@ -15,7 +15,7 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
                 .Map(dest => dest.Title, src => src.request.Title)
                 .Map(dest => dest.Description, src => src.request.Description)
                 .Map(dest => dest.StartTime, src => src.request.StartTime)
-                .Map(dest => dest.EndTiem, src => src.request.EndTiem)
+                .Map(dest => dest.EndTime, src => src.request.EndTime)
                 .Map(dest => dest.RecurrenceRule, src => src.request.RecurrenceRule)
                 .Map(dest => dest.Location, src => src.request.Location);
 

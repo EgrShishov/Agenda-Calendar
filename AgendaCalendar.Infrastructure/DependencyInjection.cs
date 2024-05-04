@@ -11,10 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Hangfire;
 using Hangfire.PostgreSql;
 using AgendaCalendar.Infrastructure.Authorization;
+using AgendaCalendar.Infrastructure.Hangfire;
 
 namespace AgendaCalendar.Infrastructure
 {
@@ -90,9 +90,9 @@ namespace AgendaCalendar.Infrastructure
 
         public static IServiceCollection AddBackgroundJob(this IServiceCollection services, IConfiguration configuration)
         {
-           /* services.AddHangfire(conf => conf.UsePostgreSqlStorage(configuration.GetConnectionString("HangfireDb")))
-                    .AddSingleton<HangfireBackgroundJobService>()
-                    .AddHangfireServer();*/
+            services.AddHangfire(conf => conf.UsePostgreSqlStorage(configuration.GetConnectionString("HangfireDb")))
+                    .AddScoped<HangfireBackgroundJobService>()
+                    .AddHangfireServer();
             return services;
         }
 

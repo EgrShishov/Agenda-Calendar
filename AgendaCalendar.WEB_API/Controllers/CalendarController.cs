@@ -4,6 +4,7 @@ using AgendaCalendar.Application.Calendars.Queries;
 using AgendaCalendar.Application.Events.Queries;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Calendars;
+using AgendaCalendar.WEB_API.Extensions;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,8 +26,9 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("u")]
-        public async Task<ActionResult<IEnumerable<Event>>> GetCalendars(int userId)
+        public async Task<ActionResult<IEnumerable<Event>>> GetCalendars()
         {
+            int userId = User.GetUserId();
             var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
 
             List<Event> events = new List<Event>();
@@ -42,8 +44,9 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("calendars")]
-        public async Task<IActionResult> Calendars(int userId)
+        public async Task<IActionResult> Calendars()
         {
+            int userId = User.GetUserId();
             var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
             return userCalendarsResult.Match(
                 userCalendarResult => Ok(_mapper.Map<List<CalendarResponse>>(userCalendarResult)),
@@ -53,19 +56,28 @@ namespace AgendaCalendar.WEB_API.Controllers
         [HttpGet("export")]
         public async Task<IActionResult> Export(int id) 
         {
-            var bytes = await _mediator.Send(new ExportCalendarCommand(id));
+            var exportCalendarCommandResult = await _mediator.Send(new ExportCalendarCommand(id));
 
-            var calendar = await _mediator.Send(new CalendarByIdQuery(id));
+            var calendarByIdResult = await _mediator.Send(new CalendarByIdQuery(id));
 
-            return bytes.Match(
-                bytes => File(bytes, "text/plain", $"{calendar.Value.Title}.ics"),
+            return exportCalendarCommandResult.Match(
+                bytes =>
+                {
+                    var stream = new MemoryStream(bytes);
+
+                    Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{calendarByIdResult.Value.Title}.ics\"");
+                    Response.ContentType = "application/calendar";
+
+                    return File(stream, "application/calendar");
+                },
                 errors => Problem(errors));
         }
 
         [HttpPost("import")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Import(IFormFile file, int id)
+        public async Task<IActionResult> Import(IFormFile file)
         {
+            int id = User.GetUserId();
+
             string filename = Path.GetFileName(file.FileName);
 
             using MemoryStream mstream = new();
@@ -75,13 +87,15 @@ namespace AgendaCalendar.WEB_API.Controllers
             var calendarImportResult = await _mediator.Send(new ImportCalendarCommand(calendar_bytes, id));
 
             return calendarImportResult.Match(
-                calendarImportResult => RedirectToAction(nameof(Index)),
+                calendarImportResult => Ok(_mapper.Map<CalendarResponse>(calendarImportResult)),
                 errors => Problem(errors));
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateCalendarRequest request, int id)
+        public async Task<IActionResult> Create(CreateCalendarRequest request)
         {
+            int id = User.GetUserId();
+
             var command = _mapper.Map<CreateCalendarCommand>((request, id));
 
             var createCalendarResult = await _mediator.Send(command);
@@ -111,20 +125,30 @@ namespace AgendaCalendar.WEB_API.Controllers
             var calendarDeleteResult = await _mediator.Send(new DeleteCalendarCommand(id));
 
             return calendarDeleteResult.Match(
-                _ => RedirectToAction(nameof(Index)),
+                _ => Ok(_mapper.Map<CalendarResponse>(calendarDeleteResult)),
                 errors => Problem(errors));
         }
 
         [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe(int id)
         {
-            throw new NotImplementedException();
+            int userId = User.GetUserId();
+
+            var subscribeCalendarResult = await _mediator.Send(new SubscribeToCalendarCommand(userId, id));
+            return subscribeCalendarResult.Match(
+                subscribeCalendarResult => Ok(_mapper.Map<CalendarResponse>(subscribeCalendarResult)),
+                errors => Problem(errors));
         }
 
         [HttpPost("unsubscribe")]
         public async Task<IActionResult> Unsubscribe(int id)
         {
-            throw new NotImplementedException();
+            int userId = User.GetUserId();
+
+            var subscribeCalendarResult = await _mediator.Send(new UnsubscribeFromCalendarCommand(userId, id));
+            return subscribeCalendarResult.Match(
+                subscribeCalendarResult => Ok(_mapper.Map<CalendarResponse>(subscribeCalendarResult)),
+                errors => Problem(errors));
         }
 
     }

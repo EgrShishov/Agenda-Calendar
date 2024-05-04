@@ -9,6 +9,8 @@ namespace AgendaCalendar.Domain.Entities
 
         public string CalendarDescription { get; set; }
 
+        public string CalendarColor { get; set; }
+
         public List<Event> Events { get; set; } = new();
 
         public List<Reminder> Reminders { get; set; } = new();

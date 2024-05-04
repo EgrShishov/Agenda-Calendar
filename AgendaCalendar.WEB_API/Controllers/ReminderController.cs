@@ -19,9 +19,9 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateReminder(CreateReminderRequest request, int id)
+        public async Task<IActionResult> CreateReminder(CreateReminderRequest request)
         {
-            var command = _mapper.Map<AddReminderCommand>((request, id));
+            var command = _mapper.Map<AddReminderCommand>(request);
             var createReminderResult = await _mediator.Send(command);
 
             return createReminderResult.Match(

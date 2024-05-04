@@ -7,6 +7,6 @@ namespace AgendaCalendar.WEB_API.Contracts.Events
         string Description,
         string Location,
         DateTime StartTime,
-        DateTime EndTiem,
+        DateTime EndTime,
         RecurrenceRule RecurrenceRule);
 }

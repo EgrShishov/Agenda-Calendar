@@ -23,7 +23,4 @@ export class UserService{
         localStorage.removeItem('user');
     }
 
-    // function setCurrentUser(user: any){
-    //
-    // };
 }

@@ -7,10 +7,12 @@ namespace AgendaCalendar.Infrastructure.Authorization
     public class GoogleOAuthService : IGoogleOAuthService
     {
         private readonly UserManager<User> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GoogleOAuthService(UserManager<User> userManager)
+        public GoogleOAuthService(UserManager<User> userManager, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<User> GoogleSignIn(string tokenId)
@@ -27,7 +29,17 @@ namespace AgendaCalendar.Infrastructure.Authorization
                 var identityResult = await _userManager.CreateAsync(userToAdd);
                 if (identityResult.Succeeded)
                 {
-                    return userToAdd;
+                    var newUser = await _userManager.FindByEmailAsync(payload.Email);
+                    var userCalendar = new Calendar
+                    {
+                        Title = payload.Email,
+                        CalendarDescription = $"Basic calendar, which belongs to {payload.Email}",
+                        AuthorId = newUser.Id,
+                        CalendarColor = "green"
+                    };
+                    await _unitOfWork.CalendarRepository.AddAsync(userCalendar);
+                    await _unitOfWork.SaveAllAsync();
+                    return newUser;
                 }
                 else
                 {

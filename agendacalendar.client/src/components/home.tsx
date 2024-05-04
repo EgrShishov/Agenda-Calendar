@@ -6,14 +6,14 @@ const HomeComponent = () => {
     const gifsList = [
         '../../public/gifs/gif10.gif',
         '../../public/gifs/gif8.gif',
+        '../../public/gifs/gif6.gif',
+        '../../public/gifs/gif7.gif',
         '../../public/gifs/gif9.gif',
         '../../public/gifs/gif1.gif',
         '../../public/gifs/gif2.gif',
         '../../public/gifs/gif3.gif',
         '../../public/gifs/gif4.gif',
         '../../public/gifs/gif5.gif',
-        '../../public/gifs/gif6.gif',
-        '../../public/gifs/gif7.gif'
     ];
 
     const [curIndex, setCurIndex] = useState(0);

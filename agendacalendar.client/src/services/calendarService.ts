@@ -10,15 +10,13 @@ export class CalendarService{
 
     }
 
-    async getCalendars(userId: number){
-        const response = await axios.get(`${this.baseUrl}calendar/calendars?userId=${userId}`, {
-            withCredentials: true
-        });
+    async getCalendars(){
+        const response = await axios.get(`${this.baseUrl}calendar/calendars`);
         return response.data;
     }
 
-    async createCalendar(calendarRequest: CalendarModel, authorId: number){
-        const response = await axios.post(`${this.baseUrl}calendar/create?id=${authorId}`, calendarRequest);
+    async createCalendar(calendarRequest: CalendarModel){
+        const response = await axios.post(`${this.baseUrl}calendar/create`, calendarRequest);
         return response.data;
     }
 
@@ -28,21 +26,26 @@ export class CalendarService{
     }
 
     async deleteCalendar(calendarId: number){
-        const response = await axios.get(this.baseUrl + 'calendar/delete' + calendarId);
+        const response = await axios.post(this.baseUrl + 'calendar/delete?id=' + calendarId);
         return response.data;
     }
 
     async exportCalendar(calendarId: number){
-        const response = await axios.get(this.baseUrl + 'calendar/export/' + calendarId);
+        const response = await axios.get(this.baseUrl + 'calendar/export?id=' + calendarId);
         return response.data;
     }
 
-    async importCalendar(file: File, id: number){
+    async importCalendar(file){
         const formData = new FormData();
         formData.append('file', file);
-
+        console.log(formData);
         try{
-            const response = await axios.post(`${this.baseUrl}/calendar/import?userId=${id}`, formData);
+            const response = await axios.post(`${this.baseUrl}calendar/import`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(response);
             return response.data;
         } catch(error){
             console.log('Error happend', error);

@@ -2,5 +2,6 @@
 {
     public record EditCalendarRequest(
         string Title,
+        string CalendarColor,
         string CalendarDescription);
 }

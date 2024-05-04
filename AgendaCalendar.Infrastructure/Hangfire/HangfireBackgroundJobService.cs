@@ -6,16 +6,18 @@ namespace AgendaCalendar.Infrastructure.Hangfire
 {
     public class HangfireBackgroundJobService
     {
-       /* public HangfireBackgroundJobService(IUnitOfWork unitOfWork, IMediator mediator)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
+        public HangfireBackgroundJobService(IUnitOfWork unitOfWork, IMediator mediator)
         {
-            this.unitOfWork = unitOfWork;
-            this.mediator = mediator;
+            _unitOfWork = unitOfWork;
+            _mediator = mediator;
             Console.WriteLine("Hangfire background job service started...");
         }
 
         public void ScheduleReminderJob(Reminder reminder)
         {
-            //RecurringJob.AddOrUpdate("my-recurring-job",() => CheckRemindersForSending(), Cron.MinuteInterval(1));
+            RecurringJob.AddOrUpdate("my-recurring-job",() => CheckRemindersForSending(), Cron.MinuteInterval(1));
             Console.WriteLine("sended");
         }
 
@@ -24,7 +26,7 @@ namespace AgendaCalendar.Infrastructure.Hangfire
             DateTime currentTime = DateTime.Now;
             List<Reminder> remindersToSend = new List<Reminder>();
 
-            foreach (var reminder in await unitOfWork.ReminderRepository.GetListAsync())
+            foreach (var reminder in await _unitOfWork.ReminderRepository.GetListAsync())
             {
                 if (reminder.ReminderTime - currentTime < TimeSpan.FromHours(1))
                 {
@@ -34,12 +36,12 @@ namespace AgendaCalendar.Infrastructure.Hangfire
             Console.WriteLine(remindersToSend.Count);
             foreach (var reminder in remindersToSend)
             {
-                //await mediator.Send(new SendReminderCommand(reminder));
-                await unitOfWork.ReminderRepository.DeleteAsync(reminder.Id);
+               await _mediator.Send(new SendReminderCommand(reminder));
+                await _unitOfWork.ReminderRepository.DeleteAsync(reminder.Id);
             }
 
-            await unitOfWork.SaveAllAsync();
+            await _unitOfWork.SaveAllAsync();
             return remindersToSend;
-        }*/
+        }
     }
 }
