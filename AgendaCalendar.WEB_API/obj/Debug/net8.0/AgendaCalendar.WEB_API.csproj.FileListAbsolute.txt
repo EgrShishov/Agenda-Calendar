@@ -264,7 +264,6 @@ C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\(De)SerializationLib.d
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\AgendaCalendar.Application.pdb
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\AgendaCalendar.Domain.pdb
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\AgendaCalendar.Infrastructure.pdb
-C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\(De)SerializationLib.pdb
 C:\AgendaCalendar\AgendaCalendar.WEB_API\obj\Debug\net8.0\AgendaCalendar.WEB_API.csproj.AssemblyReference.cache
 C:\AgendaCalendar\AgendaCalendar.WEB_API\obj\Debug\net8.0\AgendaCalendar.WEB_API.GeneratedMSBuildEditorConfig.editorconfig
 C:\AgendaCalendar\AgendaCalendar.WEB_API\obj\Debug\net8.0\AgendaCalendar.WEB_API.AssemblyInfoInputs.cache
@@ -293,3 +292,4 @@ C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Mapster.Core.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Mapster.DependencyInjection.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\ErrorOr.dll
 C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
+C:\AgendaCalendar\AgendaCalendar.WEB_API\bin\Debug\net8.0\(De)SerializationLib.pdb

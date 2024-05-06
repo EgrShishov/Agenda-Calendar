@@ -29,17 +29,31 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<ActionResult<IEnumerable<Event>>> GetCalendars()
         {
             int userId = User.GetUserId();
-            var userCalendars = await _mediator.Send(new CalendarListQuery(userId));
+            var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
 
             List<Event> events = new List<Event>();
             List<Event> upcomingEvents = new List<Event>();
-            foreach (var calendar in userCalendars.Value)
+            string icalEvents = string.Empty;
+            foreach (var calendar in userCalendarsResult.Value)
             {
                 events = events.Concat(calendar.Events).ToList();
                 var calendarsUpcomingResult = await _mediator.Send(new EventListByDateQuery(calendar.Id, DateTime.Now));
                 upcomingEvents = upcomingEvents.Concat(calendarsUpcomingResult.Value).ToList();
+                icalEvents += JsonConverter.GetJsonEventList(calendar.CalendarColor, calendar.Events);
             }
-            var icalEvents = JsonConverter.GetJsonEventList(events);
+
+            if (icalEvents.StartsWith("["))
+            {
+                icalEvents = icalEvents.Substring(1);
+            }
+            if (icalEvents.EndsWith("]"))
+            {
+                icalEvents = icalEvents.Substring(0, icalEvents.Length - 1);
+            }
+            string[] jsonArrays = icalEvents.Split(new string[] { "][" }, StringSplitOptions.RemoveEmptyEntries);
+
+            icalEvents = "[" + string.Join(",", jsonArrays) + "]";
+            
             return Ok(icalEvents);
         }
 

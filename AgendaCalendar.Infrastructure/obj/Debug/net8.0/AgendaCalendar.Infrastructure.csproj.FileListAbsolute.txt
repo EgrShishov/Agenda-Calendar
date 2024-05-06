@@ -7,7 +7,6 @@ C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\(De)SerializationLib.dll
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Application.pdb
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\AgendaCalendar.Domain.pdb
-C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\(De)SerializationLib.pdb
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.csproj.AssemblyReference.cache
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.AssemblyInfoInputs.cache
@@ -20,3 +19,4 @@ C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\refint\AgendaCa
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.pdb
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.genruntimeconfig.cache
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\ref\AgendaCalendar.Infrastructure.dll
+C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\(De)SerializationLib.pdb

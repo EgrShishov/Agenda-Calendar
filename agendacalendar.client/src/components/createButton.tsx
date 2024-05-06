@@ -1,59 +1,63 @@
 import React, {useContext, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const CreateButton = () => {
     const { setShowEventDetails, setShowCalendarModal, setShowReminderModal } = useContext(GlobalContext)
+
     const [showPopover, setShowPopover] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    const onClickHandler = () => {
-        setShowEventDetails(true);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const handleCreateButtonClick = () => {
-        setShowPopover(!showPopover);
+    const handleClose = () => {
+        setAnchorEl(null);
     };
 
-    const handleOptionSelect = (option) => {
-        setSelectedOption(option);
+    const handleAddItem = (item) => {
         setShowPopover(false);
-
-        if (option === 'event') {
+        console.log(item);
+        if (item == 'event') {
             setShowEventDetails(true);
             setShowCalendarModal(false);
             setShowReminderModal(false);
-        } else if (option === 'calendar') {
+        } else if (item == 'calendar') {
             setShowEventDetails(false);
             setShowCalendarModal(true);
             setShowReminderModal(false);
-        } else if(option === 'reminder'){
+        } else if(item == 'reminder'){
             setShowEventDetails(false);
             setShowCalendarModal(false);
             setShowReminderModal(true);
         }
+        handleClose();
     };
 
     return (
         <React.Fragment>
-            <button
-                onClick={handleCreateButtonClick}
-                className="text-orange-400 font-bold border p-2 rounded-full flex items-center shadow-md hover:shadow-2xl bg-white">
-            <span className="material-icons-outlined w-7 h-7">
-                add
-            </span>
-                <span className="pl-3 pr-7"> Create</span>
-            </button>
-            {showPopover && (
-                <div className="absolute right-0 top-0 z-50 mt-2 mr-2 bg-white rounded shadow-md">
-                    <div className="p-2">
-                        <button onClick={() => handleOptionSelect('event')}>Event</button>
-                        <br/>
-                        <button onClick={() => handleOptionSelect('calendar')}>Calendar</button>
-                        <br/>
-                        <button onClick={() => handleOptionSelect('reminder')}>Reminder</button>
-                    </div>
-                </div>
-            )}
+            <Button className="bg-white border p-2" onClick={handleClick} variant="contained">
+                <span className="text-orange-400 font-bold text-2xl material-icons-outlined w-7 h-7">
+                    add
+                </span>
+                    <span className="text-orange-400 font-bold text-xl pl-3 pr-7">Create</span>
+            </Button>
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <MenuItem onClick={() => handleAddItem('calendar')}>Calendar</MenuItem>
+                <MenuItem onClick={() => handleAddItem('event')}>Event</MenuItem>
+                <MenuItem onClick={() => handleAddItem('reminder')}>Reminder</MenuItem>
+            </Menu>
         </React.Fragment>
     );
 };

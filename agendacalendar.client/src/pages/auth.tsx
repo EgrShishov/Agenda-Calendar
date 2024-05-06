@@ -11,6 +11,7 @@ import GlobalContext from "../context/globalContext.ts";
 
 const Auth = () => {
     const gifs = [
+        '../../public/gifs/clocks11.gif',
         '../../public/gifs/clocks3.gif',
         '../../public/gifs/clocks5.gif',
         '../../public/gifs/clocks4.gif',
@@ -95,7 +96,7 @@ const Auth = () => {
         <div className="w-full h-screen flex items-start bg-transperent">
             <img src={gifElement}
                  alt="gifImageOfHourGlasses"
-                 className="absolute inset-0 object-cover w-full h-full"
+                 className="absolute inset-0 object-cover w-full h-full filter brightness-50"
             />
             <div className="relative w-1/2 h-full flex flex-col">
                 <div className="absolute top-1/2 left-[10%] transform -translate-y-1/2">

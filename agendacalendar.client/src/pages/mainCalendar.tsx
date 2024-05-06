@@ -18,11 +18,13 @@ const MainCalendar = () => {
             <div className="h-screen w-full flex flex-col">
                 <CalendarHeader/>
                 <div className="flex-1 grid grid-cols-5">
-                    <div className="col-span-1">
+                    <div className="col-span-1 h-full">
                         <Sidebar/>
                     </div>
                     <div className="col-span-4 items-center">
-                        <Calendar/>
+                        <div className="h-full">
+                            <Calendar/>
+                        </div>
                     </div>
                 </div>
             </div>

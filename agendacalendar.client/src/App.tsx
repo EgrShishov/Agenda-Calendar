@@ -12,7 +12,7 @@ import {useContext} from "react";
 import GlobalContext from "./context/globalContext.ts";
 
 function App() {
-    const {isAuthenticated, setIsAuthenticated} = useContext(GlobalContext);
+    const {isAuthenticated} = useContext(GlobalContext);
 
     return(
         <Router>

@@ -3,16 +3,26 @@ import GlobalContext from "../context/globalContext.ts";
 import {CalendarService} from "../services/calendarService.ts";
 import {CalendarModel} from "../models/calendarModel.ts";
 
+const labelsClasses = [
+    "indigo",
+    "gray",
+    "green",
+    "blue",
+    "red",
+    "purple",
+];
+
 const CalendarModal = () => {
     const {setShowCalendarModal, calendarsList, setCalendarsList} = useContext(GlobalContext);
 
-    const [activeTab, setActiveTab] = useState('new');
+    const [selectedTab, setSelectedTab] = useState('new');
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [participants, setParticipants] = useState([]);
     const [email] = useState('users email');
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedLabel, setSelectedLabel] = useState('');
 
     const handleFileChanged = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -23,7 +33,8 @@ const CalendarModal = () => {
         e.preventDefault()
         const calendarModel: CalendarModel = {
             title: title,
-            calendarDescription: description
+            calendarDescription: description,
+            calendarColor: selectedLabel
         };
         const response = await calendarService.createCalendar(calendarModel);
         calendarsList.push(response);
@@ -59,14 +70,20 @@ const CalendarModal = () => {
                     </header>
                     <div className="p-3">
                         <div className="flex justify-between mb-4">
-                            <button type="button" className={`tab-btn ${activeTab == 'new' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('new')}>Create New
+                            <button type="button"
+                                    className={`text-lg font-semibold ${selectedTab == 'new' ? 'active text-black border-b-2 border-black' : 'text-gray-500'}`}
+                                    onClick={() => setSelectedTab('new')}>Create New
                             </button>
-                            <button type="button" className={`tab-btn ${activeTab == 'import' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('import')}>Import Calendar
+                            <button type="button"
+                                    className={`text-lg font-semibold ${selectedTab == 'import' ? 'active text-black border-b-2 border-black' : 'text-gray-500'}`}
+                                    onClick={() => setSelectedTab('import')}>Import Calendar
+                            </button>
+                            <button type="button"
+                                    className={`text-lg font-semibold ${selectedTab == 'subscribe' ? 'active text-black border-b-2 border-black' : 'text-gray-500'}`}
+                                    onClick={() => setSelectedTab('subscribe')}>Subscribe
                             </button>
                         </div>
-                        {activeTab == 'new' && (
+                        {selectedTab == 'new' && (
                             <div className="grid grid-cols-1/4 items-end gap-y-3.5">
                                 <div></div>
                                 <div className="row-span-1 flex items-center">
@@ -86,9 +103,9 @@ const CalendarModal = () => {
                                 </div>
 
                                 <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                segment
-                            </span>
+                                    <span className="material-icons-outlined text-black-65">
+                                        segment
+                                    </span>
                                     <input
                                         type="text"
                                         name="description"
@@ -101,9 +118,29 @@ const CalendarModal = () => {
                                 </div>
 
                                 <div className="row-span-1 flex items-center">
-                                <span className="material-icons-outlined text-black-65">
-                                    {email}
-                                </span>
+                                    <span className="material-icons-outlined text-black-65">
+                                        email
+                                    </span>
+                                    <span className="text-gray-600 text-xl mx-3 font-semibold">
+                                        {email}
+                                    </span>
+                                </div>
+
+                                <div className="row-span-1 flex items-center">
+                                    {
+                                        labelsClasses.map((lblClass, i) => (
+                                            <span
+                                                key={i}
+                                                onClick={() => setSelectedLabel(lblClass)}
+                                                className={`w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer`}
+                                            >
+                                            {selectedLabel === lblClass && (
+                                                <span className="material-icons-outlined text-white text-sm">
+                                                    check
+                                                </span>
+                                            )}
+                                        </span>))
+                                    }
                                 </div>
 
                                 <button
@@ -116,14 +153,14 @@ const CalendarModal = () => {
                                 </button>
                             </div>
                         )}
-                        {activeTab == 'import' && (
+                        {selectedTab == 'import' && (
                             <div className="grid grid-cols-1/4 items-end gap-y-3.5">
                                 <label htmlFor="filePicker" className="block mb-2 col-span-1">Choose a calendar
                                     file:</label>
                                 <input
                                     id="filePicker"
                                     type="file"
-                                    accept=".ics" // Указываем тип файлов, которые можно выбрать
+                                    accept=".ics"
                                     onChange={(e) => handleFileChanged(e)}
                                     className="border border-gray-300 p-2 rounded-md col-span-1"
                                 />
@@ -135,6 +172,11 @@ const CalendarModal = () => {
                                 >
                                     Import calendar
                                 </button>
+                            </div>
+                        )}
+                        {selectedTab == 'subscribe' && (
+                            <div>
+
                             </div>
                         )}
                     </div>
