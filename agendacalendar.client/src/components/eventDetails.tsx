@@ -22,6 +22,8 @@ const labelsClasses = [
 
 const EventDetails = () => {
     const {
+        events,
+        setEvents,
         selectedEvent,
         setSelectedEvent,
         setShowEventDetails,
@@ -52,7 +54,7 @@ const EventDetails = () => {
     const [reccurenceRule, setReccurenceRule] = useState();
     const [selectedCalendar, setSelectedCalendar] =
         useState(selectedEvent ?
-            calendarsList.find(calendar => calendar.id === selectedEvent._def.extendedProps.calendarId)
+            calendarsList.find(calendar => calendar.calendar.id === selectedEvent._def.extendedProps.calendarId)
             : null
         );
 
@@ -68,6 +70,7 @@ const EventDetails = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
         const recRule: ReccurencyRule = {
             frequency: 0,
             interval: 0,
@@ -77,7 +80,8 @@ const EventDetails = () => {
             monthsOfYear: [0],
             year: 0,
             recurrenceDates: [{startTime:new Date(), endTime: new Date()}],
-        }
+        };
+
         const calendarEvent: Event = {
             title: title,
             description: description,
@@ -86,12 +90,14 @@ const EventDetails = () => {
             location: location,
             recurrenceRule: recRule
         };
+
         if(!selectedEvent){
-            console.log(selectedCalendar);
-            const calendarId = selectedCalendar.id;
+            const calendarId = selectedCalendar.calendar.id;
             const response = await eventService.createEvent(calendarEvent, calendarId);
-            console.log(response);
-        }
+
+            events.push(response);
+            setEvents(events);
+        };
 
         setShowEventDetails(false);
     };
@@ -99,6 +105,7 @@ const EventDetails = () => {
     const onDeleteHandle = async () => {
         const eventId = selectedEvent._def.publicId;
         const response = await eventService.deleteEvent(eventId);
+
         selectedEvent.remove();
         setShowEventDetails(false);
     };
@@ -111,6 +118,7 @@ const EventDetails = () => {
     const eventIsAllDay = (event) =>{
         setIsAllDay(event.target.checked);
         const time = new Date(startTime.getTime());
+
         if (event.target.checked) {
             setEndTime(new Date(time.setDate(time.getDate() + 1)));
         } else {
@@ -124,13 +132,13 @@ const EventDetails = () => {
 
     const handleCalendarChange = (event) => {
         const selectedCalendarId = event.target.value;
-        const selectedCalendar = calendarsList.find(calendar => calendar.id == selectedCalendarId);
+        const selectedCalendar = calendarsList.find(calendar => calendar.calendar.id == selectedCalendarId);
         setSelectedCalendar(selectedCalendar);
     };
 
     const GetCalendarName = (calendarId) =>  {
-        const calendar = calendarsList.find(calendar => calendar.id == calendarId);
-        return calendar ? calendar.title : '';
+        const calendar = calendarsList.find(calendar => calendar.calendar.id == calendarId);
+        return calendar.calendar ? calendar.calendar.title : '';
     };
 
     const startDateChanged = (newTime) => {
@@ -384,31 +392,19 @@ const EventDetails = () => {
                                     <div className="flex gap-x-2 mx-3">
                                         <select value={selectedCalendar ? selectedCalendar.id : ''}
                                                 onChange={handleCalendarChange}
-                                                className="px-2 py-1 rounded border">
+                                                className="px-2 py-1 rounded border bg-white">
                                             <option value="">Select Calendar</option>
                                             {calendarsList.map(calendar => (
                                                 <option
-                                                    key={calendar.id}
-                                                    value={calendar.id}
+                                                    key={calendar.calendar.id}
+                                                    value={calendar.calendar.id}
+                                                    color={calendar.calendar.calendarColor}
+                                                    className="flex items-center"
                                                 >
-                                                    {calendar.title}
+                                                    {calendar.calendar.title}
                                                 </option>
                                             ))}
                                         </select>
-                                        {/*{*/}
-                                        {/*    labelsClasses.map((lblClass, i) => (*/}
-                                        {/*        <span*/}
-                                        {/*            key={i}*/}
-                                        {/*            onClick={() => setSelectedLabel(lblClass)}*/}
-                                        {/*            className={`w-6 h-6 rounded-full bg-green-400 flex items-center justify-center cursor-pointer`}*/}
-                                        {/*        >*/}
-                                        {/*        {selectedLabel === lblClass && (*/}
-                                        {/*            <span className="material-icons-outlined text-white text-sm">*/}
-                                        {/*                check*/}
-                                        {/*            </span>*/}
-                                        {/*        )}*/}
-                                        {/*    </span>))*/}
-                                        {/*}*/}
                                     </div>
                                 )}
                             </div>

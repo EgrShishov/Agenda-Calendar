@@ -17,7 +17,6 @@ const CalendarList = () =>{
         calendarsList,
         setCalendarsList ,
         filteredEvents,
-        setFilteredEvents
     } = useContext(GlobalContext);
     const calendarService = new CalendarService();
 
@@ -40,52 +39,36 @@ const CalendarList = () =>{
         const calendarId = e.target.value;
         const response = await calendarService.deleteCalendar(calendarId);
         if(response){
-            setCalendarsList(prev => prev.filter(calendar => calendar.id != calendarId));
+            setCalendarsList(prev => prev.filter(calendar => calendar.calendar.id != calendarId));
         }
         console.log(response);
     }
 
-    const handleChecked = (e) => {
-        e.preventDefault();
-
-    };
-
     return (
         <React.Fragment>
-            <p className="text-orange-400 font-bold mt-10">Calendars</p>
-            <div className="text-orange-400 font-bold flex items-center justify-center">
-                <ul>
-                    {console.log(calendarsList, 'from calendarList')}
-                    {calendarsList.map(({calendar, checked}, idx) => (
-                        <li>
-                            <label key={idx} className="items-center mt-3 block">
-                                <input
-                                    type="checkbox"
-                                    checked={checked}
-                                    onChange={() =>
-                                        updateLabel({label: calendar.calendarColor, checked: !checked})
-                                    }
-                                    className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer accent-${calendar.calendarColor}-500`}
-                                />
-                                <span
-                                    className="text-l text-gray-400 font-semibold mx-2">{calendar.title}
-                                </span>
-                                <button
-                                    onClick={handleDownloadOnClick}
-                                    value={calendarsList[idx].id}
-                                    className="material-icons-outlined font-light text-black-65 cursor-pointer">
-                                    download
-                                </button>
-                                <button
-                                    onClick={handleDeleteOnClick}
-                                    value={calendarsList[idx].id}
-                                    className="material-icons-outlined font-light text-black-65 cursor-pointer">
-                                    cancel
-                                </button>
-                            </label>
-                        </li>
-                    ))}
-                </ul>
+            <p className="text-orange-400 font-bold text-xl mt-10">Calendars</p>
+            <div className="mt-4">
+                {calendarsList.map(({ calendar, checked }, idx) => (
+                    <div key={idx} className="bg-gray-100 rounded-md p-2.5 mb-2 flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => updateLabel({ label: calendar.calendarColor, checked: !checked })}
+                            className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer accent-${calendar.calendarColor}-400`}
+                        />
+                        <div className="flex-grow">
+                            <p className="text-lg font-semibold text-gray-700">{calendar.title}</p>
+                        </div>
+                        <div className="flex ml-2">
+                            <button onClick={handleDownloadOnClick} value={calendar.id} className="text-gray-600 hover:text-gray-800 focus:outline-none">
+                                <i className="material-icons-outlined">download</i>
+                            </button>
+                            <button onClick={handleDeleteOnClick} value={calendar.id} className="text-gray-600 hover:text-gray-800 focus:outline-none ml-2">
+                                <i className="material-icons-outlined">cancel</i>
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </React.Fragment>
     )

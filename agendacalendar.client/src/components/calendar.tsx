@@ -27,7 +27,7 @@ const Calendar = () => {
             console.log(events);
         };
         fetchEvents()},
-[]);
+[events]);
 
     return (
         <div className="container max-w-screen-ms max-h-screen-md mt-4">
@@ -41,7 +41,7 @@ const Calendar = () => {
                     //start: ''
                     start: 'prev,next'
                 }}
-                events={filteredEvents}
+                events={events}
                 eventClick={onEventClickHandler}
                 themeSystem={"bootstrap5"}
             />

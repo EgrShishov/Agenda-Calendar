@@ -65,10 +65,12 @@ export default function ContextWrapper(props){
         console.table(calendarsList);
         setCalendarsList(calendarsList.map((calobj) =>  {
                 const calendarLabel = {
-                    label: calobj.checked.calendarColor,
+                    label: calobj.calendar.calendarColor,
                     checked: calobj.checked
                 };
-                return (calendarLabel === obj.label ? {calendar, checked: obj.checked} : {calendar, checked: calendarLabel.checked});
+                return (calendarLabel.label == obj.label ?
+                    {calendar: calobj.calendar, checked: obj.checked}
+                    : {calendar: calobj.calendar, checked: calobj.checked});
             }
         ));
     }

@@ -37,7 +37,7 @@ const CalendarModal = () => {
             calendarColor: selectedLabel
         };
         const response = await calendarService.createCalendar(calendarModel);
-        calendarsList.push(response);
+        calendarsList.push({calendar: response, checked: true});
         console.log(calendarsList);
         setCalendarsList(calendarsList);
         setShowCalendarModal(false);
