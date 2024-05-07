@@ -3,17 +3,14 @@ import GlobalContext from "../context/globalContext.ts";
 import {CalendarService} from "../services/calendarService.ts";
 import {CalendarModel} from "../models/calendarModel.ts";
 
-const labelsClasses = [
-    "indigo",
-    "gray",
-    "green",
-    "blue",
-    "red",
-    "purple",
-];
 
 const CalendarModal = () => {
-    const {setShowCalendarModal, calendarsList, setCalendarsList} = useContext(GlobalContext);
+    const {
+        labelsClasses,
+        setShowCalendarModal,
+        calendarsList,
+        setCalendarsList
+    } = useContext(GlobalContext);
 
     const [selectedTab, setSelectedTab] = useState('new');
 

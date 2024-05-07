@@ -13,7 +13,7 @@ const Calendar = () => {
     const calendarService = new CalendarService();
     const eventService = new EventService();
     const {setSelectedEvent, setShowEventDetails} = useContext(GlobalContext);
-    const {filteredEvents, events, setEvents} = useContext(GlobalContext);
+    const { filteredEvents, events, setEvents} = useContext(GlobalContext);
 
     const onEventClickHandler = (clickInfo) => {
         setSelectedEvent(clickInfo.event)
@@ -24,7 +24,6 @@ const Calendar = () => {
         const fetchEvents = async () => {
             const events = await eventService.getUserEvents();
             setEvents(events);
-            console.log(events);
         };
         fetchEvents()},
 [events]);
@@ -41,7 +40,7 @@ const Calendar = () => {
                     //start: ''
                     start: 'prev,next'
                 }}
-                events={events}
+                events={filteredEvents}
                 eventClick={onEventClickHandler}
                 themeSystem={"bootstrap5"}
             />

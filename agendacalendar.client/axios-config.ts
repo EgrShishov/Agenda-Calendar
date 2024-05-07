@@ -24,7 +24,6 @@ axios.interceptors.response.use(
                 expires: new Date(Date.now() + 60 * 60 * 1000),
             });
         }
-        console.log('axios', response, token);
         return response;
     },
     function (error){

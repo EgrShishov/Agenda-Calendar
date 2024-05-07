@@ -6,6 +6,16 @@ import {UserService} from "../services/userService.ts";
 import {EventService} from "../services/eventService.ts";
 import {ReminderService} from "../services/reminderService.ts";
 
+const labelsClasses = [
+    "indigo",
+    "gray",
+    "green",
+    "blue",
+    "red",
+    "purple",
+    "orange"
+];
+
 export default function ContextWrapper(props){
     const [calendarsList, setCalendarsList] = useState([]);
     const [events, setEvents] = useState([]);
@@ -44,22 +54,6 @@ export default function ContextWrapper(props){
         }
     }, [showEventDetails]);
 
-    // useEffect(() => {
-    //     setLabels((prevLabels) => {
-    //         return [...new Set(events.map((event) => event.label))].map(
-    //             (label) => {
-    //                 const currentLabel = prevLabels.find(
-    //                     (lbl) => lbl.label === label
-    //                 );
-    //                 return {
-    //                     label,
-    //                     checked: currentLabel ? currentLabel.checked : true,
-    //                 };
-    //             }
-    //         );
-    //     });
-    // }, [events]);
-
     function updateLabel(obj){
         console.log(obj);
         console.table(calendarsList);
@@ -68,11 +62,13 @@ export default function ContextWrapper(props){
                     label: calobj.calendar.calendarColor,
                     checked: calobj.checked
                 };
-                return (calendarLabel.label == obj.label ?
-                    {calendar: calobj.calendar, checked: obj.checked}
-                    : {calendar: calobj.calendar, checked: calobj.checked});
+                if (calendarLabel.label == obj.label){
+                    calobj.checked = obj.checked;
+                }
+                return calobj;
             }
         ));
+        console.table(calendarsList);
     }
 
     const filteredEvents = useMemo(() => {
@@ -104,7 +100,8 @@ export default function ContextWrapper(props){
                 setEvents,
                 filteredEvents,
                 calendarsList,
-                setCalendarsList
+                setCalendarsList,
+                labelsClasses,
             }}
         >
             { props.children }

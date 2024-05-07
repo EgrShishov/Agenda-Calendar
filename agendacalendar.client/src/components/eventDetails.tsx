@@ -10,18 +10,9 @@ import 'react-nice-dates/build/style.css';
 import {Button, MenuItem, Menu} from '@mui/material';
 import ReccurecyRuleModal from "./reccurecyRuleModal.tsx";
 
-const labelsClasses = [
-    "indigo",
-    "gray",
-    "green",
-    "blue",
-    "red",
-    "purple",
-    "orange"
-];
-
 const EventDetails = () => {
     const {
+        labelsClasses,
         events,
         setEvents,
         selectedEvent,
@@ -59,12 +50,7 @@ const EventDetails = () => {
         );
 
     const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
-    const [selectedLabel, setSelectedLabel] = useState(
-        selectedEvent
-            ? labelsClasses.find((lbl) => lbl === selectedEvent.label)
-            : labelsClasses[0]
-    );
-
+    const [bgColor, setBgColor] = useState(selectedEvent? selectedEvent.backgroundColor : 'orange');
     const Redirect = useNavigate();
     const eventService = new EventService();
 
@@ -97,7 +83,7 @@ const EventDetails = () => {
 
             events.push(response);
             setEvents(events);
-        };
+        }
 
         setShowEventDetails(false);
     };
@@ -124,10 +110,6 @@ const EventDetails = () => {
         } else {
             setEndTime(new Date(endTime.getTime()));
         }
-    };
-
-    const handleLabelChange = (event) => {
-        setSelectedLabel(event.target.value);
     };
 
     const handleCalendarChange = (event) => {
@@ -169,11 +151,11 @@ const EventDetails = () => {
 
     const handleItem = (item) => {
         setSelectedItem(item);
+        setBgColor(item.backgroundColor);
 
         if(item == 'none'){
             console.log(item);
         } else if(item == 'custom'){
-            console.log('mama');
             setShowRecurrenceModal(true);
         }
         handleClose();
@@ -183,7 +165,8 @@ const EventDetails = () => {
         <React.Fragment>
             <div className="my-14 w-full fixed h-screen flex justify-center items-center rounded-xl z-50">
                 <form className="bg-white my-3 fixed w-4/12 h-fit rounded-xl shadow-2xl">
-                    <header className="rounded-t-xl bg-orange-300 px-4 py-2.5 flex justify-between items-center">
+                    <header className={`rounded-t-xl px-4 py-2.5 flex justify-between items-center`}
+                    style={{ backgroundColor: bgColor }}>
                       <span className="material-icons-outlined text-black-400">
                         drag_handle
                       </span>
@@ -316,14 +299,13 @@ const EventDetails = () => {
                                     />
                                 )}
                             </div>
-
                             <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                location_on
-                            </span>
+                                <span className="material-icons-outlined text-black-65">
+                                    location_on
+                                </span>
                                 {selectedEvent && (
                                     <p className="mx-3 text-gary-400 text-ms font-medium">
-                                        {location}
+                                    {location}
                                     </p>
                                 )}
                                 {!selectedEvent && (
@@ -348,9 +330,9 @@ const EventDetails = () => {
                                         Notification
                                     </p>
                                 )}
+                                {showRecurrenceModal && <ReccurecyRuleModal setShowReccurenceModal={setShowRecurrenceModal} />}
                                 {!selectedEvent && (
                                     <div className="mx-3">
-                                        {showRecurrenceModal && <ReccurecyRuleModal/>}
                                         <Button
                                             className="bg-white border p-2"
                                             aria-controls="simple-menu"
