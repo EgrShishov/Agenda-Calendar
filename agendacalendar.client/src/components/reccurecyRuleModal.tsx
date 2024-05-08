@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import {
     TextField,
     Select,
@@ -8,6 +8,8 @@ import {
     Button,
 } from '@mui/material';
 import {ReccurencyDate, ReccurencyRule} from "../models/reccurencyRulePatternModel.ts";
+import {enGB} from "date-fns/locale";
+import {DatePicker} from "react-nice-dates";
 
 const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
     const [interval, setInterval] = useState(1);
@@ -21,12 +23,9 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
 
+
     const handleIntervalChange = (event) => {
         setInterval(event.target.value);
-    };
-
-    const handleDaysOfWeekChange = (event) => {
-        setDaysOfWeek(event.target.value);
     };
 
     const handleStartTimeChange = (event) => {
@@ -35,6 +34,22 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
 
     const handleEndTimeChange = (event) => {
         setEndTime(event.target.value);
+    };
+
+    const handleDaysOfWeekChange = (event) => {
+        setDaysOfWeek(event.target.value);
+    };
+
+    const handleSpecificDaysOfMonthChange = (event) => {
+        setDaysOfMonth(event.target.value);
+    };
+
+    const handleSpecificWeeksOfMonthChange = (event) => {
+        setWeeksOfMonth(event.target.value);
+    };
+
+    const handleYearChange = (event) => {
+        setYear(event.target.value);
     };
 
     const handleSubmit = (event) => {
@@ -64,8 +79,8 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1/6 items-end gap-y-3.5"
                 >
-                    <FormControl className="row-span-1 flex items-center">
-                        <span className="row-span-1 flex">Interval</span>
+                    <FormControl className="row-span-1 flex">
+                        <span className="row-span-1 flex">Interval: </span>
                         <Select
                             labelId="interval-label"
                             id="interval"
@@ -96,29 +111,73 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
                             </div>
                         </div>
                     </FormControl>
-
-                    <TextField
-                        id="start-time"
-                        label="Start time"
-                        type="time"
-                        value={startTime}
-                        onChange={handleStartTimeChange}
-                        className={"row-span-1 flex"}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <TextField
-                        id="end-time"
-                        label="End time"
-                        type="time"
-                        value={endTime}
-                        onChange={handleEndTimeChange}
-                        className={"row-span-1 flex"}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
+                    <div style={{position: 'relative', maxHeight: '200px'}}>
+                        <DatePicker
+                            date={startTime}
+                            onDateChange={handleStartTimeChange}
+                            format={"yyyy-MM-dd"}
+                            locale={enGB}>
+                            {({inputProps, focused}) => (
+                                <input
+                                    className={'input' + (focused ? ' -focused' : '')}
+                                    {...inputProps}
+                                    style={{backgroundColor: "transparent"}}
+                                    placeholder="Select start time"
+                                />
+                            )}
+                        </DatePicker>
+                    </div>
+                    <div style={{position: 'relative', maxHeight: '200px'}}>
+                        <DatePicker
+                            date={endTime}
+                            onDateChange={handleStartTimeChange}
+                            format={"yyyy-MM-dd"}
+                            locale={enGB}>
+                            {({inputProps, focused}) => (
+                                <input
+                                    className={'input' + (focused ? ' -focused' : '')}
+                                    {...inputProps}
+                                    style={{backgroundColor: "transparent"}}
+                                    placeholder="Select end time"
+                                />
+                            )}
+                        </DatePicker>
+                    </div>
+                    <FormControl>
+                        <InputLabel id="specific-days-of-month-label">Specific Days of Month</InputLabel>
+                        <Select
+                            labelId="specific-days-of-month-label"
+                            id="specific-days-of-month"
+                            multiple
+                            value={daysOfMonth}
+                            onChange={handleSpecificDaysOfMonthChange}
+                        >
+                            {/* Options for specific days of the month */}
+                        </Select>
+                    </FormControl>
+                    <FormControl>
+                        <InputLabel id="specific-weeks-of-month-label">Specific Weeks of Month</InputLabel>
+                        <Select
+                            labelId="specific-weeks-of-month-label"
+                            id="specific-weeks-of-month"
+                            multiple
+                            value={weeksOfMonth}
+                            onChange={handleSpecificWeeksOfMonthChange}
+                        >
+                            {/* Options for specific weeks of the month */}
+                        </Select>
+                    </FormControl>
+                    <FormControl>
+                        <InputLabel id="year-label">Year</InputLabel>
+                        <Select
+                            labelId="year-label"
+                            id="year"
+                            value={year}
+                            onChange={handleYearChange}
+                        >
+                            {/* Options for the year */}
+                        </Select>
+                    </FormControl>
                     <div className="row-span-1 flex items-center justify-end gap-3">
                         <button
                             className="bg-gray-300 hover:bg-black/60 px-6 py-2 rounded text-white
