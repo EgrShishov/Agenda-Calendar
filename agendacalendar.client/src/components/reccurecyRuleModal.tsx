@@ -12,9 +12,56 @@ import {enGB} from "date-fns/locale";
 import {DatePicker} from "react-nice-dates";
 
 const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
+    const [repeatInterval, setRepeatInterval] = useState('none');
+
+    const handleRepeatIntervalChange = (event) => {
+        setRepeatInterval(event.target.value);
+    }
+
+    const [repeatIntervalType, setRepeatIntervalType] = useState('');
+
+    const handleRepeatIntervalTypeChange = (event) => {
+        setRepeatIntervalType(event.target.value);
+    }
+
+    const [repeatIntervalValue, setRepeatIntervalValue] = useState(0);
+
+    const handleRepeatIntervalValueChange = (event) => {
+        setRepeatIntervalValue(event.target.value);
+    }
+
+    const [daysOfWeek, setDaysOfWeek] = useState([0]);
+
+    const handleRepeatDayOfWeekToggle = (event) => {
+        setDaysOfWeek(event.target.value);
+    }
+
+    const [repeatStartType, setRepeatStartType] = useState('never');
+
+    const handleRepeatStartTypeChange = (event) => {
+        setRepeatStartType(event.target.value);
+    }
+
+    const [repeatStartDate, setRepeatStartDate] = useState(0);
+
+    const handleRepeatStartDateChange = (event) => {
+        setRepeatStartDate(event.target.value);
+    }
+
+    const [repeatEndType, setRepeatEndType] = useState('never');
+
+    const handleRepeatEndTypeChange = (event) => {
+        setRepeatEndType(event.target.value);
+    }
+
+    const [repeatEndDate, setRepeatEndDate] = useState(0);
+
+    const handleRepeatEndDateChange = (event) => {
+        setRepeatEndDate(event.target.value);
+    }
+
     const [interval, setInterval] = useState(1);
     const [frequency, setFrequency] = useState(0);
-    const [daysOfWeek, setDaysOfWeek] = useState([0]);
     const [daysOfMonth, setDaysOfMonth] = useState([0]);
     const [weeksOfMonth, setWeeksOfMonth] = useState([0]);
     const [monthsOfYear, setmonthsOfYear] = useState([0]);
@@ -22,35 +69,6 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
     const [recurrenceDates, setRecurrenceDates] = useState([0]);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-
-
-    const handleIntervalChange = (event) => {
-        setInterval(event.target.value);
-    };
-
-    const handleStartTimeChange = (event) => {
-        setStartTime(event.target.value);
-    };
-
-    const handleEndTimeChange = (event) => {
-        setEndTime(event.target.value);
-    };
-
-    const handleDaysOfWeekChange = (event) => {
-        setDaysOfWeek(event.target.value);
-    };
-
-    const handleSpecificDaysOfMonthChange = (event) => {
-        setDaysOfMonth(event.target.value);
-    };
-
-    const handleSpecificWeeksOfMonthChange = (event) => {
-        setWeeksOfMonth(event.target.value);
-    };
-
-    const handleYearChange = (event) => {
-        setYear(event.target.value);
-    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -79,104 +97,93 @@ const ReccurecyRuleModal = ({setShowReccurenceModal}) => {
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1/6 items-end gap-y-3.5"
                 >
-                    <FormControl className="row-span-1 flex">
-                        <span className="row-span-1 flex">Interval: </span>
+                    <FormControl className="w-full row-span-1 flex">
+                        <span className="row-span-1 flex">Repeat: </span>
                         <Select
-                            labelId="interval-label"
-                            id="interval"
-                            value={interval}
-                            onChange={handleIntervalChange}
-                            className="row-span-1"
+                            labelId="repeat-label"
+                            value={repeatInterval}
+                            onChange={handleRepeatIntervalChange}
+                            className="w-full mb-4"
                         >
-                            <MenuItem value={1}>Every day</MenuItem>
-                            <MenuItem value={7}>Every week</MenuItem>
-                            <MenuItem value={30}>Every month</MenuItem>
-                            <MenuItem value={365}>Every year</MenuItem>
+                            <MenuItem value="none">Никогда</MenuItem>
+                            <MenuItem value="interval">Повторять с интервалом</MenuItem>
                         </Select>
-                    </FormControl>
-                    <FormControl className="row-span-1">
-                        <div className="flex flex-col">
-                            <span className="text-gray-500 text-ms font-bold">Days of week:</span>
-                            <div className="flex flex-wrap justify-center">
-                                {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((day) => (
-                                    <div
-                                        key={day}
-                                        className={`h-8 w-8 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer mr-2 mb-2
-                                            ${daysOfWeek.includes(day) ? 'bg-orange-500 text-white' : ''}`}
-                                        onClick={() => setDaysOfWeek(prevDays => prevDays.includes(day) ? prevDays.filter(item => item !== day) : [...prevDays, day])}
-                                    >
-                                        {day}
-                                    </div>
-                                ))}
+
+                        {repeatInterval === 'interval' && (
+                            <div className="flex items-center mb-4">
+                                <span className="mr-2">Повторять с интервалом</span>
+                                <input
+                                    type="number"
+                                    value={repeatIntervalValue}
+                                    onChange={handleRepeatIntervalValueChange}
+                                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <Select
+                                    id="repeat-interval-type"
+                                    value={repeatIntervalType}
+                                    onChange={handleRepeatIntervalTypeChange}
+                                    className="mr-2 w-32"
+                                >
+                                    <MenuItem value="days">дни</MenuItem>
+                                    <MenuItem value="weeks">недели</MenuItem>
+                                    <MenuItem value="months">месяцы</MenuItem>
+                                    <MenuItem value="years">годы</MenuItem>
+                                </Select>
                             </div>
-                        </div>
-                    </FormControl>
-                    <div style={{position: 'relative', maxHeight: '200px'}}>
-                        <DatePicker
-                            date={startTime}
-                            onDateChange={handleStartTimeChange}
-                            format={"yyyy-MM-dd"}
-                            locale={enGB}>
-                            {({inputProps, focused}) => (
-                                <input
-                                    className={'input' + (focused ? ' -focused' : '')}
-                                    {...inputProps}
-                                    style={{backgroundColor: "transparent"}}
-                                    placeholder="Select start time"
-                                />
-                            )}
-                        </DatePicker>
-                    </div>
-                    <div style={{position: 'relative', maxHeight: '200px'}}>
-                        <DatePicker
-                            date={endTime}
-                            onDateChange={handleStartTimeChange}
-                            format={"yyyy-MM-dd"}
-                            locale={enGB}>
-                            {({inputProps, focused}) => (
-                                <input
-                                    className={'input' + (focused ? ' -focused' : '')}
-                                    {...inputProps}
-                                    style={{backgroundColor: "transparent"}}
-                                    placeholder="Select end time"
-                                />
-                            )}
-                        </DatePicker>
-                    </div>
-                    <FormControl>
-                        <InputLabel id="specific-days-of-month-label">Specific Days of Month</InputLabel>
-                        <Select
-                            labelId="specific-days-of-month-label"
-                            id="specific-days-of-month"
-                            multiple
-                            value={daysOfMonth}
-                            onChange={handleSpecificDaysOfMonthChange}
-                        >
-                            {/* Options for specific days of the month */}
-                        </Select>
-                    </FormControl>
-                    <FormControl>
-                        <InputLabel id="specific-weeks-of-month-label">Specific Weeks of Month</InputLabel>
-                        <Select
-                            labelId="specific-weeks-of-month-label"
-                            id="specific-weeks-of-month"
-                            multiple
-                            value={weeksOfMonth}
-                            onChange={handleSpecificWeeksOfMonthChange}
-                        >
-                            {/* Options for specific weeks of the month */}
-                        </Select>
-                    </FormControl>
-                    <FormControl>
-                        <InputLabel id="year-label">Year</InputLabel>
-                        <Select
-                            labelId="year-label"
-                            id="year"
-                            value={year}
-                            onChange={handleYearChange}
-                        >
-                            {/* Options for the year */}
-                        </Select>
+                        )}
+
+                        {repeatIntervalType !== 'days' && (
+                            <div className="flex flex-col">
+                                <span className="text-gray-500 text-ms font-bold">Days of week:</span>
+                                <div className="flex flex-wrap justify-center">
+                                    {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((day) => (
+                                        <div
+                                            key={day}
+                                            className={`h-8 w-8 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer mr-2 mb-2
+                                        ${daysOfWeek.includes(day) ? 'bg-orange-500 text-white' : ''}`}
+                                            onClick={() => setDaysOfWeek(prevDays => prevDays.includes(day) ? prevDays.filter(item => item !== day) : [...prevDays, day])}
+                                        >
+                                            {day}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {repeatInterval !== 'none' && (
+                            <div className="">
+                                <span
+                                    className=""
+                                >
+                                    Окончание</span>
+                                <Select
+                                    labelId="repeat-end-label"
+                                    id="repeat-end"
+                                    value={repeatEndType}
+                                    onChange={handleRepeatEndTypeChange}
+                                    className="w-full mb-4"
+                                >
+                                    <MenuItem value="never">Никогда</MenuItem>
+                                    <MenuItem value="date">Дата</MenuItem>
+                                </Select>
+                                {repeatEndType === 'date' && (
+                                    <div>
+                                        <span>
+                                            Дата окончания:
+                                        </span>
+                                        <TextField
+                                            id="repeat-end-date"
+                                            type="date"
+                                            value={repeatEndDate}
+                                            onChange={handleRepeatEndDateChange}
+                                            className="w-full mb-4"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </FormControl>
                     <div className="row-span-1 flex items-center justify-end gap-3">
                         <button
