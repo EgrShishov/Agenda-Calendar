@@ -2,6 +2,8 @@ import {useContext, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
 import {ReminderService} from "../services/reminderService.ts";
 import {Reminder} from "../models/reminderModel.ts";
+import {DatePicker} from "react-nice-dates";
+import {enGB} from "date-fns/locale";
 
 const ReminderModal = () => {
     const {setShowReminderModal} = useContext(GlobalContext)
@@ -9,6 +11,11 @@ const ReminderModal = () => {
 
     const [description, setDescription] = useState('');
     const [reminderTime, setReminderTime] = useState('');
+
+    const handleReminderTimeChange = (newTime) => {
+        setReminderTime(newTime);
+    }
+
     const [email, setEmail] = useState('');
     const [notificationInterval, setNotificationInterval] = useState(0);
 
@@ -47,7 +54,6 @@ const ReminderModal = () => {
                 <div className="p-3">
                     <div className="grid grid-cols-1/4 items-end gap-y-3.5">
                         <div></div>
-
                         <div className="row-span-1 flex items-center">
                             <span className="material-icons-outlined text-black-65">
                                 segment
@@ -67,16 +73,22 @@ const ReminderModal = () => {
                             <span className="material-icons-outlined text-black-65">
                                 calendar_today
                             </span>
-                            <input
-                                type="date"
-                                name="reminderTime"
-                                placeholder="Add time"
-                                value={reminderTime}
-                                required
-                                className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
-                                w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                                onChange={(e) => setReminderTime(e.target.value)}
-                            />
+                            <div className="mx-3" style={{position: 'relative', maxHeight: '300px'}}>
+                                <DatePicker
+                                    date={reminderTime}
+                                    onDateChange={handleReminderTimeChange}
+                                    format={"yyyy-MM-dd"}
+                                    locale={enGB}>
+                                    {({inputProps, focused}) => (
+                                        <input
+                                            className={'input' + (focused ? ' -focused' : '')}
+                                            {...inputProps}
+                                            style={{backgroundColor: "transparent"}}
+                                            placeholder="Select reminder time"
+                                        />
+                                    )}
+                                </DatePicker>
+                            </div>
                         </div>
 
                         <div className="row-span-1 flex items-center">
@@ -89,7 +101,7 @@ const ReminderModal = () => {
                                 placeholder="Add email"
                                 value={email}
                                 required
-                                className="mx-3 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 w-full py-2 mt-4"
+                                className="mx-3 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 w-full  mt-4"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
@@ -104,7 +116,7 @@ const ReminderModal = () => {
                                 placeholder="Add time"
                                 value={notificationInterval}
                                 required
-                                className="mx-3 border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
+                                className="mx-3 border-0 text-gray-600 text-xl font-semibold pb-2
                                 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                                 onChange={(e) => setNotificationInterval(parseInt(e.target.value))}
                             />

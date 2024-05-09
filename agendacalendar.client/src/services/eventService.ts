@@ -22,6 +22,7 @@ export class EventService{
     async createEvent(event: Event, calendarId: number){
         const response =
             await axios.post(`${this.baseUrl}events/create?calendarId=${calendarId}`, event);
+        console.log(response.request);
         return response.data;
     }
 

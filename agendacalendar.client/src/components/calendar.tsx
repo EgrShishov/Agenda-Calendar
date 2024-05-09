@@ -3,6 +3,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import rrulePlugin from '@fullcalendar/rrule'
 import {CalendarService} from "../services/calendarService.ts";
 import {useContext, useEffect, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
@@ -31,7 +32,7 @@ const Calendar = () => {
     return (
         <div className="container max-w-screen-ms max-h-screen-md mt-4">
             <FullCalendar
-                plugins={[dayGridPlugin, bootstrap5Plugin]}
+                plugins={[dayGridPlugin, bootstrap5Plugin,rrulePlugin]}
                 initialView="dayGridMonth"
                 headerToolbar={{
                     end: 'today,dayGridWeek,dayGridMonth',

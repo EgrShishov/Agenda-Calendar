@@ -22,7 +22,7 @@ const Auth = () => {
         '../../public/gifs/clocks8.gif',
     ]
 
-    const {isAuthenticated, setIsAuthenticated} = useContext(GlobalContext);
+    const {setIsAuthenticated} = useContext(GlobalContext);
     const [curIndex, setCurIndex] = useState(0);
     const [gifElement, setGifElement] = useState(gifs[curIndex]);
     const [selectedTab, setSelectedTab] = useState('login');
@@ -59,11 +59,11 @@ const Auth = () => {
             password: password
         });
         if(response) {
-            setIsAuthenticated(true);
+            const isAuthenticated = true;
+            setIsAuthenticated(isAuthenticated);
             Redirect('/u');
         }
     };
-
     const handleSignup = async () => {
         //check for passwords, form validation
 
@@ -75,7 +75,8 @@ const Auth = () => {
         });
         console.log(response);
         if(response){
-            setIsAuthenticated(true);
+            const isAuthenticated = true;
+            setIsAuthenticated(isAuthenticated);
             Redirect('/u');
         }
     };
@@ -83,7 +84,8 @@ const Auth = () => {
     const handleOnSuccess = async (credentialResponse) => {
         const result = await googleAuthService.auth(credentialResponse.credential)
         if(result) {
-            setIsAuthenticated(true);
+            const isAuthenticated = true;
+            setIsAuthenticated(isAuthenticated);
             Redirect('/u');
         }
     };

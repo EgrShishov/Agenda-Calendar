@@ -1,14 +1,13 @@
 import React, {useState, useContext} from "react";
 import {Event} from '../models/eventModel.ts';
-import {ReccurencyRule} from "../models/reccurencyRulePatternModel.ts";
 import GlobalContext from "../context/globalContext.ts";
 import {EventService} from "../services/eventService.ts";
-import {useNavigate} from "react-router-dom";
 import { enGB } from 'date-fns/locale'
 import {DatePicker} from 'react-nice-dates'
 import 'react-nice-dates/build/style.css';
 import {Button, MenuItem, Menu} from '@mui/material';
 import ReccurecyRuleModal from "./reccurecyRuleModal.tsx";
+import reccurecyRuleModal from "./reccurecyRuleModal.tsx";
 
 const EventDetails = () => {
     const {
@@ -23,6 +22,7 @@ const EventDetails = () => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [editingMode, setEditingMode] = useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -38,35 +38,25 @@ const EventDetails = () => {
 
     const [startTime, setStartTime] = useState(selectedEvent ? selectedEvent.start : new Date());
     const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.end : new Date());
-    const [location, setLocation] = useState(selectedEvent ? selectedEvent._def.location : 'No location selected');
+    const [location, setLocation] = useState(selectedEvent ? selectedEvent._def.location : '');
 
     const [isAllDay, setIsAllDay] = useState(false);
     const [participants, setParticipants] = useState([]);
-    const [reccurenceRule, setReccurenceRule] = useState();
+    const [reccurenceRule, setReccurenceRule] = useState(null);
     const [selectedCalendar, setSelectedCalendar] =
         useState(selectedEvent ?
             calendarsList.find(calendar => calendar.calendar.id === selectedEvent._def.extendedProps.calendarId)
             : null
         );
 
+    const [notifications, setNotifications] = useState();
     const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
     const [bgColor, setBgColor] = useState(selectedEvent? selectedEvent.backgroundColor : 'orange');
-    const Redirect = useNavigate();
+
     const eventService = new EventService();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
-        const recRule: ReccurencyRule = {
-            frequency: 0,
-            interval: 0,
-            daysOfWeek: [0],
-            daysOfMonth: [0],
-            weeksOfMonth: [0],
-            monthsOfYear: [0],
-            year: 0,
-            recurrenceDates: [{startTime:new Date(), endTime: new Date()}],
-        };
 
         const calendarEvent: Event = {
             title: title,
@@ -74,15 +64,25 @@ const EventDetails = () => {
             startTime: new Date(startTime),
             endTime: new Date(endTime),
             location: location,
-            recurrenceRule: recRule
+            recurrenceRule: reccurenceRule
         };
 
-        if(!selectedEvent){
+        if(!selectedEvent)
+        {
             const calendarId = selectedCalendar.calendar.id;
             const response = await eventService.createEvent(calendarEvent, calendarId);
-
-            events.push(response);
+            events.push(calendarEvent);
             setEvents(events);
+        }
+        else if(editingMode)
+        {
+            console.log(selectedEvent.title, selectedEvent, selectedEvent.extendedProps.description);
+            selectedEvent.setProp('title', title);
+            selectedEvent.setExtendedProp('description', description);
+            selectedEvent.setStart(new Date(startTime));
+            selectedEvent.setEnd(new Date(endTime));
+
+            const response = await eventService.editEvent(calendarEvent, selectedEvent._def.publicId);
         }
 
         setShowEventDetails(false);
@@ -97,9 +97,13 @@ const EventDetails = () => {
     };
 
     const onEditHandler = async () => {
-        setShowEventDetails(false);
-        Redirect(`/event/${selectedEvent._def.publicId}/edit`);
+        setEditingMode(true);
+        setSelectedCalendar(calendarsList.find(calendar => calendar.calendar.id === selectedEvent._def.extendedProps.calendarId));
     };
+
+    const handleDiscard = () => {
+        setEditingMode(false);
+    }
 
     const eventIsAllDay = (event) =>{
         setIsAllDay(event.target.checked);
@@ -163,7 +167,10 @@ const EventDetails = () => {
 
     return (
         <React.Fragment>
-            <div className="my-14 w-full fixed h-screen flex justify-center items-center rounded-xl z-50">
+            {!selectedEvent && showRecurrenceModal &&
+                <ReccurecyRuleModal setShowReccurenceModal={setShowRecurrenceModal}
+                                    setReccurenceRule={setReccurenceRule}/>}
+            <div className="my-14 w-full fixed h-screen flex justify-center items-center rounded-xl z-10">
                 <form className="bg-white my-3 fixed w-4/12 h-fit rounded-xl shadow-2xl">
                     <header className={`rounded-t-xl px-4 py-2.5 flex justify-between items-center`}
                     style={{ backgroundColor: bgColor }}>
@@ -194,6 +201,7 @@ const EventDetails = () => {
                             </button>
                         </div>
                     </header>
+
                     <div className="p-3">
                         <div className="grid grid-cols-1/6 items-end gap-y-3.5">
                             <div></div>
@@ -201,42 +209,49 @@ const EventDetails = () => {
                             <span className="material-icons-outlined text-black-65">
                                 subtitles
                             </span>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    placeholder="Add title"
-                                    value={title}
-                                    required
-                                    className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
-                                w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                                    onChange={(e) => setTitle(e.target.value)}
-                                />
+                                <div>
+                                    {(editingMode || !selectedEvent) ? (
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            placeholder="Add title"
+                                            value={title}
+                                            required
+                                            className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
+                                    w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                                            onChange={(e) => setTitle(e.target.value)}
+                                        />
+                                    ) : (
+                                        <span
+                                            className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
+                                            w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                                        >
+                                            {title}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                schedule
-                            </span>
-                                {selectedEvent && (
-                                    <p className="mx-3 text-gary-400 text-ms font-medium">
-                                        {startTime.toString()} - {startTime.toString()}
-                                    </p>
-                                )}
-                                {!selectedEvent && (
+                                <span className="material-icons-outlined text-black-65">
+                                    schedule
+                                </span>
+                                {(!selectedEvent || editingMode) ? (
                                     <div className="mx-3">
                                         <div className="flex items-center my-2">
-                                            <span className="text-semibold text-black/60 text-ms mr-3">Start time:</span>
-                                            <div style={{ position: 'relative', maxHeight: '300px'}}>
+                                            <span
+                                                className="text-semibold text-black/60 text-ms mr-3">Start time:</span>
+                                            <div style={{position: 'relative', maxHeight: '300px'}}>
                                                 <DatePicker
                                                     date={startTime}
                                                     onDateChange={startDateChanged}
                                                     format={"yyyy-MM-dd"}
                                                     locale={enGB}>
-                                                    {({ inputProps, focused }) => (
+                                                    {({inputProps, focused}) => (
                                                         <input
                                                             className={'input' + (focused ? ' -focused' : '')}
                                                             {...inputProps}
-                                                            style={{ backgroundColor: "transparent"}}
+                                                            style={{backgroundColor: "transparent"}}
                                                             placeholder="Select start time"
                                                         />
                                                     )}
@@ -245,17 +260,17 @@ const EventDetails = () => {
                                         </div>
                                         <div className="flex items-center my-2">
                                             <span className="text-semibold text-black/60 text-ms mr-3">End time:</span>
-                                            <div style={{ position: 'relative', maxHeight: '200px'}}>
+                                            <div style={{position: 'relative', maxHeight: '200px'}}>
                                                 <DatePicker
                                                     date={endTime}
                                                     onDateChange={endDateChanged}
                                                     format={"yyyy-MM-dd"}
                                                     locale={enGB}>
-                                                    {({ inputProps, focused }) => (
+                                                    {({inputProps, focused}) => (
                                                         <input
                                                             className={'input' + (focused ? ' -focused' : '')}
                                                             {...inputProps}
-                                                            style={{ backgroundColor: "transparent"}}
+                                                            style={{backgroundColor: "transparent"}}
                                                             placeholder="Select end time"
                                                         />
                                                     )}
@@ -263,7 +278,8 @@ const EventDetails = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center my-2">
-                                            <label className="text-semibold text-black/60 text-ms mr-3 flex items-center">
+                                            <label
+                                                className="text-semibold text-black/60 text-ms mr-3 flex items-center">
                                                 All day
                                                 <input
                                                     checked={isAllDay}
@@ -275,19 +291,18 @@ const EventDetails = () => {
                                             </label>
                                         </div>
                                     </div>
+                                ) : (
+                                    <span className="mx-3 text-gary-400 text-ms font-medium">
+                                        {startTime.toString()} - {startTime.toString()}
+                                    </span>
                                 )}
                             </div>
 
                             <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                segment
-                            </span>
-                                {selectedEvent && (
-                                    <p className="mx-3 text-gary-400 text-ms font-medium">
-                                        {description}
-                                    </p>
-                                )}
-                                {!selectedEvent && (
+                                <span className="material-icons-outlined text-black-65">
+                                    segment
+                                </span>
+                                {(!selectedEvent || editingMode) ? (
                                     <input
                                         type="text"
                                         name="description"
@@ -297,18 +312,20 @@ const EventDetails = () => {
                                         className="mx-3 border-0 text-gray-600 text-ms font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
+                                ): (
+                                    <span
+                                        className="mx-3 text-gary-400 text-ms font-medium"
+                                    >
+                                        {description}
+                                    </span>
                                 )}
                             </div>
+
                             <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     location_on
                                 </span>
-                                {selectedEvent && (
-                                    <p className="mx-3 text-gary-400 text-ms font-medium">
-                                    {location}
-                                    </p>
-                                )}
-                                {!selectedEvent && (
+                                {(!selectedEvent || editingMode) ? (
                                     <input
                                         type="text"
                                         name="location"
@@ -318,20 +335,18 @@ const EventDetails = () => {
                                         className="mx-3 border-0 text-gray-600 text-ms font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                                         onChange={(e) => setLocation(e.target.value)}
                                     />
+                                ) : (
+                                    <span className="mx-3 text-gary-400 text-ms font-medium">
+                                        {location}
+                                    </span>
                                 )}
                             </div>
 
                             <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                notifications
-                            </span>
-                                {selectedEvent && (
-                                    <p className="mx-3 text-gary-400 text-ms font-medium">
-                                        Notification
-                                    </p>
-                                )}
-                                {showRecurrenceModal && <ReccurecyRuleModal setShowReccurenceModal={setShowRecurrenceModal} />}
-                                {!selectedEvent && (
+                                <span className="material-icons-outlined text-black-65">
+                                    repeat
+                                </span>
+                                {(!selectedEvent || editingMode) ? (
                                     <div className="mx-3">
                                         <Button
                                             className="bg-white border p-2"
@@ -344,7 +359,6 @@ const EventDetails = () => {
                                       </span>
                                         </Button>
                                         <Menu
-                                            id="simple-menu"
                                             anchorEl={anchorEl}
                                             keepMounted
                                             open={Boolean(anchorEl)}
@@ -358,24 +372,38 @@ const EventDetails = () => {
                                             <MenuItem onClick={() => handleItem('custom')}>Custom</MenuItem>
                                         </Menu>
                                     </div>
+                                ) : (
+                                    <span className="mx-3 text-gary-400 text-ms font-medium">
+                                        {reccurenceRule}
+                                    </span>
                                 )}
                             </div>
 
+                            {selectedEvent && notifications && (
+                                <div className="row-span-1 flex items-center">
+                                <span className="material-icons-outlined text-black-65">
+                                    notifications
+                                </span>
+                                    {selectedEvent && (
+                                        <p className="mx-3 text-gary-400 text-ms font-medium">
+                                            {notifications}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="row-span-1 flex items-center">
-                            <span className="material-icons-outlined text-black-65">
-                                calendar_today
-                            </span>
-                                {selectedEvent && (
-                                    <p className="mx-3 text-gary-400 text-ms font-medium" >
-                                        {GetCalendarName(selectedEvent._def.extendedProps.calendarId)}
-                                    </p>
-                                )}
-                                {!selectedEvent && (
+                                <span className="material-icons-outlined text-black-65">
+                                    calendar_today
+                                </span>
+                                {(!selectedEvent || editingMode) ? (
                                     <div className="flex gap-x-2 mx-3">
                                         <select value={selectedCalendar ? selectedCalendar.id : ''}
                                                 onChange={handleCalendarChange}
                                                 className="px-2 py-1 rounded border bg-white">
-                                            <option value="">Select Calendar</option>
+                                            {!selectedEvent && (
+                                                <option value="">Select Calendar</option>
+                                            )}
                                             {calendarsList.map(calendar => (
                                                 <option
                                                     key={calendar.calendar.id}
@@ -388,6 +416,10 @@ const EventDetails = () => {
                                             ))}
                                         </select>
                                     </div>
+                                ) : (
+                                    <span className="mx-3 text-gary-400 text-ms font-medium">
+                                        {GetCalendarName(selectedEvent._def.extendedProps.calendarId)}
+                                    </span>
                                 )}
                             </div>
 
@@ -400,6 +432,25 @@ const EventDetails = () => {
                                 >
                                     Add new event
                                 </button>
+                            )}
+                            {selectedEvent && editingMode && (
+                                <div className="row-span-1 flex justify-content-end gap-x-2.5">
+                                    <button
+                                        type="submit"
+                                        onClick={handleSubmit}
+                                        className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                            hover:scale-105 transition ease-out duration-200 transform"
+                                    >
+                                        Save changes
+                                    </button>
+                                    <button
+                                        onClick={handleDiscard}
+                                        className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                                hover:scale-105 transition ease-out duration-200 transform"
+                                    >
+                                        Discard
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>

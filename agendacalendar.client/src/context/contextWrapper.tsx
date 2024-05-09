@@ -17,6 +17,7 @@ const labelsClasses = [
 ];
 
 export default function ContextWrapper(props){
+
     const [calendarsList, setCalendarsList] = useState([]);
     const [events, setEvents] = useState([]);
     const [showEventDetails, setShowEventDetails] = useState(false);
@@ -24,12 +25,24 @@ export default function ContextWrapper(props){
     const [showReminderModal, setShowReminderModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([]);
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(JSON.parse(localStorage.getItem('authState')));
 
     const calendarService = new CalendarService();
     const userService = new UserService();
     const eventService = new EventService();
     const reminderService = new ReminderService();
+
+    useEffect(() => {
+        const storedAuthState = localStorage.getItem('authState');
+        if (storedAuthState) {
+            setIsAuthenticated(JSON.parse(storedAuthState));
+        }
+    }, []);
+
+    const handleSetIsAuthenticated = (value) => {
+        setIsAuthenticated(value);
+        localStorage.setItem('authState', JSON.stringify(value));
+    };
 
     useEffect(() => {
         const fetchCalendars = async () => {
@@ -84,7 +97,7 @@ export default function ContextWrapper(props){
         <GlobalContext.Provider
             value={{
                 isAuthenticated,
-                setIsAuthenticated,
+                setIsAuthenticated: handleSetIsAuthenticated,
                 showEventDetails,
                 setShowEventDetails,
                 showCalendarModal,

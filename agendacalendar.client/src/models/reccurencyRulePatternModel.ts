@@ -1,16 +1,8 @@
 
 export interface ReccurencyRule {
-    frequency: number,
+    freq: string,
     interval: number,
-    daysOfWeek: number[],
-    daysOfMonth: number[],
-    weeksOfMonth: number[],
-    monthsOfYear: number[],
-    year: number,
-    recurrenceDates: ReccurencyDate[],
-}
-
-export interface ReccurencyDate{
-    startTime: Date,
-    endTime: Date,
+    byweekday: string[],
+    dtstart: Date,
+    until: Date
 }
