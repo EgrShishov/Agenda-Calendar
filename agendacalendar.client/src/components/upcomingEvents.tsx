@@ -1,10 +1,10 @@
 
-const upcomingEvents = () =>{
+const UpcomingEvents = () =>{
     return (
-        <div>
-
+        <div className="">
+            <p>Upcoming events + schedule?</p>
         </div>
     )
 }
 
-export default upcomingEvents;
+export default UpcomingEvents;

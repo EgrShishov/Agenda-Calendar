@@ -4,11 +4,10 @@ import CalendarList from "./calendarList.tsx";
 
 const Sidebar =() => {
     return (
-        <aside className="border p-5 w-64">
+        <div className="border p-3">
             <CreateButton />
-            <UpcomingEvents />
             <CalendarList />
-        </aside>
+        </div>
     );
 };
 

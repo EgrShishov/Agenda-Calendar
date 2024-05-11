@@ -40,9 +40,18 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
 
     const [repeatStartDate, setRepeatStartDate] = useState(new Date());
 
-    const handleRepeatStartDateChange = (newDate) => {
-        setRepeatStartDate(newDate);
-    }
+    const handleRepeatStartDateChange = (newTime) => {
+        const parsedNewStartTime = new Date(newTime);
+        const parsedEndTime = new Date(repeatStartDate);
+
+        if (parsedNewStartTime.getTime() > parsedEndTime.getTime()) {
+            const newEndTime = new Date(parsedNewStartTime);
+            newEndTime.setDate(newEndTime.getDate() + 1);
+            setRepeatEndDate(newEndTime);
+        }
+
+        setRepeatStartDate(parsedNewStartTime);
+    };
 
     const [repeatEndType, setRepeatEndType] = useState('never');
 
@@ -52,9 +61,18 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
 
     const [repeatEndDate, setRepeatEndDate] = useState(new Date());
 
-    const handleRepeatEndDateChange = (newDate) => {
-        setRepeatEndDate(newDate);
-    }
+    const handleRepeatEndDateChange = (newTime) => {
+        const parsedEndTime = new Date(newTime);
+        const parsedStartTime = new Date(repeatStartDate);
+
+        if (parsedEndTime.getTime() < parsedStartTime.getTime()) {
+            const newStartTime = new Date(parsedEndTime);
+            newStartTime.setDate(newStartTime.getDate() - 1);
+            setRepeatStartDate(newStartTime);
+        }
+
+        setRepeatEndDate(parsedEndTime);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();

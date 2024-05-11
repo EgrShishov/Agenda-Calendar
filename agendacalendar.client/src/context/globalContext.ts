@@ -1,8 +1,7 @@
 import React from 'react';
 
 const GlobalContext = React.createContext({
-    isAuthenticated: false,
-    setIsAuthenticated: () => {},
+    calendarRef: null,
     showEventDetails: false,
     setShowEventDetails: () => {},
     showCalendarModal: false,

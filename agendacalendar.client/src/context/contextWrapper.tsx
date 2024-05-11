@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import GlobalContext from './globalContext.ts';
 import calendarList from "../components/calendarList.tsx";
 import {CalendarService} from "../services/calendarService.ts";
@@ -17,7 +17,7 @@ const labelsClasses = [
 ];
 
 export default function ContextWrapper(props){
-
+    const calendarRef = useRef(null);
     const [calendarsList, setCalendarsList] = useState([]);
     const [events, setEvents] = useState([]);
     const [showEventDetails, setShowEventDetails] = useState(false);
@@ -25,24 +25,12 @@ export default function ContextWrapper(props){
     const [showReminderModal, setShowReminderModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([]);
-    const [isAuthenticated, setIsAuthenticated] = useState(JSON.parse(localStorage.getItem('authState')));
 
     const calendarService = new CalendarService();
     const userService = new UserService();
     const eventService = new EventService();
     const reminderService = new ReminderService();
 
-    useEffect(() => {
-        const storedAuthState = localStorage.getItem('authState');
-        if (storedAuthState) {
-            setIsAuthenticated(JSON.parse(storedAuthState));
-        }
-    }, []);
-
-    const handleSetIsAuthenticated = (value) => {
-        setIsAuthenticated(value);
-        localStorage.setItem('authState', JSON.stringify(value));
-    };
 
     useEffect(() => {
         const fetchCalendars = async () => {
@@ -96,8 +84,7 @@ export default function ContextWrapper(props){
     return (
         <GlobalContext.Provider
             value={{
-                isAuthenticated,
-                setIsAuthenticated: handleSetIsAuthenticated,
+                calendarRef: calendarRef,
                 showEventDetails,
                 setShowEventDetails,
                 showCalendarModal,
