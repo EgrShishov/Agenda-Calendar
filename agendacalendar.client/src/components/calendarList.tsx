@@ -69,8 +69,20 @@ const CalendarList = () =>{
         <React.Fragment>
             <div className="flex justify-between items-center mt-4">
                 <button onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 focus:outline-none">
-                    {isCollapsed ? <p className="text-gray-400 font-bold text-xl mt-10">Calendars</p>
-                        : <p className="text-orange-400 font-bold text-xl mt-10">Calendars</p>}
+                    <div className="flex items-end">
+                        <p className="text-gray-400 font-bold text-xl mt-10">Your calendars: </p>
+                        {
+
+                            isCollapsed ?
+                                <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+                                keyboard_arrow_down
+                            </span>
+                                :
+                                <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+                                keyboard_arrow_up
+                            </span>
+                        }
+                    </div>
                 </button>
             </div>
             <div className="mt-4">
@@ -84,7 +96,7 @@ const CalendarList = () =>{
                             style={{accentColor: calendar.calendarColor}}
                         />
                         <div className="flex-grow ml-3">
-                            <p className="text-lg font-semibold text-gray-700">{calendar.title}</p>
+                            <p className="text-l font-semibold text-gray-700">{calendar.title}</p>
                         </div>
                         <div className="relative ml-3">
                             <button onClick={handleMenuToggle} className="text-gray-600 focus:outline-none">
