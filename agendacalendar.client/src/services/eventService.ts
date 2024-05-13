@@ -26,8 +26,8 @@ export class EventService{
         return response.data;
     }
 
-    async editEvent(event: Event, eventId: number){
-        const response = await axios.post(`${this.baseUrl}events/edit?eventId=${eventId}`, event);
+    async editEvent(event: Event, eventId: number, calendarId: number){
+        const response = await axios.post(`${this.baseUrl}events/edit?eventId=${eventId}?calendarId=${calendarId}`, event);
         return response.data;
     }
 
@@ -36,4 +36,8 @@ export class EventService{
         return response.data;
     }
 
+    async getUpcoming(){
+        const response = await axios.get(`${this.baseUrl}events/upcoming`);
+        return response.data;
+    }
 }

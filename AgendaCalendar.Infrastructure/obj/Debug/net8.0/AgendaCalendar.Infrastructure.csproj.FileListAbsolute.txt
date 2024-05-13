@@ -19,4 +19,3 @@ C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\refint\AgendaCa
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.pdb
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\AgendaCalendar.Infrastructure.genruntimeconfig.cache
 C:\AgendaCalendar\AgendaCalendar.Infrastructure\obj\Debug\net8.0\ref\AgendaCalendar.Infrastructure.dll
-C:\AgendaCalendar\AgendaCalendar.Infrastructure\bin\Debug\net8.0\(De)SerializationLib.pdb

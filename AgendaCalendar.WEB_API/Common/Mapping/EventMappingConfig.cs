@@ -19,8 +19,8 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
                 .Map(dest => dest.RecurrenceRule, src => src.request.RecurrenceRule)
                 .Map(dest => dest.Location, src => src.request.Location);
 
-            config.NewConfig<(EditEventRequest request, int eventId, int authorId), UpdateEventCommand>()
-                .Map(dest => dest.CalendarId, src => src.request.CalendarId)
+            config.NewConfig<(EditEventRequest request, int eventId, int authorId, int calendarId), UpdateEventCommand>()
+                .Map(dest => dest.CalendarId, src => src.calendarId)
                 .Map(dest => dest.EventId, src => src.eventId)
                 .Map(dest => dest.AuthorId, src => src.authorId)
                 .Map(dest => dest.Title, src => src.request.Title)

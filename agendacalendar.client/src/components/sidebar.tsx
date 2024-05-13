@@ -4,7 +4,7 @@ import CalendarList from "./calendarList.tsx";
 
 const Sidebar =() => {
     return (
-        <div className="border p-3">
+        <div className="border p-3 flex-1">
             <CreateButton />
             <CalendarList />
         </div>

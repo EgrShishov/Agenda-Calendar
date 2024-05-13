@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {CalendarService} from "../services/calendarService.ts";
 import GlobalContext from "../context/globalContext.ts";
 import {MenuItem, Menu} from "@mui/material";
+import {CalendarModel} from "../models/calendarModel.ts";
 
 const CalendarList = () =>{
     const {
@@ -10,6 +11,7 @@ const CalendarList = () =>{
         updateLabel,
         calendarsList,
         setCalendarsList ,
+        setShowCalendarModal,
         filteredEvents,
     } = useContext(GlobalContext);
 
@@ -52,7 +54,8 @@ const CalendarList = () =>{
         handleMenuClose();
     };
 
-    const handleDeleteOnClick = async (calendarId) => {
+    const handleDeleteOnClick = async (event) => {
+        const calendarId = anchorEl.id;
         const response = await calendarService.deleteCalendar(calendarId);
         if(response){
             setCalendarsList(prev => prev.filter(calendar => calendar.calendar.id != calendarId));
@@ -61,74 +64,88 @@ const CalendarList = () =>{
         handleMenuClose();
     }
 
-    const handleEditOnClick = async(calendarId) => {
-        handleMenuClose();
+    const handleEditOnClick = async (event) => {
+        setShowCalendarModal(true);
+        const newCalendar: CalendarModel = {
+
+        };
+
+        const calendarId = anchorEl.id;
+
+        const response = await calendarService.editCalendar(newCalendar, calendarId);
+        if(response)
+        {
+            handleMenuClose();
+        }
     };
 
     return (
         <React.Fragment>
-            <div className="flex justify-between items-center mt-4">
-                <button onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 focus:outline-none">
-                    <div className="flex items-end">
-                        <p className="text-gray-400 font-bold text-xl mt-10">Your calendars: </p>
-                        {
+            <div className="border border-gray-300 rounded p-1 mt-5">
+                <div className="flex justify-between items-center p-2">
+                    <button onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <div className="flex items-center">
+                            <p className="text-xl font-bold mb-2">Your calendars: </p>
+                            {
 
-                            isCollapsed ?
-                                <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+                                isCollapsed ?
+                                    <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
                                 keyboard_arrow_down
                             </span>
-                                :
-                                <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+                                    :
+                                    <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
                                 keyboard_arrow_up
                             </span>
-                        }
-                    </div>
-                </button>
-            </div>
-            <div className="mt-4">
-                {!isCollapsed && calendarsList.map(({calendar, checked}, idx) => (
-                    <div key={idx} className="bg-gray-100 rounded-md p-2.5 mb-2 flex items-center relative">
-                        <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => updateLabel({label: calendar.calendarColor, checked: !checked})}
-                            className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer`}
-                            style={{accentColor: calendar.calendarColor}}
-                        />
-                        <div className="flex-grow ml-3">
-                            <p className="text-l font-semibold text-gray-700">{calendar.title}</p>
+                            }
                         </div>
-                        <div className="relative ml-3">
-                            <button onClick={handleMenuToggle} className="text-gray-600 focus:outline-none">
-                                <span className="material-icons-outlined">more_vert</span>
-                            </button>
-                            <Menu
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={handleMenuClose}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right'
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                            >
-                                <MenuItem onClick={() => handleDownloadOnClick(calendar.id)}>
-                                    Download
-                                </MenuItem>
-                                <MenuItem onClick={() => handleDeleteOnClick(calendar.id)}>
-                                    Delete
-                                </MenuItem>
-                                <MenuItem onClick={() => handleEditOnClick(calendar.id)}>
-                                    Edit
-                                </MenuItem>
-                            </Menu>
+                    </button>
+                </div>
+                <div className="">
+                    {!isCollapsed && calendarsList.map(({calendar, checked}, idx) => (
+                        <div key={idx} className="bg-gray-100 rounded-md p-2.5 mb-2 flex items-center relative">
+                            <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => updateLabel({label: calendar.calendarColor, checked: !checked})}
+                                className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer`}
+                                style={{accentColor: calendar.calendarColor}}
+                            />
+                            <div className="flex-grow ml-3">
+                                <p className="text-l font-semibold text-gray-700">{calendar.title}</p>
+                            </div>
+                            <div className="relative ml-3">
+                                <button onClick={handleMenuToggle} id={calendar.id}
+                                        className="text-gray-600 focus:outline-none">
+                                    <span className="material-icons-outlined">more_vert</span>
+                                </button>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right'
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleDownloadOnClick(calendar.id)}>
+                                        Download
+                                    </MenuItem>
+                                    <MenuItem onClick={() => handleDeleteOnClick(calendar.id)}>
+                                        Delete
+                                    </MenuItem>
+                                    <MenuItem id={calendar.id} onClick={handleEditOnClick}>
+                                        Edit
+                                    </MenuItem>
+                                </Menu>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </React.Fragment>
     )

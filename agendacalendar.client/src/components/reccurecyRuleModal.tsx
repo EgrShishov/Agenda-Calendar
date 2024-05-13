@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import {enGB} from "date-fns/locale";
 import {DatePicker} from "react-nice-dates";
+import {RecurrenceRule} from "../models/eventModel.ts";
 
 const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
     const [repeatInterval, setRepeatInterval] = useState('none');
@@ -14,7 +15,7 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
         setRepeatInterval(event.target.value);
     }
 
-    const [repeatIntervalType, setRepeatIntervalType] = useState(7); //weeks
+    const [repeatIntervalType, setRepeatIntervalType] = useState('weekly'); //weeks
 
     const handleRepeatIntervalTypeChange = (event) => {
         setRepeatIntervalType(event.target.value);
@@ -77,7 +78,7 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const reccurenceRule = {
+        const reccurenceRule: RecurrenceRule = {
             freq: repeatIntervalType,
             interval: repeatIntervalValue,
             byweekday: daysOfWeek,
@@ -125,10 +126,10 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
                                         onChange={handleRepeatIntervalTypeChange}
                                         className="mr-2 w-32"
                                     >
-                                        <MenuItem value={1}>дни</MenuItem>
-                                        <MenuItem value={7}>недели</MenuItem>
-                                        <MenuItem value={12}>месяцы</MenuItem>
-                                        <MenuItem value={365}>годы</MenuItem>
+                                        <MenuItem value={"daily"}>дни</MenuItem>
+                                        <MenuItem value={"weekly"}>недели</MenuItem>
+                                        <MenuItem value={"monthly"}>месяцы</MenuItem>
+                                        <MenuItem value={"yearly"}>годы</MenuItem>
                                     </Select>
                                 </div>
                             )}
@@ -137,12 +138,12 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
                                 <div className="flex flex-col">
                                     <span className="text-gray-500 text-ms font-bold">Days of week:</span>
                                     <div className="flex flex-wrap justify-center">
-                                        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((day, index) => (
+                                        {['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'].map((day) => (
                                             <div
-                                                key={index}
+                                                key={day}
                                                 className={`h-8 w-8 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer mr-2 mb-2
-                                        ${daysOfWeek.includes(index + 1) ? 'bg-orange-500 text-white' : ''}`}
-                                                onClick={() => setDaysOfWeek(prevDays => prevDays.includes(index + 1) ? prevDays.filter(item => item !== index + 1) : [...prevDays, index + 1])}
+                                                ${daysOfWeek.includes(day) ? 'bg-orange-500 text-white' : ''}`}
+                                                onClick={() => setDaysOfWeek(prevDays => prevDays.includes(day) ? prevDays.filter(item => item !== day) : [...prevDays, day])}
                                             >
                                                 {day}
                                             </div>

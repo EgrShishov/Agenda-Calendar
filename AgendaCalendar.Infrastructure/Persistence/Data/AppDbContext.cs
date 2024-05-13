@@ -17,7 +17,6 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
                 .OwnsOne<RecurrenceRule>(e => e.ReccurenceRules, e =>
                 {
                     e.WithOwner();
-                    e.OwnsOne<List<TimePeriod>>(e => e.RecurrenceDates);
                 });
   
             modelBuilder.Entity<Event>()

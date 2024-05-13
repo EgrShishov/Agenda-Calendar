@@ -17,7 +17,7 @@ const CalendarModal = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [participants, setParticipants] = useState([]);
-    const [email] = useState('users email');
+    const [email] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedLabel, setSelectedLabel] = useState('');
 
@@ -28,24 +28,27 @@ const CalendarModal = () => {
     const calendarService = new CalendarService();
     const handleCreateSubmit = async (e) => {
         e.preventDefault()
+
         const calendarModel: CalendarModel = {
             title: title,
             calendarDescription: description,
             calendarColor: selectedLabel
         };
+
         const response = await calendarService.createCalendar(calendarModel);
         calendarsList.push({calendar: response, checked: true});
-        console.log(calendarsList);
         setCalendarsList(calendarsList);
+
         setShowCalendarModal(false);
     }
 
     const handleImportSubmit = async (e) =>{
         e.preventDefault();
+
         const response = await calendarService.importCalendar(selectedFile);
         calendarsList.push(response);
         setCalendarsList(calendarsList);
-        console.log(response);
+
         setShowCalendarModal(false);
     };
 
@@ -129,7 +132,8 @@ const CalendarModal = () => {
                                             <span
                                                 key={i}
                                                 onClick={() => setSelectedLabel(lblClass)}
-                                                className={`w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer`}
+                                                className={`w-6 h-6 rounded-full mr-1.5 flex items-center justify-center cursor-pointer`}
+                                                style={{backgroundColor: lblClass}}
                                             >
                                             {selectedLabel === lblClass && (
                                                 <span className="material-icons-outlined text-white text-sm">

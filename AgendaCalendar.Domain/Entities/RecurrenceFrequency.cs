@@ -3,10 +3,10 @@ namespace AgendaCalendar.Domain.Entities
 {
     public enum RecurrenceFrequency
     {
-        None,
-        Daily,
-        Weekly,
-        Monthly,
-        Yearly
+        none,
+        daily,
+        weekly,
+        monthly,
+        yearly
     }
 }
