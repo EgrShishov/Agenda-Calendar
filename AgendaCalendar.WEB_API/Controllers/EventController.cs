@@ -1,7 +1,6 @@
-﻿using AgendaCalendar.Application.Calendars.Queries;
-using AgendaCalendar.Application.Events.Commands;
+﻿using AgendaCalendar.Application.Events.Commands;
 using AgendaCalendar.Application.Events.Queries;
-using AgendaCalendar.Domain.Entities;
+using AgendaCalendar.Application.Reminders.Commands;
 using AgendaCalendar.WEB_API.Contracts.Events;
 using AgendaCalendar.WEB_API.Extensions;
 using MapsterMapper;
@@ -25,9 +24,20 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> Create(CreateEventRequest request, int calendarId)
         {
             int authorId = User.GetUserId();
+            string authorEmail = User.GetEmail();
+
             var command = _mapper.Map<AddEventCommand>((request, calendarId, authorId));
 
             var createEventResult = await _mediator.Send(command);
+
+            var createReminderResult = await _mediator.Send(
+                new AddReminderCommand(
+                    request.Description,
+                    request.StartTime,
+                    authorEmail,
+                    createEventResult.Value.Id,
+                    TimeSpan.Zero
+            ));
 
             return createEventResult.Match(
                 createEventResult => Ok(_mapper.Map<EventResponse>(createEventResult)),

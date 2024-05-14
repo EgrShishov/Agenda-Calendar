@@ -26,6 +26,17 @@ namespace AgendaCalendar.Application.Events.Commands
 
             if (existingEvent is not null)
             {
+                if(existingEvent.StartTime != request.StartTime)
+                {
+                    var event_reminder = await unitOfWork.ReminderRepository.ListAsync(r => r.EventId == existingEvent.Id);
+                    if (event_reminder.Any())
+                    {
+                        var reminder = event_reminder.First();
+                        reminder.ReminderTime = request.StartTime;
+
+                        await unitOfWork.ReminderRepository.UpdateAsync(reminder);
+                    }
+                }
                 existingEvent.Title = request.Title;
                 existingEvent.Description = request.Description;
                 existingEvent.Location = request.Location;

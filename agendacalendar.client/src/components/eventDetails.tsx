@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, {useState, useContext, useEffect} from "react";
 import {Event, RecurrenceRule} from '../models/eventModel.ts';
 import GlobalContext from "../context/globalContext.ts";
 import {EventService} from "../services/eventService.ts";
@@ -20,7 +20,7 @@ const EventDetails = () => {
         calendarsList
     } = useContext(GlobalContext);
 
-    console.log("selected", selectedEvent);
+    console.log('event details', selectedEvent);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -34,31 +34,77 @@ const EventDetails = () => {
         setAnchorEl(null);
     };
 
+
     const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
     const [description, setDescription] =
-        useState(selectedEvent ? selectedEvent.description : '');
+        useState(selectedEvent ?
+            (selectedEvent.extendedProps.description ? selectedEvent.extendedProps.description : '') : '');
+
     const emptyReccurenceRule : RecurrenceRule = {
         interval: 0,
         freq: 'none',
         byweekday: [],
-        dtstart: "",
-        until: ""
+        dtstart: '',
+        until: ''
     }
+
+    const [reccurenceRule, setReccurenceRule] = useState(emptyReccurenceRule);
+
+    function convertFrequency(freq){
+        switch(freq){
+            case 0:
+                return 'none';
+            case 1:
+                return 'daily';
+            case 2:
+                return 'weekly';
+            case 3:
+                return 'monthly';
+            case 4:
+                return 'yearly';
+        }
+    }
+
+    function convertWeekdays(daysArray){
+        const daysMapping = {
+            0: 'su',
+            1: 'mo',
+            2: 'tu',
+            3: 'we',
+            4: 'th',
+            5: 'fr',
+            6: 'sa'
+        };
+        return daysArray.map(day => daysMapping[day]);
+    }
+
+    useEffect(()=>{
+        const recrule = selectedEvent._def.recurringDef ? selectedEvent._def.recurringDef.typeData.rruleSet._rrule[0].options : null;
+        let rrule = null;
+
+        if(recrule){
+            rrule = {
+                freq: convertFrequency(recrule.freq) ?? 'none',
+                interval: recrule.interval ?? 0,
+                byweekday: convertWeekdays(recrule.byweekday) ?? [''],
+                dtstart: recrule.dtstart ?? '',
+                until: recrule.until ?? new Date()
+            };
+            setReccurenceRule(rrule);
+        }
+    },[selectedEvent]);
 
     const [startTime, setStartTime] = useState(selectedEvent ? selectedEvent.start : new Date());
     const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.end : new Date());
-    const [location, setLocation] = useState(selectedEvent ? selectedEvent.location : '');
+    const [location, setLocation] = useState(selectedEvent ? selectedEvent.extendedProps.resourceId : '');
 
     const [isAllDay, setIsAllDay] = useState(false);
 
     const [participants, setParticipants] = useState([]);
 
-    const [reccurenceRule, setReccurenceRule] = useState(selectedEvent ?
-        (selectedEvent.rrule? selectedEvent.rrule : emptyReccurenceRule) : emptyReccurenceRule);
-
     const [selectedCalendar, setSelectedCalendar] =
         useState(selectedEvent ?
-            calendarsList.find(calendar => calendar.calendar.id === selectedEvent.calendarId)
+            calendarsList.find(calendar => calendar.calendar.id === selectedEvent.extendedProps.calendarId)
             : null
         );
 
@@ -69,7 +115,9 @@ const EventDetails = () => {
     const eventService = new EventService();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
+
+        console.log(reccurenceRule);
 
         const calendarEvent: Event = {
             title: title,
@@ -89,14 +137,15 @@ const EventDetails = () => {
         }
         else if(editingMode)
         {
-            console.log(selectedEvent.title, selectedEvent, selectedEvent.extendedProps.description);
-            selectedEvent.setProp('title', title);
+            const eventId = selectedEvent._def.publicId;
+            const calendarId = selectedEvent._def.extendedProps.calendarId;
+
+            /*selectedEvent.setProp('title', title);
             selectedEvent.setExtendedProp('description', description);
             selectedEvent.setStart(new Date(startTime));
-            selectedEvent.setEnd(new Date(endTime));
+            selectedEvent.setEnd(new Date(endTime));*/
 
-
-            const response = await eventService.editEvent(calendarEvent, selectedEvent.publicId, selectedEvent.calendarId);
+            const response = await eventService.editEvent(calendarEvent, eventId, calendarId);
             console.log(response);
         }
 
@@ -107,13 +156,13 @@ const EventDetails = () => {
         const eventId = selectedEvent.publicId;
         const response = await eventService.deleteEvent(eventId);
 
-        selectedEvent.remove();
         setShowEventDetails(false);
+        selectedEvent.remove();
     };
 
     const onEditHandler = async () => {
         setEditingMode(true);
-        setSelectedCalendar(calendarsList.find(calendar => calendar.calendar.id === selectedEvent.calendarId));
+        setSelectedCalendar(calendarsList.find(calendar => calendar.calendar.id === selectedEvent.extendedProps.calendarId));
     };
 
     const handleDiscard = () => {
@@ -185,26 +234,26 @@ const EventDetails = () => {
     };
 
     const formatWeekdays = (byweekday) => {
+        console.log(byweekday);
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return byweekday.map(day => daysOfWeek[day]).join(', ');
+        return byweekday.map((day, idx) => daysOfWeek[idx]).join(', ');
     };
 
     const formatRecurrencePattern = (recurrenceRule) => {
         const { freq, interval, byweekday, dtstart, until } = recurrenceRule;
 
         let pattern = `Repeats ${interval} time(s) every `;
-
         switch (freq) {
-            case 1:
+            case 'daily':
                 pattern += 'day';
                 break;
-            case 2:
+            case 'weekly':
                 pattern += 'week';
                 break;
-            case 3:
+            case 'monthly':
                 pattern += 'month';
                 break;
-            case 4:
+            case 'yearly':
                 pattern += 'year';
                 break;
             default:
@@ -385,28 +434,30 @@ const EventDetails = () => {
                                 )}
                             </div>
 
-                            <div className="row-span-1 flex items-center">
+                            {(location || editingMode) && (
+                                <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     location_on
                                 </span>
-                                {(!selectedEvent || editingMode) ? (
-                                    <input
-                                        type="text"
-                                        name="location"
-                                        placeholder="Add location"
-                                        value={location}
-                                        required
-                                        className="mx-3 border-0 text-gray-600 text-ms font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                                        onChange={(e) => setLocation(e.target.value)}
-                                    />
-                                ) : (
-                                    <span className="mx-3 text-gary-400 text-ms font-medium">
+                                    {(!selectedEvent || editingMode) ? (
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            placeholder="Add location"
+                                            value={location}
+                                            required
+                                            className="mx-3 border-0 text-gray-600 text-ms font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                                            onChange={(e) => setLocation(e.target.value)}
+                                        />
+                                    ) : (
+                                        <span className="mx-3 text-gary-400 text-ms font-medium">
                                         {location}
                                     </span>
-                                )}
-                            </div>
+                                    )}
+                                </div>
+                            )}
 
-                            {reccurenceRule.freq !== 'none' && (
+                            {(reccurenceRule.freq !== 'none' || editingMode) && (
                                 <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     repeat
@@ -419,29 +470,29 @@ const EventDetails = () => {
                                                 aria-haspopup="true"
                                                 onClick={handleClick}
                                             >
-                                      <span className="mx-2 font-semibold text-ms text-black/80">
-                                        {selectedItem ? selectedItem : "Add pattern"}
-                                      </span>
+                                              <span className="mx-2 font-semibold text-ms text-black/80">
+                                                {selectedItem ? selectedItem : "Add pattern"}
+                                              </span>
                                             </Button>
                                             <Menu
                                                 anchorEl={anchorEl}
-                                                keepMounted
-                                                open={Boolean(anchorEl)}
-                                                onClose={handleClose}
-                                                transformOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'left',
-                                                }}
-                                            >
-                                                <MenuItem onClick={() => handleItem('none')}>None</MenuItem>
-                                                <MenuItem onClick={() => handleItem('custom')}>Custom</MenuItem>
-                                            </Menu>
+                                            keepMounted
+                                            open={Boolean(anchorEl)}
+                                            onClose={handleClose}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'left',
+                                            }}
+                                        >
+                                            <MenuItem onClick={() => handleItem('none')}>None</MenuItem>
+                                            <MenuItem onClick={() => handleItem('custom')}>Custom</MenuItem>
+                                        </Menu>
                                         </div>
-                                    ) : (
-                                        <span className="mx-3 text-gary-400 text-ms font-medium">
-                                           {formatRecurrencePattern(reccurenceRule)}
-                                        </span>
-                                    )}
+                                        ) : (
+                                            <span className="mx-3 text-gary-400 text-ms font-medium">
+                                               {formatRecurrencePattern(reccurenceRule)}
+                                            </span>
+                                        )}
                                 </div>
                             )}
 
@@ -484,7 +535,7 @@ const EventDetails = () => {
                                     </div>
                                 ) : (
                                     <span className="mx-3 text-gary-400 text-ms font-medium">
-                                        {GetCalendarName(selectedEvent.calendarId)}
+                                        {GetCalendarName(selectedEvent.extendedProps.calendarId)}
                                     </span>
                                 )}
                             </div>

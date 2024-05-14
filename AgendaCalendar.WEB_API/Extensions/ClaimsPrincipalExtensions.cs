@@ -19,5 +19,13 @@ namespace AgendaCalendar.WEB_API.Extensions
 
             return int.TryParse(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value, out int id) ? id : 0;
         }
+
+        public static string GetEmail(this ClaimsPrincipal user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            return user.FindFirstValue(ClaimTypes.Email);
+        }
     }
 }

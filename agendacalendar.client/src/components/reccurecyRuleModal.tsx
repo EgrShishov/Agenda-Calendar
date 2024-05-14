@@ -79,11 +79,11 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
         event.preventDefault();
 
         const reccurenceRule: RecurrenceRule = {
-            freq: repeatIntervalType,
-            interval: repeatIntervalValue,
-            byweekday: daysOfWeek,
-            dtstart: repeatStartDate,
-            until: repeatEndDate
+            freq: repeatIntervalType ?? 'none',
+            interval: repeatIntervalValue ?? 0,
+            byweekday: daysOfWeek ?? [],
+            dtstart: repeatStartDate ?? '',
+            until: repeatEndDate ?? ''
         };
         setReccurenceRule(reccurenceRule);
         setShowReccurenceModal(false);

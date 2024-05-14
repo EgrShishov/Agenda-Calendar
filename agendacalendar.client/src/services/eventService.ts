@@ -22,12 +22,12 @@ export class EventService{
     async createEvent(event: Event, calendarId: number){
         const response =
             await axios.post(`${this.baseUrl}events/create?calendarId=${calendarId}`, event);
-        console.log(response.request);
         return response.data;
     }
 
     async editEvent(event: Event, eventId: number, calendarId: number){
-        const response = await axios.post(`${this.baseUrl}events/edit?eventId=${eventId}?calendarId=${calendarId}`, event);
+        const response =
+            await axios.post(`${this.baseUrl}events/edit?eventId=${eventId}&calendarId=${calendarId}`, event);
         return response.data;
     }
 
