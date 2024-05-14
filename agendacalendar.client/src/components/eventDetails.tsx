@@ -75,22 +75,24 @@ const EventDetails = () => {
             5: 'fr',
             6: 'sa'
         };
-        return daysArray.map(day => daysMapping[day]);
+        return daysArray != null ? daysArray.map(day => daysMapping[day]) : [];
     }
 
     useEffect(()=>{
-        const recrule = selectedEvent._def.recurringDef ? selectedEvent._def.recurringDef.typeData.rruleSet._rrule[0].options : null;
-        let rrule = null;
+        if(selectedEvent) {
+            const recrule = selectedEvent._def.recurringDef ? selectedEvent._def.recurringDef.typeData.rruleSet._rrule[0].options : null;
+            let rrule = null;
 
-        if(recrule){
-            rrule = {
-                freq: convertFrequency(recrule.freq) ?? 'none',
-                interval: recrule.interval ?? 0,
-                byweekday: convertWeekdays(recrule.byweekday) ?? [''],
-                dtstart: recrule.dtstart ?? '',
-                until: recrule.until ?? new Date()
-            };
-            setReccurenceRule(rrule);
+            if (recrule) {
+                rrule = {
+                    freq: convertFrequency(recrule.freq) ?? 'none',
+                    interval: recrule.interval ?? 0,
+                    byweekday: convertWeekdays(recrule.byweekday) ?? [''],
+                    dtstart: recrule.dtstart ?? '',
+                    until: recrule.until ?? new Date()
+                };
+                setReccurenceRule(rrule);
+            }
         }
     },[selectedEvent]);
 
@@ -153,7 +155,7 @@ const EventDetails = () => {
     };
 
     const onDeleteHandle = async () => {
-        const eventId = selectedEvent.publicId;
+        const eventId = selectedEvent._def.publicId;
         const response = await eventService.deleteEvent(eventId);
 
         setShowEventDetails(false);
@@ -242,16 +244,16 @@ const EventDetails = () => {
     const formatRecurrencePattern = (recurrenceRule) => {
         const { freq, interval, byweekday, dtstart, until } = recurrenceRule;
 
-        let pattern = `Repeats ${interval} time(s) every `;
+        let pattern = `Repeats in ${interval} time(s) every `;
         switch (freq) {
             case 'daily':
-                pattern += 'day';
+                pattern += 'month';
                 break;
             case 'weekly':
                 pattern += 'week';
                 break;
             case 'monthly':
-                pattern += 'month';
+                pattern += 'day';
                 break;
             case 'yearly':
                 pattern += 'year';
@@ -457,7 +459,7 @@ const EventDetails = () => {
                                 </div>
                             )}
 
-                            {(reccurenceRule.freq !== 'none' || editingMode) && (
+                            {(reccurenceRule.freq !== 'none' || editingMode || !selectedEvent) && (
                                 <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     repeat

@@ -134,7 +134,7 @@ const ReccurecyRuleModal = ({setShowReccurenceModal, setReccurenceRule}) => {
                                 </div>
                             )}
 
-                            {repeatIntervalType !== 1 && (
+                            {repeatIntervalType !== 'daily' && (
                                 <div className="flex flex-col">
                                     <span className="text-gray-500 text-ms font-bold">Days of week:</span>
                                     <div className="flex flex-wrap justify-center">

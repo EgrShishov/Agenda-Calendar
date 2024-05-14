@@ -1,9 +1,11 @@
 import {EventService} from "../services/eventService.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useContext} from "react";
+import GlobalContext from "../context/globalContext.ts";
 
 const UpcomingEvents = () => {
 
     const eventService = new EventService();
+    const {events} = useContext(GlobalContext);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
 
     useEffect(() => {
@@ -18,7 +20,7 @@ const UpcomingEvents = () => {
         };
 
         fetchUpcomingEvents();
-    }, []);
+    }, [events]);
 
     const formatDate = (dateTimeString) => {
         const options = {
