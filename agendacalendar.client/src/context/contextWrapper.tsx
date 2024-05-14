@@ -6,14 +6,37 @@ import {UserService} from "../services/userService.ts";
 import {EventService} from "../services/eventService.ts";
 import {ReminderService} from "../services/reminderService.ts";
 
-const labelsClasses = [
+const allColors = [
     "indigo",
     "gray",
     "green",
     "blue",
     "red",
     "purple",
-    "orange"
+    "orange",
+    "cyan",
+    "magenta",
+    "yellow",
+    "lime",
+    "teal",
+    "pink",
+    "lavender",
+    "brown",
+    "olive",
+    "navy",
+    "maroon",
+    "black",
+    "white",
+    "gold",
+    "silver",
+    "coral",
+    "skyblue",
+    "violet",
+    "tan",
+    "orchid",
+    "salmon",
+    "seagreen",
+    "tomato"
 ];
 
 export default function ContextWrapper(props){
@@ -26,6 +49,9 @@ export default function ContextWrapper(props){
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([]);
 
+    const [labelsClasses, setLabelsClasses] = useState(allColors);
+    const [usedColors, setUsedColors] = useState([]); //used calendars and their colors
+
     const calendarService = new CalendarService();
     const userService = new UserService();
     const eventService = new EventService();
@@ -33,21 +59,25 @@ export default function ContextWrapper(props){
 
 
     useEffect(() => {
-        const fetchCalendars = async () => {
-            try {
-                const calendars = await calendarService.getCalendars();
-                setCalendarsList(calendars.map((calendar) => {
-                    return {
-                        calendar,
-                        checked: true
-                    }
-                }));
-            } catch (error) {
-                console.error('Error fetching calendars:', error);
-            }
-        };
-        fetchCalendars();
+        const availableColors = allColors.filter(color => !usedColors.includes(color));
     }, []);
+
+    useEffect(() => {
+    const fetchCalendars = async () => {
+        try {
+            const calendars = await calendarService.getCalendars();
+            setCalendarsList(calendars.map((calendar) => {
+                return {
+                    calendar,
+                    checked: true
+                }
+            }));
+        } catch (error) {
+            console.error('Error fetching calendars:', error);
+        }
+    };
+    fetchCalendars();
+}, []);
 
     useEffect(() => {
         if (!showEventDetails) {

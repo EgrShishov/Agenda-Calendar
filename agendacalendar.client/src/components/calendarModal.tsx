@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
 import {CalendarService} from "../services/calendarService.ts";
 import {CalendarModel} from "../models/calendarModel.ts";
+import {Button, Menu, MenuItem} from "@mui/material";
 
 
 const CalendarModal = () => {
@@ -19,7 +20,7 @@ const CalendarModal = () => {
     const [participants, setParticipants] = useState([]);
     const [email] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedLabel, setSelectedLabel] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
 
     const handleFileChanged = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -32,7 +33,7 @@ const CalendarModal = () => {
         const calendarModel: CalendarModel = {
             title: title,
             calendarDescription: description,
-            calendarColor: selectedLabel
+            calendarColor: selectedColor
         };
 
         const response = await calendarService.createCalendar(calendarModel);
@@ -51,6 +52,26 @@ const CalendarModal = () => {
 
         setShowCalendarModal(false);
     };
+
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleColorSelection = (color) => {
+        setSelectedColor(color);
+        setAnchorEl(null);
+    };
+
+    const colorRows = [];
+    for (let i = 0; i < labelsClasses.length; i += 2) {
+        colorRows.push(labelsClasses.slice(i, i + 2));
+    }
 
     return (
         <React.Fragment>
@@ -127,21 +148,54 @@ const CalendarModal = () => {
                                 </div>
 
                                 <div className="row-span-1 flex items-center">
-                                    {
-                                        labelsClasses.map((lblClass, i) => (
+                                    <Button
+                                        onClick={handleClick}
+                                        className="flex items-center border border-gray-300 px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    >
+                                        <span
+                                            className={"text-black/60 text-ms mx-3 font-semibold"}
+                                        >
+                                              Select a Color
+                                        </span>
+                                        <svg
+                                            className="-mr-1 ml-2 h-5 w-5 text-gray-400"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M6.293 7.293a1 1 0 011.414 0L10 9.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414zM7 5a1 1 0 100-2 1 1 0 000 2z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </Button>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleClose}
+                                    >
+                                        {labelsClasses.map((color, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                className={`mx-2 w-6 h-6 my-2`}
+                                                onClick={() => handleColorSelection(color)}
+                                                style={{
+                                                    backgroundColor: color,
+                                                }}
+                                            />
+                                        ))}
+                                    </Menu>
+                                    {selectedColor && (
+                                        <span className="text-gray-600 text-ms mx-3 font-semibold">
+                                            Selected color:
                                             <span
-                                                key={i}
-                                                onClick={() => setSelectedLabel(lblClass)}
-                                                className={`w-6 h-6 rounded-full mr-1.5 flex items-center justify-center cursor-pointer`}
-                                                style={{backgroundColor: lblClass}}
-                                            >
-                                            {selectedLabel === lblClass && (
-                                                <span className="material-icons-outlined text-white text-sm">
-                                                    check
-                                                </span>
-                                            )}
-                                        </span>))
-                                    }
+                                                className={`mx-2 w-6 h-6 rounded-full`}
+                                                style={{backgroundColor: selectedColor}}
+                                            />
+                                        </span>
+                                    )}
                                 </div>
 
                                 <button

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgendaCalendar.WEB_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a364d2c3f5e083ed1cef037629ae46b95360d631")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ae9014b5a39880a6959d2d93016c4fa26aa1de1")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgendaCalendar.WEB_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgendaCalendar.WEB_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
