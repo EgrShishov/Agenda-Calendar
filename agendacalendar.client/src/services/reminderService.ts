@@ -9,8 +9,8 @@ export class ReminderService{
 
     }
 
-    async createReminder(reminder: Reminder){
-        const response = await axios.post(`${this.baseUrl}reminder/create`, reminder);
+    async createReminder(reminder: Reminder, eventId:number){
+        const response = await axios.post(`${this.baseUrl}reminder/create?eventId=${eventId}`, reminder);
         return response.data;
     }
 

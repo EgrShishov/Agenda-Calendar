@@ -1,9 +1,21 @@
-import {useContext, useState} from "react";
+import React, {useContext, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
 import {ReminderService} from "../services/reminderService.ts";
 import {Reminder} from "../models/reminderModel.ts";
 import {DatePicker} from "react-nice-dates";
 import {enGB} from "date-fns/locale";
+import {Menu, TextField} from "@mui/material";
+import {makeStyles} from "@mui/styles";
+
+const useStyles = makeStyles({
+    menu: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    textField: {
+        marginRight: 8,
+    },
+});
 
 const ReminderModal = () => {
     const {setShowReminderModal} = useContext(GlobalContext)
@@ -19,19 +31,42 @@ const ReminderModal = () => {
     const [email, setEmail] = useState('');
     const [notificationInterval, setNotificationInterval] = useState(0);
 
+    const classes = useStyles();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [hours, setHours] = useState(0);
+    const [minutes, setMinutes] = useState(0);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleHoursChange = (event) => {
+        setHours(parseInt(event.target.value) || 0);
+    };
+
+    const handleMinutesChange = (event) => {
+        setMinutes(parseInt(event.target.value) || 0);
+    };
+
+    const getNotificationInterval = () => {
+        return `Repeat every ${hours.toString().padStart(2, '0')} hours ${minutes.toString().padStart(2, '0')} minutes`;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const eventId = 1;
+        const eventId = 0;
+        setNotificationInterval(hours * 60 + minutes);
         const reminder : Reminder = {
-            eventId: eventId,
             description: description,
             email: email,
-            reminderTime: new Date(reminderTime),
-            notificationInterval: {
-                ticks: notificationInterval
-            }
+            reminderTime: reminderTime,
+            notificationInterval: 10
         };
-        const response = await reminderService.createReminder(reminder);
+        const response = await reminderService.createReminder(reminder, eventId);
         setShowReminderModal(false);
         console.log(response);
     };
@@ -77,7 +112,7 @@ const ReminderModal = () => {
                                 <DatePicker
                                     date={reminderTime}
                                     onDateChange={handleReminderTimeChange}
-                                    format={"yyyy-MM-dd"}
+                                    format={"yyyy-MM-dd HH:mm"}
                                     locale={enGB}>
                                     {({inputProps, focused}) => (
                                         <input
@@ -101,7 +136,7 @@ const ReminderModal = () => {
                                 placeholder="Add email"
                                 value={email}
                                 required
-                                className="mx-3 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 w-full  mt-4"
+                                className="mx-3 border-b-2 border-gray-300 focus:outline-none w-full mt-4"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
@@ -110,16 +145,48 @@ const ReminderModal = () => {
                             <span className="material-icons-outlined text-black-65">
                                 subtitles
                             </span>
-                            <input
+                            {/*<input
                                 type="number"
+                                min={0}
                                 name="notifiactionInterval"
                                 placeholder="Add time"
                                 value={notificationInterval}
                                 required
                                 className="mx-3 border-0 text-gray-600 text-xl font-semibold pb-2
-                                w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                                w-full border-b-2 border-gray-200 focus:outline-none"
                                 onChange={(e) => setNotificationInterval(parseInt(e.target.value))}
-                            />
+                            />*/}
+                            <div className={"mx-3"}>
+                                <button onClick={handleClick}>
+                                    {getNotificationInterval()}
+                                </button>
+                                <Menu
+                                    id="notification-interval-menu"
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
+                                    className={classes.menu}
+                                >
+                                    <TextField
+                                        type="number"
+                                        inputProps={{min: 0, max: 23}}
+                                        value={hours}
+                                        onChange={handleHoursChange}
+                                        className={classes.textField}
+                                        label="Hours"
+                                        variant="outlined"
+                                    />
+                                    <TextField
+                                        type="number"
+                                        inputProps={{min: 0, max: 59}}
+                                        value={minutes}
+                                        onChange={handleMinutesChange}
+                                        className={classes.textField}
+                                        label="Minutes"
+                                        variant="outlined"
+                                    />
+                                </Menu>
+                            </div>
                         </div>
 
                         <button

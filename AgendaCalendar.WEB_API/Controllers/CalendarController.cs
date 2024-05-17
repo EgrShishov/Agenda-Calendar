@@ -5,6 +5,7 @@ using AgendaCalendar.Application.Events.Queries;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Calendars;
 using AgendaCalendar.WEB_API.Extensions;
+using Hangfire;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -29,8 +30,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<ActionResult<IEnumerable<Event>>> GetCalendars()
         {
             int userId = User.GetUserId();
+            var jobId = BackgroundJob.Enqueue(() => Console.WriteLine("Welcome to Shopping World!"));
             var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
-
             List<Event> events = new List<Event>();
             List<Event> upcomingEvents = new List<Event>();
             string icalEvents = string.Empty;
@@ -63,7 +64,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             int userId = User.GetUserId();
             var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
             return userCalendarsResult.Match(
-                userCalendarResult => Ok(_mapper.Map<List<CalendarResponse>>(userCalendarResult)),
+                calendars => Ok(_mapper.Map<List<CalendarResponse>>(calendars)),
                 errors => Problem(errors));
         } 
 
@@ -101,7 +102,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var calendarImportResult = await _mediator.Send(new ImportCalendarCommand(calendar_bytes, id));
 
             return calendarImportResult.Match(
-                calendarImportResult => Ok(_mapper.Map<CalendarResponse>(calendarImportResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
@@ -115,7 +116,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var createCalendarResult = await _mediator.Send(command);
 
             return createCalendarResult.Match(
-                crateCalendarResult => Ok(_mapper.Map<CalendarResponse>(createCalendarResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
@@ -127,7 +128,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var editCalendarResult = await _mediator.Send(command);
 
             return editCalendarResult.Match(
-                editCalendarResult => Ok(_mapper.Map<CalendarResponse>(editCalendarResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
@@ -139,7 +140,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var calendarDeleteResult = await _mediator.Send(new DeleteCalendarCommand(id));
 
             return calendarDeleteResult.Match(
-                _ => Ok(_mapper.Map<CalendarResponse>(calendarDeleteResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
@@ -150,7 +151,7 @@ namespace AgendaCalendar.WEB_API.Controllers
 
             var subscribeCalendarResult = await _mediator.Send(new SubscribeToCalendarCommand(userId, id));
             return subscribeCalendarResult.Match(
-                subscribeCalendarResult => Ok(_mapper.Map<CalendarResponse>(subscribeCalendarResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
@@ -161,7 +162,7 @@ namespace AgendaCalendar.WEB_API.Controllers
 
             var subscribeCalendarResult = await _mediator.Send(new UnsubscribeFromCalendarCommand(userId, id));
             return subscribeCalendarResult.Match(
-                subscribeCalendarResult => Ok(_mapper.Map<CalendarResponse>(subscribeCalendarResult)),
+                calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 

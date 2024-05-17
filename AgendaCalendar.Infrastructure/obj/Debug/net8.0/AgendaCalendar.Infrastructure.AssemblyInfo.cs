@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a364d2c3f5e083ed1cef037629ae46b95360d631")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b12d0d9c0eddbb7e76b1aca46b9f94e36fd2965f")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgendaCalendar.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -35,7 +35,7 @@ const EventDetails = () => {
     };
 
 
-    const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
+    const [title, setTitle] = useState(selectedEvent ? (selectedEvent.title? selectedEvent.title : '') : '');
     const [description, setDescription] =
         useState(selectedEvent ?
             (selectedEvent.extendedProps.description ? selectedEvent.extendedProps.description : '') : '');
@@ -98,7 +98,8 @@ const EventDetails = () => {
 
     const [startTime, setStartTime] = useState(selectedEvent ? selectedEvent.start : new Date());
     const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.end : new Date());
-    const [location, setLocation] = useState(selectedEvent ? selectedEvent.extendedProps.resourceId : '');
+    const [location, setLocation] = useState(selectedEvent ?
+        (selectedEvent.extendedProps.resourceId ? selectedEvent.extendedProps.resourceId : '') : '');
 
     const [isAllDay, setIsAllDay] = useState(false);
 
@@ -288,7 +289,8 @@ const EventDetails = () => {
             <div className="my-14 w-full fixed h-screen flex justify-center items-center rounded-xl z-10">
                 <form className="bg-white my-3 fixed w-4/12 h-fit rounded-xl shadow-2xl">
                     <header className={`rounded-t-xl px-4 py-2.5 flex justify-between items-center`}
-                    style={{ backgroundColor: bgColor }}>
+                        style={{ backgroundColor: selectedCalendar ? selectedCalendar.calendar.calendarColor :
+                                (selectedEvent ? selectedEvent.backgroundColor : 'orange') }}>
                       <span className="material-icons-outlined text-black-400">
                         drag_handle
                       </span>
@@ -360,14 +362,14 @@ const EventDetails = () => {
                                                 <DatePicker
                                                     date={startTime}
                                                     onDateChange={startDateChanged}
-                                                    format={"yyyy-MM-dd"}
+                                                    format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
                                                     {({inputProps, focused}) => (
                                                         <input
                                                             className={'input' + (focused ? ' -focused' : '')}
                                                             {...inputProps}
                                                             style={{backgroundColor: "transparent"}}
-                                                            placeholder="Select start time"
+                                                            placeholder="Select start date & time"
                                                         />
                                                     )}
                                                 </DatePicker>
@@ -379,14 +381,14 @@ const EventDetails = () => {
                                                 <DatePicker
                                                     date={endTime}
                                                     onDateChange={endDateChanged}
-                                                    format={"yyyy-MM-dd"}
+                                                    format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
                                                     {({inputProps, focused}) => (
                                                         <input
                                                             className={'input' + (focused ? ' -focused' : '')}
                                                             {...inputProps}
                                                             style={{backgroundColor: "transparent"}}
-                                                            placeholder="Select end time"
+                                                            placeholder="Select end date & time"
                                                         />
                                                     )}
                                                 </DatePicker>
@@ -408,7 +410,7 @@ const EventDetails = () => {
                                     </div>
                                 ) : (
                                     <span className="mx-3 text-gary-400 text-ms font-medium">
-                                        {startTime.toString()} - {startTime.toString()}
+                                        {startTime.toString()} - {endTime && (endTime.toString())}
                                     </span>
                                 )}
                             </div>
@@ -436,7 +438,7 @@ const EventDetails = () => {
                                 )}
                             </div>
 
-                            {(location || editingMode) && (
+                            {(location != '' || editingMode) && (
                                 <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     location_on
@@ -515,7 +517,7 @@ const EventDetails = () => {
                                 <span className="material-icons-outlined text-black-65">
                                     calendar_today
                                 </span>
-                                {(!selectedEvent || editingMode) ? (
+                                {(!selectedEvent) ? (
                                     <div className="flex gap-x-2 mx-3">
                                         <select value={selectedCalendar ? selectedCalendar.id : ''}
                                                 onChange={handleCalendarChange}
@@ -541,12 +543,14 @@ const EventDetails = () => {
                                     </span>
                                 )}
                             </div>
-
+                            
                             {!selectedEvent && (
                                 <button
                                     type="submit"
                                     onClick={handleSubmit}
-                                    className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                    style={{ backgroundColor: selectedCalendar ? selectedCalendar.calendar.calendarColor :
+                                            (selectedEvent ? selectedEvent.backgroundColor : 'orange') }}
+                                    className="hover:bg-black/60 px-6 py-2 rounded text-black
                                             hover:scale-105 transition ease-out duration-200 transform"
                                 >
                                     Add new event
@@ -557,14 +561,18 @@ const EventDetails = () => {
                                     <button
                                         type="submit"
                                         onClick={handleSubmit}
-                                        className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                        style={{ backgroundColor: selectedCalendar ? selectedCalendar.calendar.calendarColor :
+                                                (selectedEvent ? selectedEvent.backgroundColor : 'orange') }}
+                                        className="hover:bg-black/60 px-6 py-2 rounded text-black
                                             hover:scale-105 transition ease-out duration-200 transform"
                                     >
                                         Save changes
                                     </button>
                                     <button
                                         onClick={handleDiscard}
-                                        className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                        style={{ backgroundColor: selectedCalendar ? selectedCalendar.calendar.calendarColor :
+                                                (selectedEvent ? selectedEvent.backgroundColor : 'orange') }}
+                                        className="hover:bg-black/60 px-6 py-2 rounded text-black
                                                 hover:scale-105 transition ease-out duration-200 transform"
                                     >
                                         Discard

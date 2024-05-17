@@ -2,23 +2,20 @@
 using Hangfire;
 using MediatR;
 
-namespace AgendaCalendar.Infrastructure.Hangfire
+namespace AgendaCalendar.Infrastructure.Background
 {
-    public class HangfireBackgroundJobService
+    public class BackgroundJobSettings
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMediator _mediator;
-        public HangfireBackgroundJobService(IUnitOfWork unitOfWork, IMediator mediator)
+
+        public BackgroundJobSettings(IUnitOfWork unitOfWork, IMediator mediator)
         {
+            Console.WriteLine("Mama");
             _unitOfWork = unitOfWork;
             _mediator = mediator;
-            Console.WriteLine("Hangfire background job service started...");
-        }
 
-        public void ScheduleReminderJob(Reminder reminder)
-        {
-            RecurringJob.AddOrUpdate("my-recurring-job",() => CheckRemindersForSending(), Cron.MinuteInterval(1));
-            Console.WriteLine("sended");
+            RecurringJob.AddOrUpdate("CheckingReminder", () => CheckRemindersForSending(), Cron.MinuteInterval(1));
         }
 
         public async Task<IReadOnlyList<Reminder>> CheckRemindersForSending()

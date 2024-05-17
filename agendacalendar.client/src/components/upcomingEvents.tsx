@@ -13,6 +13,7 @@ const UpcomingEvents = () => {
             try{
                 const events = await eventService.getUpcoming();
                 setUpcomingEvents(events);
+                console.log(events);
             }
             catch(error){
                 console.error(error);

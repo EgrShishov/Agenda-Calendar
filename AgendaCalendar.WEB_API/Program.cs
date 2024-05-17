@@ -1,6 +1,7 @@
 using AgendaCalendar.Application;
 using AgendaCalendar.Infrastructure;
 using AgendaCalendar.WEB_API;
+using Hangfire;
 
 var MyAllowSpecificOrigins = "AllowAll";
 
@@ -27,6 +28,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddBackgroundJob(builder.Configuration);
 
 var app = builder.Build();
 
@@ -40,4 +42,5 @@ app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseHangfireDashboard();
 app.Run();

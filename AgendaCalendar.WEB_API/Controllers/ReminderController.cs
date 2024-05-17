@@ -19,13 +19,13 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateReminder(CreateReminderRequest request)
+        public async Task<IActionResult> CreateReminder(CreateReminderRequest request, int eventId)
         {
-            var command = _mapper.Map<AddReminderCommand>(request);
+            var command = _mapper.Map<AddReminderCommand>((request, eventId));
             var createReminderResult = await _mediator.Send(command);
 
             return createReminderResult.Match(
-                createReminderResult => Ok(_mapper.Map<ReminderResponse>(createReminderResult)),
+                reminder => Ok(_mapper.Map<ReminderResponse>(reminder)),
                 errors => Problem(errors));
         }
 
@@ -34,7 +34,7 @@ namespace AgendaCalendar.WEB_API.Controllers
         {
             var deleteReminderResult = await _mediator.Send(new DeleteReminderCommand(id));
             return deleteReminderResult.Match(
-                deleteReminderResult => Ok(_mapper.Map<ReminderResponse>(deleteReminderResult)),
+                reminder => Ok(_mapper.Map<ReminderResponse>(reminder)),
                 errors => Problem(errors));
         }
 
@@ -45,7 +45,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var editReminderResult = await _mediator.Send(command);
 
             return editReminderResult.Match(
-                editReminderResult => Ok(_mapper.Map<ReminderResponse>(editReminderResult)),
+                reminder => Ok(_mapper.Map<ReminderResponse>(reminder)),
                 errors => Problem(errors));
         }
     }

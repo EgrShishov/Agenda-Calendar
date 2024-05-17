@@ -23,10 +23,10 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
 
             config.NewConfig<Calendar, CalendarResponse>()
                 .Map(dest => dest.id, src => src.Id)
-                .Map(dest => dest.AuthorId, src => src.AuthorId)
-                .Map(dest => dest.Title, src => src.Title)
-                .Map(dest => dest.CalendarDescription, src => src.CalendarDescription)
-                .Map(dest => dest.CalendarColor, src => src.CalendarColor);
+                .Map(dest => dest.authorId, src => src.AuthorId)
+                .Map(dest => dest.title, src => src.Title)
+                .Map(dest => dest.calendarDescription, src => src.CalendarDescription)
+                .Map(dest => dest.calendarColor, src => src.CalendarColor);
         }
     }
 }

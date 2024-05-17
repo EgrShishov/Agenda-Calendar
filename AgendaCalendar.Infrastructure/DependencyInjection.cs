@@ -14,7 +14,9 @@ using Microsoft.AspNetCore.Identity;
 using Hangfire;
 using Hangfire.PostgreSql;
 using AgendaCalendar.Infrastructure.Authorization;
-using AgendaCalendar.Infrastructure.Hangfire;
+using AgendaCalendar.Infrastructure.Background;
+using AgendaCalendar.Application.Reminders.Commands;
+using Microsoft.Extensions.Hosting;
 
 namespace AgendaCalendar.Infrastructure
 {
@@ -41,7 +43,6 @@ namespace AgendaCalendar.Infrastructure
 
         public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-            Console.WriteLine(configuration.GetConnectionString("AgendaCalendarDb"));
             services.AddPersistence()
                     .AddDbContext<AppDbContext>(
                         options =>
@@ -91,8 +92,11 @@ namespace AgendaCalendar.Infrastructure
         public static IServiceCollection AddBackgroundJob(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHangfire(conf => conf.UsePostgreSqlStorage(configuration.GetConnectionString("HangfireDb")))
-                    .AddScoped<HangfireBackgroundJobService>()
                     .AddHangfireServer();
+
+            services.AddScoped<BackgroundJobSettings>();
+            services.AddSingleton<IHostedService, RecurringJobHostedService>();
+
             return services;
         }
 

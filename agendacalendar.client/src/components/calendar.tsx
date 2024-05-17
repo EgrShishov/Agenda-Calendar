@@ -39,18 +39,24 @@ const Calendar = () => {
 [events]);
     
     return (
-        <div className="container max-w-screen-ms max-h-screen-md mt-4">
-            <FullCalendar
-                ref={calendarRef}
-                plugins={[dayGridPlugin, timeGridPlugin, bootstrap5Plugin, rrulePlugin]}
-                initialView="dayGridMonth"
-                firstDay={1}
-                headerToolbar={false}
-                height={630}
-                events={filteredEvents}
-                eventClick={onEventClickHandler}
-            />
-        </div>
+        events ? (
+            <div className="container max-w-screen-ms max-h-screen-md mt-4">
+                <FullCalendar
+                    ref={calendarRef}
+                    plugins={[dayGridPlugin, timeGridPlugin, bootstrap5Plugin, rrulePlugin]}
+                    initialView="dayGridMonth"
+                    firstDay={1}
+                    headerToolbar={false}
+                    height={630}
+                    events={filteredEvents}
+                    eventClick={onEventClickHandler}
+                />
+            </div>
+        ) : (
+            <div>
+                Loading calendar
+            </div>
+        )
     );
 };
 

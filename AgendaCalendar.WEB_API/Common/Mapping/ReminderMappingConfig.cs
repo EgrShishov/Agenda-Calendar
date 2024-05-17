@@ -9,19 +9,19 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<CreateReminderRequest, AddReminderCommand>()
-                .Map(dest => dest.desc, src => src.Description)
-                .Map(dest => dest.emailAdress, src => src.Email)
+            config.NewConfig<(CreateReminderRequest request, int eventId), AddReminderCommand>()
+                .Map(dest => dest.desc, src => src.request.Description)
+                .Map(dest => dest.emailAdress, src => src.request.Email)
                 .Map(dest => dest.eventId, src => src.eventId)
-                .Map(dest => dest.time, src => src.ReminderTime)
-                .Map(dest => dest.interval, src => src.NotificationInterval);
+                .Map(dest => dest.time, src => src.request.ReminderTime)
+                .Map(dest => dest.interval, src => TimeSpan.FromMinutes(src.request.NotificationInterval));
 
-            config.NewConfig<(EditReminderRequest request, int reminderId), UpdateReminderCommand>()
+            config.NewConfig<(EditReminderRequest request, int eventId), UpdateReminderCommand>()
                 .Map(dest => dest.Description, src => src.request.Description)
                 .Map(dest => dest.Email, src => src.request.Email)
-                .Map(dest => dest.EventId, src => src.request.EventId)
+                .Map(dest => dest.EventId, src => src.eventId)
                 .Map(dest => dest.ReminderTime, src => src.request.ReminderTime)
-                .Map(dest => dest.NotificationInterval, src => src.request.NotificationInterval);
+                .Map(dest => dest.NotificationInterval, src => TimeSpan.FromMinutes(src.request.NotificationInterval));
 
             config.NewConfig<Reminder, ReminderResponse>();
         }

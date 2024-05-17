@@ -40,6 +40,7 @@ const allColors = [
 ];
 
 export default function ContextWrapper(props){
+
     const calendarRef = useRef(null);
     const [calendarsList, setCalendarsList] = useState([]);
     const [events, setEvents] = useState([]);
@@ -60,24 +61,31 @@ export default function ContextWrapper(props){
 
     useEffect(() => {
         const availableColors = allColors.filter(color => !usedColors.includes(color));
-    }, []);
+        setLabelsClasses(availableColors);
+    }, [usedColors]);
 
     useEffect(() => {
-    const fetchCalendars = async () => {
-        try {
-            const calendars = await calendarService.getCalendars();
-            setCalendarsList(calendars.map((calendar) => {
-                return {
-                    calendar,
-                    checked: true
-                }
-            }));
-        } catch (error) {
-            console.error('Error fetching calendars:', error);
-        }
-    };
-    fetchCalendars();
-}, []);
+        const fetchCalendars = async () => {
+            try {
+                const calendars = await calendarService.getCalendars();
+                setCalendarsList(calendars.map((calendar) => {
+                    return {
+                        calendar,
+                        checked: true
+                    }
+                }));
+
+                const usedColors = calendars.map(calendar => calendar.calendarColor);
+                setUsedColors(usedColors);
+
+                console.log(usedColors);
+
+            } catch (error) {
+                console.error('Error fetching calendars:', error);
+            }
+        };
+        fetchCalendars();
+    },[]);
 
     useEffect(() => {
         if (!showEventDetails) {
@@ -86,8 +94,6 @@ export default function ContextWrapper(props){
     }, [showEventDetails]);
 
     function updateLabel(obj){
-        console.log(obj);
-        console.table(calendarsList);
         setCalendarsList(calendarsList.map((calobj) =>  {
                 const calendarLabel = {
                     label: calobj.calendar.calendarColor,

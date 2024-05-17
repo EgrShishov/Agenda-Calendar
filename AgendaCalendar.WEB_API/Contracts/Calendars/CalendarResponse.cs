@@ -2,8 +2,8 @@
 {
     public record CalendarResponse(
         int id,
-        int AuthorId,
-        string Title,
-        string CalendarColor,
-        string CalendarDescription);
+        int authorId,
+        string title,
+        string calendarColor,
+        string calendarDescription);
 }

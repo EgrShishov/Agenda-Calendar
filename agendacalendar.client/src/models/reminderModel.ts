@@ -4,7 +4,5 @@ export interface Reminder {
     description: string,
     email: string
     reminderTime: Date,
-    notificationInterval: {
-        ticks: number
-    }
+    notificationInterval: number
 }

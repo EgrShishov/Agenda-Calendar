@@ -40,7 +40,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             ));
 
             return createEventResult.Match(
-                createEventResult => Ok(_mapper.Map<EventResponse>(createEventResult)),
+                created => Ok(_mapper.Map<EventResponse>(created)),
                 errors => Problem(errors));
         }
 
@@ -53,7 +53,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var editEventResult = await _mediator.Send(command);
 
             return editEventResult.Match(
-                editEventResult => Ok(_mapper.Map<EventResponse>(editEventResult)),
+                newEvent => Ok(_mapper.Map<EventResponse>(newEvent)),
                 errors => Problem(errors));
         }
 
@@ -63,7 +63,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var deleteEventResult = await _mediator.Send(new DeleteEventCommand(id));
 
             return deleteEventResult.Match(
-                deleteEventResult => Ok(_mapper.Map<EventResponse>(deleteEventResult)),
+                deletedEvent => Ok(_mapper.Map<EventResponse>(deletedEvent)),
                 errors => Problem(errors));
         }
 
@@ -76,7 +76,7 @@ namespace AgendaCalendar.WEB_API.Controllers
             var upcomingEventsResult = await _mediator.Send(new UpcomingEventsQuery(userId, amount));
 
             return upcomingEventsResult.Match(
-                upcomingEventsResult => Ok(_mapper.Map<List<EventResponse>>(upcomingEventsResult)),
+                upcoming => Ok(_mapper.Map<List<EventResponse>>(upcoming)),
                 errors => Problem(errors));
         }
     }

@@ -37,6 +37,7 @@ const CalendarModal = () => {
         };
 
         const response = await calendarService.createCalendar(calendarModel);
+        console.log(response);
         calendarsList.push({calendar: response, checked: true});
         setCalendarsList(calendarsList);
 
