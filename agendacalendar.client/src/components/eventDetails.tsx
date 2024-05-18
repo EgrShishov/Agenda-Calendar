@@ -7,7 +7,77 @@ import {DatePicker} from 'react-nice-dates'
 import 'react-nice-dates/build/style.css';
 import {Button, MenuItem, Menu} from '@mui/material';
 import ReccurecyRuleModal from "./reccurecyRuleModal.tsx";
-import {format, isToday} from 'date-fns';
+import {format} from 'date-fns';
+
+const formatDate = (dateString) => {
+    return format(new Date(dateString), 'MMMM d, yyyy');
+};
+
+const formatWeekdays = (byweekday) => {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return byweekday.map((day, idx) => daysOfWeek[idx]).join(', ');
+};
+
+const formatRecurrencePattern = (recurrenceRule) => {
+    const { freq, interval, byweekday, dtstart, until } = recurrenceRule;
+
+    let pattern = `Repeats in ${interval} time(s) every `;
+    switch (freq) {
+        case 'daily':
+            pattern += 'month';
+            break;
+        case 'weekly':
+            pattern += 'week';
+            break;
+        case 'monthly':
+            pattern += 'day';
+            break;
+        case 'yearly':
+            pattern += 'year';
+            break;
+        default:
+            pattern += freq;
+            break;
+    }
+
+    if (byweekday && byweekday.length > 0) {
+        pattern += `, on ${formatWeekdays(byweekday)}`;
+    }
+    pattern += `, starting from ${formatDate(dtstart)}`;
+
+    if (until) {
+        pattern += `, ending on ${formatDate(until)}`;
+    }
+    return pattern;
+};
+
+function convertFrequency(freq){
+    switch(freq){
+        case 0:
+            return 'none';
+        case 1:
+            return 'daily';
+        case 2:
+            return 'weekly';
+        case 3:
+            return 'monthly';
+        case 4:
+            return 'yearly';
+    }
+}
+
+function convertWeekdays(daysArray){
+    const daysMapping = {
+        0: 'su',
+        1: 'mo',
+        2: 'tu',
+        3: 'we',
+        4: 'th',
+        5: 'fr',
+        6: 'sa'
+    };
+    return daysArray != null ? daysArray.map(day => daysMapping[day]) : [];
+}
 
 const EventDetails = () => {
     const {
@@ -19,8 +89,6 @@ const EventDetails = () => {
         setShowEventDetails,
         calendarsList
     } = useContext(GlobalContext);
-
-    console.log('event details', selectedEvent);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -49,34 +117,6 @@ const EventDetails = () => {
     }
 
     const [reccurenceRule, setReccurenceRule] = useState(emptyReccurenceRule);
-
-    function convertFrequency(freq){
-        switch(freq){
-            case 0:
-                return 'none';
-            case 1:
-                return 'daily';
-            case 2:
-                return 'weekly';
-            case 3:
-                return 'monthly';
-            case 4:
-                return 'yearly';
-        }
-    }
-
-    function convertWeekdays(daysArray){
-        const daysMapping = {
-            0: 'su',
-            1: 'mo',
-            2: 'tu',
-            3: 'we',
-            4: 'th',
-            5: 'fr',
-            6: 'sa'
-        };
-        return daysArray != null ? daysArray.map(day => daysMapping[day]) : [];
-    }
 
     useEffect(()=>{
         if(selectedEvent) {
@@ -120,9 +160,7 @@ const EventDetails = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log(reccurenceRule);
-
-        const calendarEvent: Event = {
+        const calendarEvent : Event = {
             title: title,
             description: description,
             startTime: startTime,
@@ -142,14 +180,7 @@ const EventDetails = () => {
         {
             const eventId = selectedEvent._def.publicId;
             const calendarId = selectedEvent._def.extendedProps.calendarId;
-
-            /*selectedEvent.setProp('title', title);
-            selectedEvent.setExtendedProp('description', description);
-            selectedEvent.setStart(new Date(startTime));
-            selectedEvent.setEnd(new Date(endTime));*/
-
             const response = await eventService.editEvent(calendarEvent, eventId, calendarId);
-            console.log(response);
         }
 
         setShowEventDetails(false);
@@ -233,50 +264,6 @@ const EventDetails = () => {
         handleClose();
     };
 
-    const formatDate = (dateString) => {
-        return format(new Date(dateString), 'MMMM d, yyyy');
-    };
-
-    const formatWeekdays = (byweekday) => {
-        console.log(byweekday);
-        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return byweekday.map((day, idx) => daysOfWeek[idx]).join(', ');
-    };
-
-    const formatRecurrencePattern = (recurrenceRule) => {
-        const { freq, interval, byweekday, dtstart, until } = recurrenceRule;
-
-        let pattern = `Repeats in ${interval} time(s) every `;
-        switch (freq) {
-            case 'daily':
-                pattern += 'month';
-                break;
-            case 'weekly':
-                pattern += 'week';
-                break;
-            case 'monthly':
-                pattern += 'day';
-                break;
-            case 'yearly':
-                pattern += 'year';
-                break;
-            default:
-                pattern += freq;
-                break;
-        }
-
-        if (byweekday && byweekday.length > 0) {
-            pattern += `, on ${formatWeekdays(byweekday)}`;
-        }
-        pattern += `, starting from ${formatDate(dtstart)}`;
-
-        if (until) {
-            pattern += `, ending on ${formatDate(until)}`;
-        }
-        return pattern;
-    };
-
-
     return (
         <React.Fragment>
             {
@@ -329,7 +316,7 @@ const EventDetails = () => {
                             </span>
                                 <div>
                                     {(editingMode || !selectedEvent) ? (
-                                        <input
+                                       <input
                                             type="text"
                                             name="title"
                                             placeholder="Add title"
@@ -337,7 +324,9 @@ const EventDetails = () => {
                                             required
                                             className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
                                     w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                                            onChange={(e) => setTitle(e.target.value)}
+                                            onChange={(e) => {
+                                                setTitle(e.target.value);
+                                            }}
                                         />
                                     ) : (
                                         <span
@@ -362,7 +351,7 @@ const EventDetails = () => {
                                             <div style={{position: 'relative', maxHeight: '300px'}}>
                                                 <DatePicker
                                                     date={startTime}
-                                                    minimumDate={Date.now()}
+                                                    minimumDate={ !editingMode ? Date.now() : startTime }
                                                     onDateChange={startDateChanged}
                                                     format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
@@ -382,7 +371,7 @@ const EventDetails = () => {
                                             <div style={{position: 'relative', maxHeight: '200px'}}>
                                                 <DatePicker
                                                     date={endTime}
-                                                    minimumDate={Date.now()}
+                                                    minimumDate={!editingMode ? Date.now() : endTime }
                                                     onDateChange={endDateChanged}
                                                     format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
@@ -441,7 +430,7 @@ const EventDetails = () => {
                                 )}
                             </div>
 
-                            {(location != '' || editingMode) && (
+                            {(location || editingMode) && (
                                 <div className="row-span-1 flex items-center">
                                 <span className="material-icons-outlined text-black-65">
                                     location_on
@@ -546,7 +535,7 @@ const EventDetails = () => {
                                     </span>
                                 )}
                             </div>
-                            
+
                             {!selectedEvent && (
                                 <button
                                     type="submit"

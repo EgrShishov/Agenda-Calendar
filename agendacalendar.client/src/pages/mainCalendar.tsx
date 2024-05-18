@@ -20,7 +20,7 @@ const MainCalendar = () => {
 
             <div className="h-screen w-full flex flex-col">
                 <CalendarHeader />
-                <div className="flex-1 grid grid-cols-6">
+                <div className=" h-screen grid grid-cols-6">
                     <div className="col-span-1 item-center">
                         <Sidebar/>
                     </div>

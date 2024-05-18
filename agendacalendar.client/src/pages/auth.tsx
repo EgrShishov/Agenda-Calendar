@@ -106,11 +106,22 @@ const Auth = () => {
     };
 
     const handleSignup = async () => {
+        if (password !== passwordConfirmation) {
+            setErrorMessage('Passwords do not match.');
+            return;
+        }
+
+        console.log(!passwordRegex.test(password))
+        if (!passwordRegex.test(password)) {
+            setErrorMessage('Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.');
+            return;
+        }
+
         try{
             const response = await userService.register({
-                username: username, //handle that userName is already exist
+                username: username,
                 birthdayDate: new Date(birthdayDate),
-                email: email, //handle that email is already exist
+                email: email,
                 password: password //validate stretgh of password
             });
 
@@ -156,6 +167,9 @@ const Auth = () => {
     const handleOnError = () => {
         setErrorMessage('Google OAuth error');
     };
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
 
     return(
         <div className="w-full h-screen flex items-start bg-transperent">

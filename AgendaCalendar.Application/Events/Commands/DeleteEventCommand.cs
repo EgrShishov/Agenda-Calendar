@@ -21,7 +21,7 @@ namespace AgendaCalendar.Application.Events.Commands
 
             var reminders = await unitOfWork.ReminderRepository.ListAsync(r => r.EventId == @event.Id);
 
-            if (reminders is not null)
+            if (reminders.Any())
             {
                 var event_reminder = reminders.First();
                 await unitOfWork.ReminderRepository.DeleteAsync(event_reminder.Id);
