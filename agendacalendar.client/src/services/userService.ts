@@ -11,16 +11,16 @@ export class UserService{
     async register(model: any){
         const response = await axios.post(`${this.baseUrl}account/register`,
             model);
-        return response.data;
+        return response;
     }
 
     async login(model: any){
         const response = await axios.post(`${this.baseUrl}account/login`, model);
-        return response.data;
+        return response;
     }
 
     async logout(){
-        localStorage.removeItem('user');
+
     }
 
 }

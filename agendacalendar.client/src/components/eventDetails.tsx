@@ -7,7 +7,7 @@ import {DatePicker} from 'react-nice-dates'
 import 'react-nice-dates/build/style.css';
 import {Button, MenuItem, Menu} from '@mui/material';
 import ReccurecyRuleModal from "./reccurecyRuleModal.tsx";
-import { format } from 'date-fns';
+import {format, isToday} from 'date-fns';
 
 const EventDetails = () => {
     const {
@@ -210,6 +210,7 @@ const EventDetails = () => {
     const endDateChanged = (newTime) => {
         const parsedEndTime = new Date(newTime);
         const parsedStartTime = new Date(startTime);
+        const now = new Date();
 
         if (parsedEndTime.getTime() < parsedStartTime.getTime()) {
             const newStartTime = new Date(parsedEndTime);
@@ -361,6 +362,7 @@ const EventDetails = () => {
                                             <div style={{position: 'relative', maxHeight: '300px'}}>
                                                 <DatePicker
                                                     date={startTime}
+                                                    minimumDate={Date.now()}
                                                     onDateChange={startDateChanged}
                                                     format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
@@ -380,6 +382,7 @@ const EventDetails = () => {
                                             <div style={{position: 'relative', maxHeight: '200px'}}>
                                                 <DatePicker
                                                     date={endTime}
+                                                    minimumDate={Date.now()}
                                                     onDateChange={endDateChanged}
                                                     format={"yyyy-MM-dd HH:mm"}
                                                     locale={enGB}>
@@ -523,7 +526,7 @@ const EventDetails = () => {
                                                 onChange={handleCalendarChange}
                                                 className="px-2 py-1 rounded border bg-white">
                                             {!selectedEvent && (
-                                                <option value="">Select Calendar</option>
+                                                <option value="" disabled>Select Calendar</option>
                                             )}
                                             {calendarsList.map(calendar => (
                                                 <option

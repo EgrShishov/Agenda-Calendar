@@ -3,11 +3,14 @@ import {useNavigate} from "react-router-dom";
 import {useCookies} from "react-cookie";
 import {GoogleAuthService} from "../services/googleAuthService.ts";
 import {UserService} from "../services/userService.ts";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import { enGB } from 'date-fns/locale'
 import {DatePicker} from 'react-nice-dates'
 import 'react-nice-dates/build/style.css';
-import GlobalContext from "../context/globalContext.ts";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+let errorToastId = null;
 
 const Auth = () => {
     const gifs = [
@@ -21,6 +24,14 @@ const Auth = () => {
         '../../public/gifs/clocks10.gif',
         '../../public/gifs/clocks8.gif',
     ]
+
+    useEffect(() => {
+        return () => {
+            if (errorToastId) {
+                toast.dismiss(errorToastId);
+            }
+        };
+    }, []);
 
     const [curIndex, setCurIndex] = useState(0);
     const [gifElement, setGifElement] = useState(gifs[curIndex]);
@@ -41,6 +52,8 @@ const Auth = () => {
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [birthdayDate, setBirthdayDate] = useState('');
 
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const ChangeGif = () => {
         const newIndex = (curIndex + 1) % gifs.length;
         setCurIndex(newIndex)
@@ -52,39 +65,96 @@ const Auth = () => {
         return () => clearInterval(intervalId);
     }, [curIndex]);
 
-    const handleLogin = async () => {
-        const response = await userService.login({
-            email: email,
-            password: password
+    useEffect(() => {
+        if (errorToastId) {
+            toast.dismiss(errorToastId);
+        }
+        toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+            limit: 1
         });
-        if(response) {
-            Redirect('/u');
+    }, [errorMessage]);
+
+    const handleLogin = async () => {
+        try {
+            const response = await userService.login({
+                email: email,
+                password: password
+            });
+
+            if (response.status === 200) {
+                Redirect('/u');
+            } else {
+                console.log('error');
+            }
+        } catch (error) {
+            const errorData = error.response.data;
+            if (errorData.status === 401 && errorData.title === 'Invalid credentials.') {
+                setErrorMessage('Wrong username or password');
+            } else if (errorData.status === 404 && errorData.errorCodes.includes('User.NotFound')) {
+                setErrorMessage('Cannot find user with given credentials');
+            } else {
+                setErrorMessage('Unexpected server error');
+            }
         }
     };
-    const handleSignup = async () => {
-        //check for passwords, form validation
 
-        const response = await userService.register({
-            username: username, //handle that userName is already exist
-            birthdayDate: new Date(birthdayDate),
-            email: email, //handle that email is already exist
-            password: password //validate stretgh of password
-        });
-        console.log(response);
-        if(response){
-            Redirect('/u');
+    const handleSignup = async () => {
+        try{
+            const response = await userService.register({
+                username: username, //handle that userName is already exist
+                birthdayDate: new Date(birthdayDate),
+                email: email, //handle that email is already exist
+                password: password //validate stretgh of password
+            });
+
+            if(response.status === 200){
+                Redirect('/u');
+            } else {
+                console.log('error');
+            }
+        } catch(error){
+            const errorData = error.response.data;
+            if (errorData.status === 409 && errorData.errorCodes.includes('User.DuplicateEmail')) {
+                setErrorMessage('Email already in use');
+            } else if(errorData.status === 409 &&errorData.errorCodes.includes('User.DuplicateUsername')) {
+                setErrorMessage('User with given username already exist');
+            } else {
+                setErrorMessage(errorData);
+            }
         }
     };
 
     const handleOnSuccess = async (credentialResponse) => {
-        const result = await googleAuthService.auth(credentialResponse.credential)
-        if(result) {
-            Redirect('/u');
+        try{
+            const result = await googleAuthService.auth(credentialResponse.credential)
+            if(result) {
+                Redirect('/u');
+            } else {
+                console.log('server error');
+            }
+        } catch(error){
+            const errorData = error.response.data;
+            if (errorData.errorCodes.includes('Auth.FailedToAuth')){
+                setErrorMessage('Failed to authorize through third-party service. Google');
+            } else if(errorData.errorCodes.includes('Auth.JwtGenerationFailed')){
+                setErrorMessage('Cannot generate JWT token');
+            } else if(errorData.status === 401 && errorData.errorCodes.includes('Auth.InvalidCred')){
+                setErrorMessage('Invalid credentials');
+            } else {
+                setErrorMessage(errorData);
+            }
         }
     };
 
     const handleOnError = () => {
-        console.error('Login Failed');
+        setErrorMessage('Google OAuth error');
     };
 
     return(
@@ -138,7 +208,8 @@ const Auth = () => {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         placeholder="Username"
-                                        className="w-full text-black py-3 bg-transparent border-b-2 border-orange-500 outline-none focus:outline-none"/>
+                                        className="w-full text-black py-3 bg-transparent border-b-2 border-orange-500 outline-none focus:outline-none"
+                                    />
                                     <div style={{ position: 'relative', maxHeight: '200px'}} className="py-3 border-b-2 border-orange-500">
                                         <DatePicker
                                             date={birthdayDate}

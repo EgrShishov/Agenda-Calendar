@@ -4,9 +4,11 @@ import CalendarList from "./calendarList.tsx";
 
 const Sidebar =() => {
     return (
-        <div className="border p-3 flex-1">
-            <CreateButton />
-            <CalendarList />
+        <div className="border border-gray-300 rounded p-3 h-screen overflow-y-auto flex flex-col">
+            <div className="mt-4 flex justify-center">
+                <CreateButton/>
+            </div>
+            <CalendarList/>
         </div>
     );
 };

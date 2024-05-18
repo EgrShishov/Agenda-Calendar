@@ -38,7 +38,7 @@ const UpcomingEvents = () => {
     };
 
     return (
-        <div className="border border-gray-300 rounded p-3">
+        <div className="border border-gray-300 rounded p-3 h-screen overflow-y-auto">
             <div className="border border-gray-300 rounded p-2">
                 <p className="text-lg font-bold mb-2">Upcoming events</p>
                 {upcomingEvents.length > 0 ? (

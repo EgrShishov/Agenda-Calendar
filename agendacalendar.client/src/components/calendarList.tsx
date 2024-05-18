@@ -77,7 +77,8 @@ const CalendarList = () => {
             <React.Fragment>
                 <div className="border border-gray-300 rounded p-1 mt-5">
                     <div className="flex justify-between items-center p-2">
-                        <button onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <button onClick={toggleCollapse}
+                                className="text-gray-600 hover:text-gray-800 focus:outline-none">
                             <div className="flex items-center">
                                 <p className="text-xl font-bold mb-2">Your calendars: </p>
                                 {
@@ -94,9 +95,9 @@ const CalendarList = () => {
                             </div>
                         </button>
                     </div>
-                    <div className="">
+                    <div className="h-full">
                         {!isCollapsed && calendarsList.map(({calendar, checked}, idx) => (
-                            <div key={idx} className="bg-gray-100 rounded-md p-2.5 mb-2 flex items-center relative">
+                            <div key={idx} className="bg-gray-100 rounded-md p-2.5 mb-2 flex items-center">
                                 <input
                                     type="checkbox"
                                     checked={checked}
@@ -104,10 +105,13 @@ const CalendarList = () => {
                                     className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer`}
                                     style={{accentColor: calendar.calendarColor}}
                                 />
-                                <div className="flex-grow ml-3">
-                                    <p className="text-l font-semibold text-gray-700">{calendar.title}</p>
+                                <div className="flex-grow ml-3 overflow-hidden">
+                                    <p className="text-l font-semibold text-gray-700 truncate"
+                                       style={{maxWidth: '200px'}}>
+                                        {calendar.title}
+                                    </p>
                                 </div>
-                                <div className="relative ml-3">
+                                <div className="relative ml-3 flex-shrink-0">
                                     <button onClick={handleMenuToggle} id={calendar.id}
                                             className="text-gray-600 focus:outline-none">
                                         <span className="material-icons-outlined">more_vert</span>
@@ -142,10 +146,10 @@ const CalendarList = () => {
                     </div>
                 </div>
             </React.Fragment>
-            ) : (
-                <div>
-                    Loading calendars
-                </div>
+        ) : (
+            <div>
+                Loading calendars
+            </div>
         )
     )
 }

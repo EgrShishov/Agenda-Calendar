@@ -6,6 +6,7 @@ import {DatePicker} from "react-nice-dates";
 import {enGB} from "date-fns/locale";
 import {Menu, TextField} from "@mui/material";
 import {makeStyles} from "@mui/styles";
+import {isToday} from "date-fns";
 
 const useStyles = makeStyles({
     menu: {
@@ -25,8 +26,13 @@ const ReminderModal = () => {
     const [reminderTime, setReminderTime] = useState('');
 
     const handleReminderTimeChange = (newTime) => {
-        setReminderTime(newTime);
-    }
+        const now = new Date();
+        if (newTime && isToday(newTime) && newTime < now) {
+            setReminderTime(now);
+        } else {
+            setReminderTime(newTime);
+        }
+    };
 
     const [email, setEmail] = useState('');
     const [notificationInterval, setNotificationInterval] = useState(0);
@@ -111,6 +117,7 @@ const ReminderModal = () => {
                             <div className="mx-3" style={{position: 'relative', maxHeight: '300px'}}>
                                 <DatePicker
                                     date={reminderTime}
+                                    minimumDate={Date.now()}
                                     onDateChange={handleReminderTimeChange}
                                     format={"yyyy-MM-dd HH:mm"}
                                     locale={enGB}>
@@ -145,17 +152,6 @@ const ReminderModal = () => {
                             <span className="material-icons-outlined text-black-65">
                                 subtitles
                             </span>
-                            {/*<input
-                                type="number"
-                                min={0}
-                                name="notifiactionInterval"
-                                placeholder="Add time"
-                                value={notificationInterval}
-                                required
-                                className="mx-3 border-0 text-gray-600 text-xl font-semibold pb-2
-                                w-full border-b-2 border-gray-200 focus:outline-none"
-                                onChange={(e) => setNotificationInterval(parseInt(e.target.value))}
-                            />*/}
                             <div className={"mx-3"}>
                                 <button onClick={handleClick}>
                                     {getNotificationInterval()}

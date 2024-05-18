@@ -39,7 +39,7 @@ const CreateButton = () => {
 
     return (
         <React.Fragment>
-            <Button className="bg-white border p-2" onClick={handleClick} variant="contained">
+            <Button className="bg-white border rounded-3 p-2" onClick={handleClick} variant="contained">
                 <span className="text-orange-400 font-bold text-2xl material-icons-outlined w-7 h-7">
                     add
                 </span>
