@@ -49,6 +49,12 @@ const CalendarList = () => {
         handleMenuClose();
     };
 
+    const handleShareOnClick = async (event) => {
+        const calendarId = anchorEl.id;
+        const response = await calendarService.share(calendarId);
+        handleMenuClose();
+    };
+
     const handleDeleteOnClick = async (event) => {
         const calendarId = anchorEl.id;
         const response = await calendarService.deleteCalendar(calendarId);
@@ -75,14 +81,13 @@ const CalendarList = () => {
     return (
         calendarsList ? (
             <React.Fragment>
-                <div className="border border-gray-300 rounded p-1 mt-5">
+                <div className="border border-gray-300 rounded p-1">
                     <div className="flex justify-between items-center p-2">
                         <button onClick={toggleCollapse}
                                 className="text-gray-600 hover:text-gray-800 focus:outline-none">
                             <div className="flex items-center">
                                 <p className="text-xl font-bold mb-2">Your calendars: </p>
                                 {
-
                                     isCollapsed ?
                                         <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
                                             keyboard_arrow_down
@@ -132,6 +137,9 @@ const CalendarList = () => {
                                     >
                                         <MenuItem onClick={() => handleDownloadOnClick(calendar.id)}>
                                             Download
+                                        </MenuItem>
+                                        <MenuItem onClick={() => handleShareOnClick(calendar.id)}>
+                                            Share
                                         </MenuItem>
                                         <MenuItem onClick={() => handleDeleteOnClick(calendar.id)}>
                                             Delete

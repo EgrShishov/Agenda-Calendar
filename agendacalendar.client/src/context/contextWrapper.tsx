@@ -43,6 +43,7 @@ export default function ContextWrapper(props){
 
     const calendarRef = useRef(null);
     const [calendarsList, setCalendarsList] = useState([]);
+    const [sharedCalendarsList, setSharedCalendarsList] = useState([]);
     const [events, setEvents] = useState([]);
     const [showEventDetails, setShowEventDetails] = useState(false);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -51,7 +52,7 @@ export default function ContextWrapper(props){
     const [labels, setLabels] = useState([]);
 
     const [labelsClasses, setLabelsClasses] = useState(allColors);
-    const [usedColors, setUsedColors] = useState([]); //used calendars and their colors
+    const [usedColors, setUsedColors] = useState([]);
 
     const calendarService = new CalendarService();
     const userService = new UserService();
@@ -77,15 +78,28 @@ export default function ContextWrapper(props){
 
                 const usedColors = calendars.map(calendar => calendar.calendarColor);
                 setUsedColors(usedColors);
-
-                console.log(usedColors);
-
             } catch (error) {
                 console.error('Error fetching calendars:', error);
             }
         };
         fetchCalendars();
     },[]);
+
+    useEffect(() => {
+        const fetchShared = async () =>
+        {
+            const calendars = await calendarService.getShared();
+            if(calendars){
+                setSharedCalendarsList(calendars.map((calendar) => {
+                    return {
+                        calendar,
+                        checked: true
+                    }
+                }));
+            }
+        };
+        fetchShared();
+    }, []);
 
     useEffect(() => {
         if (!showEventDetails) {
@@ -105,17 +119,19 @@ export default function ContextWrapper(props){
                 return calobj;
             }
         ));
-        console.table(calendarsList);
     }
 
     const filteredEvents = useMemo(() => {
+        const allCalendarsList = [...calendarsList, ...sharedCalendarsList];
+
         return events.filter((event) =>
-            calendarsList
+            allCalendarsList
                 .filter((obj) => obj.checked)
                 .map((obj) => obj.calendar.calendarColor)
                 .includes(event.backgroundColor)
         );
-    }, [events, calendarsList]);
+
+    }, [events, calendarsList, sharedCalendarsList]);
 
     return (
         <GlobalContext.Provider
@@ -137,6 +153,8 @@ export default function ContextWrapper(props){
                 filteredEvents,
                 calendarsList,
                 setCalendarsList,
+                sharedCalendarsList,
+                setSharedCalendarsList,
                 labelsClasses,
             }}
         >

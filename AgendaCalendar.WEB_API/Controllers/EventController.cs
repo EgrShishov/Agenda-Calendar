@@ -79,5 +79,6 @@ namespace AgendaCalendar.WEB_API.Controllers
                 upcoming => Ok(_mapper.Map<List<EventResponse>>(upcoming)),
                 errors => Problem(errors));
         }
+
     }
 }

@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  agendacalendar.web_api:
+    image: ${DOCKER_REGISTRY-}agendacalendarwebapi
+    build:
+      context: .
+      dockerfile: AgendaCalendar.WEB_API/Dockerfile
+
+  agendacalendar.clinet:
+    image: ${DOCKER_REGISTRY-}agendacalendarclient
+    build:
+      context: .
+      dockerfile: AgendaCalendar.client/Dockerfile

@@ -63,12 +63,9 @@ const Calendar = () => {
             setEvents(events);
         };
         fetchEvents();
-        },
-[]);
+    }, []);
 
     const handleEventChange = (info) => {
-        console.log('mama');
-
         const event = info.event;
         const recrule = event._def.recurringDef ? event._def.recurringDef.typeData.rruleSet._rrule[0].options : null;
         let rrule : RecurrenceRule = {
@@ -108,18 +105,6 @@ const Calendar = () => {
         updateEvents(updatedEvent, eventId, calendarId);
     }
 
-
-    const handleEventResize = (info) => {
-        const event = info.event;
-        const updatedEvent = {
-            ...event.toPlainObject(),
-            start: info.event.start,
-            end: info.event.end,
-        };
-
-        console.log('Event resized:', updatedEvent);
-    };
-    
     return (
         events ? (
             <div className="container max-w-screen-ms max-h-screen-md mt-4">
@@ -133,7 +118,6 @@ const Calendar = () => {
                     events={filteredEvents}
                     eventClick={onEventClickHandler}
                     editable={true}
-                    eventResize={handleEventResize}
                     eventChange={handleEventChange}
                 />
             </div>

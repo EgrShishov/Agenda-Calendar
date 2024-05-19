@@ -1,17 +1,34 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import GlobalContext from "../context/globalContext.ts";
 import {CalendarService} from "../services/calendarService.ts";
 import {CalendarModel} from "../models/calendarModel.ts";
 import {Button, Menu, MenuItem} from "@mui/material";
-
+import { toast } from 'react-toastify';
 
 const CalendarModal = () => {
     const {
         labelsClasses,
         setShowCalendarModal,
         calendarsList,
-        setCalendarsList
+        setCalendarsList,
+        sharedCalendarsList,
+        setSharedCalendarsList
     } = useContext(GlobalContext);
+
+
+    const [errorMessage, setErrorMessage] = useState(null);
+    useEffect(() => {
+        toast.error(errorMessage, {
+            position: "bottom-left",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+            limit: 1
+        });
+    }, [errorMessage]);
 
     const [selectedTab, setSelectedTab] = useState('new');
 
@@ -54,6 +71,35 @@ const CalendarModal = () => {
         setShowCalendarModal(false);
     };
 
+    const handleSubscribeSubmit = async (e) => {
+        e.preventDefault();
+
+        try{
+            const response = await calendarService.subscribeToCalendar(calendarUrl);
+            sharedCalendarsList.push(response);
+            setSharedCalendarsList(sharedCalendarsList);
+
+            console.log(response);
+            if(response.status === 200){
+                setShowCalendarModal(false);
+            } else {
+                console.log('error');
+            }
+        } catch(error){
+            const errorData = error.response.data;
+
+            if(errorData.errorCodes.includes('Calendar.InvalidUrl')){
+                setErrorMessage(errorData.title);
+            } else if(errorData.errorCodes.includes('Calendar.SubscribtionExist')){
+                setErrorMessage(errorData.title);
+            } else if(errorData.errorCodes.includes('Calendar.SubscribeError')){
+                setErrorMessage(errorData.title);
+            } else {
+                setErrorMessage('Unhandled server error');
+            }
+        }
+    };
+
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -73,6 +119,9 @@ const CalendarModal = () => {
     for (let i = 0; i < labelsClasses.length; i += 2) {
         colorRows.push(labelsClasses.slice(i, i + 2));
     }
+
+    const [calendarUrl, setCalendarUrl] = useState('');
+    const [error, setError] = useState(null);
 
     return (
         <React.Fragment>
@@ -211,15 +260,17 @@ const CalendarModal = () => {
                         )}
                         {selectedTab == 'import' && (
                             <div className="grid grid-cols-1/4 items-end gap-y-3.5">
-                                <label htmlFor="filePicker" className="block mb-2 col-span-1">Choose a calendar
-                                    file:</label>
-                                <input
-                                    id="filePicker"
-                                    type="file"
-                                    accept=".ics"
-                                    onChange={(e) => handleFileChanged(e)}
-                                    className="border border-gray-300 p-2 rounded-md col-span-1"
-                                />
+                                <div className="border border-gray-300 rounded p-3">
+                                    <label htmlFor="filePicker" className="block mb-2 col-span-1">Choose a calendar
+                                        file:</label>
+                                    <input
+                                        id="filePicker"
+                                        type="file"
+                                        accept=".ics"
+                                        onChange={(e) => handleFileChanged(e)}
+                                        className="border border-gray-300 p-2 rounded-md col-span-1"
+                                    />
+                                </div>
                                 <button
                                     type="submit"
                                     onClick={handleImportSubmit}
@@ -230,13 +281,37 @@ const CalendarModal = () => {
                                 </button>
                             </div>
                         )}
-                        {selectedTab == 'subscribe' && (
-                            <div>
 
+                        {selectedTab == 'subscribe' && (
+                            <div className="grid grid-cols-1/4 items-end gap-y-3.5">
+                                <div className="p-4 border border-gray-300 rounded">
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 mb-2">Calendar
+                                            URL
+                                        </label>
+                                        <input
+                                            type="url"
+                                            id="calendarUrl"
+                                            value={calendarUrl}
+                                            onChange={(e) => setCalendarUrl(e.target.value)}
+                                            className="w-full p-2 border border-gray-300 rounded"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    type="submit"
+                                    onClick={handleSubscribeSubmit}
+                                    className="bg-orange-300 hover:bg-black/60 px-6 py-2 rounded text-white
+                                    hover:scale-105 transition ease-out duration-200 transform"
+                                >
+                                    Subscribe
+                                </button>
+
+                                </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </form>
+                            </form>
             </div>
         </React.Fragment>
     );

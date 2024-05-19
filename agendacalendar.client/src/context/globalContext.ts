@@ -18,6 +18,8 @@ const GlobalContext = React.createContext({
     filteredEvents: [],
     calendarsList: [],
     setCalendarsList: () => {},
+    sharedCalendarsList: [],
+    setSharedCalendarsList: () => {},
     labelsClasses: [],
 });
 

@@ -30,14 +30,17 @@ const CalendarHeader = () => {
 
     const handleTodayClick = () => {
         calendarRef.current.getApi().today();
+        setTitle(calendarRef.current.getApi().view.title);
     };
 
     const handlePrevClick = () => {
         calendarRef.current.getApi().prev();
+        setTitle(calendarRef.current.getApi().view.title);
     };
 
     const handleNextClick = () => {
         calendarRef.current.getApi().next();
+        setTitle(calendarRef.current.getApi().view.title);
     };
 
     const handleViewClick = (view) => {

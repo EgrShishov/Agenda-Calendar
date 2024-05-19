@@ -22,19 +22,46 @@ namespace AgendaCalendar.Application.Events.Commands
             {
                 return Errors.Calendar.NotFound;
             }
+
+            var author = await unitOfWork.UserRepository.GetByIdAsync(request.AuthorId);
+            if (author is null)
+            {
+                return Errors.User.NotFound;
+            }
+
             var existingEvent = calendar.Events.FirstOrDefault(e => e.Id == request.EventId);
 
             if (existingEvent is not null)
             {
-                if(existingEvent.StartTime != request.StartTime)
+                var now = DateTime.Now;
+                if (existingEvent.StartTime != request.StartTime)
                 {
                     var event_reminder = await unitOfWork.ReminderRepository.ListAsync(r => r.EventId == existingEvent.Id);
                     if (event_reminder.Any())
                     {
                         var reminder = event_reminder.First();
-                        reminder.ReminderTime = request.StartTime;
+                        if(request.StartTime < now)
+                        {
+                            await unitOfWork.ReminderRepository.DeleteAsync(reminder.Id);
+                        }
+                        else
+                        {
+                            reminder.ReminderTime = request.StartTime;
+                            await unitOfWork.ReminderRepository.UpdateAsync(reminder);
+                        }
+                    } 
+                    else if (request.StartTime > now)
+                    {
+                        Reminder reminder = new Reminder
+                        {
+                            ReminderTime = request.StartTime,
+                            EventId = existingEvent.Id,
+                            Description = existingEvent.Description,
+                            Email = author.Email,
+                            NotificationInterval = TimeSpan.Zero
+                        };
 
-                        await unitOfWork.ReminderRepository.UpdateAsync(reminder);
+                        await unitOfWork.ReminderRepository.AddAsync(reminder);
                     }
                 }
                 existingEvent.Title = request.Title;

@@ -21,7 +21,7 @@ const UpcomingEvents = () => {
         };
 
         fetchUpcomingEvents();
-    }, [events]);
+    });
 
     const formatDate = (dateTimeString) => {
         const options = {
@@ -38,14 +38,15 @@ const UpcomingEvents = () => {
     };
 
     return (
-        <div className="border border-gray-300 rounded p-3 h-screen overflow-y-auto">
+        <div className="border border-gray-300 rounded p-3 h-screen overflow-y-auto max-h-[650px]">
             <div className="border border-gray-300 rounded p-2">
                 <p className="text-lg font-bold mb-2">Upcoming events</p>
                 {upcomingEvents.length > 0 ? (
                     <div>
                         {upcomingEvents.slice(0, 5).map((event, index) => (
                             <div key={index} className="flex items-center mb-2">
-                                <p className="text-ms font-semibold">{event.title} -
+                                <p className="text-l font-semibold text-gray-700 truncate"
+                                   style={{maxWidth: '200px'}}>{event.title} -
                                     <p className="text-ms font-light">{formatDate(event.startTime)}</p>
                                 </p>
                             </div>

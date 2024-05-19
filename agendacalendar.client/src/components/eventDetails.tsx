@@ -87,7 +87,8 @@ const EventDetails = () => {
         selectedEvent,
         setSelectedEvent,
         setShowEventDetails,
-        calendarsList
+        calendarsList,
+        sharedCalendarsList
     } = useContext(GlobalContext);
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -145,9 +146,11 @@ const EventDetails = () => {
 
     const [participants, setParticipants] = useState([]);
 
+    const allCalendarsList = [...calendarsList, ...sharedCalendarsList];
+
     const [selectedCalendar, setSelectedCalendar] =
         useState(selectedEvent ?
-            calendarsList.find(calendar => calendar.calendar.id === selectedEvent.extendedProps.calendarId)
+            allCalendarsList.find(calendar => calendar.calendar.id === selectedEvent.extendedProps.calendarId)
             : null
         );
 
@@ -173,8 +176,7 @@ const EventDetails = () => {
         {
             const calendarId = selectedCalendar.calendar.id;
             const response = await eventService.createEvent(calendarEvent, calendarId);
-            events.push(calendarEvent);
-            setEvents(events);
+            setEvents((prevEvents) => [...prevEvents, calendarEvent]);
         }
         else if(editingMode)
         {
@@ -221,7 +223,7 @@ const EventDetails = () => {
     };
 
     const GetCalendarName = (calendarId) =>  {
-        const calendar = calendarsList.find(calendar => calendar.calendar.id == calendarId);
+        const calendar = allCalendarsList.find(calendar => calendar.calendar.id == calendarId);
         return calendar.calendar ? calendar.calendar.title : '';
     };
 

@@ -52,13 +52,23 @@ export class CalendarService{
         }
     }
 
-    async subscribeToCalendar(calendarId: number){
-        const response = await axios.get(`${this.baseUrl}/calendar/subscribe?id=${calendarId}`);
+    async subscribeToCalendar(calendarUrl: string){
+        const response = await axios.post(`${this.baseUrl}calendar/subscribe?url=${calendarUrl}`);
         return response.data;
     }
 
     async unsubscribeFromCalendar(calendarId: number){
-        const response = await axios.get(`${this.baseUrl}/calendar/unsubscribe?id=${calendarId}`);
+        const response = await axios.post(`${this.baseUrl}calendar/unsubscribe?id=${calendarId}`);
+        return response.data;
+    }
+
+    async getShared(){
+        const response = await axios.get(`${this.baseUrl}calendar/shared`);
+        return response.data;
+    }
+
+    async share(calendarId: number){
+        const response = await axios.get(`${this.baseUrl}calendar/share?id=${calendarId}`);
         return response.data;
     }
 }

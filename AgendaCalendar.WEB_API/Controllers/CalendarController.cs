@@ -5,7 +5,6 @@ using AgendaCalendar.Application.Events.Queries;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Calendars;
 using AgendaCalendar.WEB_API.Extensions;
-using Hangfire;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,33 +26,52 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("u")]
-        public async Task<ActionResult<IEnumerable<Event>>> GetCalendars()
+        public async Task<ActionResult<IEnumerable<Event>>> GetUserEvents()
         {
             int userId = User.GetUserId();
-            var jobId = BackgroundJob.Enqueue(() => Console.WriteLine("Welcome to Shopping World!"));
+
             var userCalendarsResult = await _mediator.Send(new CalendarListQuery(userId));
+
+            var userSharedCalendarsResult = await _mediator.Send(new GetUserSubscriptionsQuery(userId));
+
             List<Event> events = new List<Event>();
             List<Event> upcomingEvents = new List<Event>();
             string icalEvents = string.Empty;
-            foreach (var calendar in userCalendarsResult.Value)
-            {
-                events = events.Concat(calendar.Events).ToList();
-                var calendarsUpcomingResult = await _mediator.Send(new EventListByDateQuery(calendar.Id, DateTime.Now));
-                upcomingEvents = upcomingEvents.Concat(calendarsUpcomingResult.Value).ToList();
-                icalEvents += JsonConverter.GetJsonEventList(calendar.CalendarColor, calendar.Events);
-            }
 
-            if (icalEvents.StartsWith("["))
+            if (!userCalendarsResult.IsError) 
             {
-                icalEvents = icalEvents.Substring(1);
-            }
-            if (icalEvents.EndsWith("]"))
-            {
-                icalEvents = icalEvents.Substring(0, icalEvents.Length - 1);
-            }
-            string[] jsonArrays = icalEvents.Split(new string[] { "][" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var calendar in userCalendarsResult.Value)
+                {
+                    events = events.Concat(calendar.Events).ToList();
 
-            icalEvents = "[" + string.Join(",", jsonArrays) + "]";
+                    var calendarsUpcomingResult = await _mediator.Send(new EventListByDateQuery(calendar.Id, DateTime.Now));
+
+                    upcomingEvents = upcomingEvents.Concat(calendarsUpcomingResult.Value).ToList();
+                    icalEvents += JsonConverter.GetJsonEventList(calendar.CalendarColor, calendar.Events);
+                }
+
+                if (!userSharedCalendarsResult.IsError && userSharedCalendarsResult.Value.Any())
+                {
+                    foreach(var shared_calendar in userSharedCalendarsResult.Value)
+                    {
+                        icalEvents += JsonConverter.GetJsonEventList(shared_calendar.CalendarColor, shared_calendar.Events, true);
+                    }
+                }
+
+                if (icalEvents.StartsWith("["))
+                {
+                    icalEvents = icalEvents.Substring(1);
+                }
+
+                if (icalEvents.EndsWith("]"))
+                {
+                    icalEvents = icalEvents.Substring(0, icalEvents.Length - 1);
+                }
+
+                string[] jsonArrays = icalEvents.Split(new string[] { "][" }, StringSplitOptions.RemoveEmptyEntries);
+
+                icalEvents = "[" + string.Join(",", jsonArrays) + "]";
+            }
             
             return Ok(icalEvents);
         }
@@ -145,11 +163,12 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("subscribe")]
-        public async Task<IActionResult> Subscribe(int id)
+        public async Task<IActionResult> Subscribe([FromQuery] string url)
         {
             int userId = User.GetUserId();
 
-            var subscribeCalendarResult = await _mediator.Send(new SubscribeToCalendarCommand(userId, id));
+            var subscribeCalendarResult = await _mediator.Send(new SubscribeToCalendarCommand(userId, url));
+
             return subscribeCalendarResult.Match(
                 calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
@@ -161,10 +180,34 @@ namespace AgendaCalendar.WEB_API.Controllers
             int userId = User.GetUserId();
 
             var subscribeCalendarResult = await _mediator.Send(new UnsubscribeFromCalendarCommand(userId, id));
+
             return subscribeCalendarResult.Match(
                 calendar => Ok(_mapper.Map<CalendarResponse>(calendar)),
                 errors => Problem(errors));
         }
 
+        [HttpGet("shared")]
+        public async Task<IActionResult> GetShared()
+        {
+            int userId = User.GetUserId();
+
+            var getSharedCalendarsResult = await _mediator.Send(new GetUserSubscriptionsQuery(userId));
+
+            return getSharedCalendarsResult.Match(
+                calendars => Ok(_mapper.Map<List<CalendarResponse>>(calendars)),
+                erors => Problem(erors));
+        }
+
+        [HttpGet("share")]
+        public async Task<IActionResult> Share(int id)
+        {
+            int userId = User.GetUserId();
+
+            var uniqueUrlResult = await _mediator.Send(new ShareCalendarCommand(id, userId));
+
+            return uniqueUrlResult.Match(
+                url => Ok(_mapper.Map<string>(url)),
+                errors => Problem(errors));
+        }
     }
 }
