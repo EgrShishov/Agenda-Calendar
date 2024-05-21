@@ -1,8 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {CalendarService} from "../services/calendarService.ts";
 import GlobalContext from "../context/globalContext.ts";
 import {MenuItem, Menu} from "@mui/material";
 import {CalendarModel} from "../models/calendarModel.ts";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CalendarList = () => {
     const {
@@ -14,6 +16,22 @@ const CalendarList = () => {
         setShowCalendarModal,
         filteredEvents,
     } = useContext(GlobalContext);
+
+    const [message, setMessage] = useState(null);
+
+    useEffect(() => {
+        if (message) {
+            toast.info(message, {
+                position: "bottom-left",
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: "light",
+            });
+            setMessage(null);
+        }
+    }, [message]);
 
     const calendarService = new CalendarService();
 
@@ -52,6 +70,8 @@ const CalendarList = () => {
     const handleShareOnClick = async (event) => {
         const calendarId = anchorEl.id;
         const response = await calendarService.share(calendarId);
+        setMessage('Link saved in clipboard');
+        await navigator.clipboard.writeText(response);
         handleMenuClose();
     };
 

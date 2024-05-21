@@ -30,11 +30,30 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
                 .HasKey(u => u.UserId);
             modelBuilder.ApplyUtcDateTimeConverter();
 
+            modelBuilder.Entity<DailyWorkingHours>()
+                .HasKey(dh => new { dh.WorkingHoursId, dh.Day });
+
+            modelBuilder.Entity<DailyWorkingHours>()
+               .HasOne(dh => dh.WorkingHours)
+               .WithMany(wh => wh.DailyHours)
+               .HasForeignKey(dh => dh.WorkingHoursId);
+
+            /* modelBuilder.Entity<Invitation>(e =>
+             {
+                 e.HasKey(e => e.Id);
+
+                 e.Property(e => e.Status)
+                 .HasConversion<string>()
+                 .HasDefaultValue(InvitationStatus.Pending);
+             });*/
         }
 
         public DbSet<Calendar> Calendars { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Reminder>? Reminders { get; set; }
         public DbSet<User>? Users { get; set; }
+        public DbSet<WorkingHours> WorkingHours { get; set; }
+        public DbSet<Meeting> Meetings { get; set; }
+        public DbSet<Invitation> Invitations { get; set; }
     }
 }
