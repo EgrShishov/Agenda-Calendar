@@ -3,10 +3,18 @@ import GlobalContext from "../context/globalContext.ts";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import WorkingHoursForm from "./workingHoursForm.tsx";
+import {useNavigate} from "react-router-dom";
 
 const CreateButton = () => {
-    const { setShowEventDetails, setShowCalendarModal, setShowReminderModal } = useContext(GlobalContext)
+    const {
+        setShowEventDetails,
+        setShowCalendarModal,
+        setShowReminderModal,
+        setShowWorkingHoursModal,
+        setShowSuggestModal} = useContext(GlobalContext)
 
+    const Redirect = useNavigate();
     const [showPopover, setShowPopover] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -20,19 +28,32 @@ const CreateButton = () => {
 
     const handleAddItem = (item) => {
         setShowPopover(false);
-        console.log(item);
         if (item == 'event') {
             setShowEventDetails(true);
             setShowCalendarModal(false);
             setShowReminderModal(false);
+            setShowWorkingHoursModal(false);
         } else if (item == 'calendar') {
             setShowEventDetails(false);
             setShowCalendarModal(true);
             setShowReminderModal(false);
-        } else if(item == 'reminder'){
+            setShowWorkingHoursModal(false);
+        } else if (item == 'reminder') {
             setShowEventDetails(false);
             setShowCalendarModal(false);
             setShowReminderModal(true);
+            setShowWorkingHoursModal(false);
+        } else if (item == 'meetings') {
+            setShowEventDetails(false);
+            setShowCalendarModal(false);
+            setShowReminderModal(false);
+            setShowWorkingHoursModal(true);
+        } else if (item == 'suggest'){
+            setShowEventDetails(false);
+            setShowCalendarModal(false);
+            setShowReminderModal(false);
+            setShowWorkingHoursModal(false);
+            setShowSuggestModal(true);
         }
         handleClose();
     };
@@ -57,6 +78,8 @@ const CreateButton = () => {
                 <MenuItem onClick={() => handleAddItem('calendar')}>Calendar</MenuItem>
                 <MenuItem onClick={() => handleAddItem('event')}>Event</MenuItem>
                 <MenuItem onClick={() => handleAddItem('reminder')}>Reminder</MenuItem>
+                <MenuItem onClick={() => handleAddItem('meetings')}>Meetings schedule</MenuItem>
+                <MenuItem onClick={() => handleAddItem('suggest')}>Suggest meeting</MenuItem>
             </Menu>
         </React.Fragment>
     );

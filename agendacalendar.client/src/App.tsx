@@ -8,6 +8,7 @@ import NotFound from "./pages/notFound.tsx";
 import EditCalendar from "./pages/editCalendar.tsx";
 import PrivateRoute from "./components/privateRoute.tsx";
 import {ToastContainer} from "react-toastify";
+import BookingPage from "./pages/bookingPage.tsx";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
                 <Routes>
                     <Route path="/" Component={Home} />
                     <Route path="/u" element={<PrivateRoute Component={MainCalendar}/>} />
+                    <Route path="/u/meetings" element={<PrivateRoute Component={BookingPage}/>} />
                     <Route path="/auth" Component={Auth} />
                     <Route path="/u/account" Component={Account} />
                     <Route path="/u/settings" Component={Settings} />

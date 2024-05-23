@@ -1,4 +1,4 @@
-import React, {useContext, useRef} from 'react';
+import React, {useContext} from 'react';
 import CalendarHeader from "../components/calendarHeader.tsx";
 import Sidebar from "../components/sidebar.tsx";
 import Calendar from "../components/calendar.tsx";
@@ -7,16 +7,25 @@ import GlobalContext from "../context/globalContext.ts";
 import CalendarModal from "../components/calendarModal.tsx";
 import ReminderModal from "../components/reminderModal.tsx";
 import UpcomingEvents from "../components/upcomingEvents.tsx";
-import calendarHeader from "../components/calendarHeader.tsx";
+import WorkingHoursForm from "../components/workingHoursForm.tsx";
+import SuggestModal from "../components/suggestModal.tsx";
 
 const MainCalendar = () => {
-    const {showEventDetails, showCalendarModal, showReminderModal} = useContext(GlobalContext);
+    const {
+        showEventDetails,
+        showCalendarModal,
+        showReminderModal,
+        showWorkingHoursModal,
+        showSuggestModal
+    } = useContext(GlobalContext);
 
     return (
         <React.Fragment>
             {showEventDetails && <EventDetails/>}
             {showCalendarModal && <CalendarModal/>}
             {showReminderModal && <ReminderModal/>}
+            {showWorkingHoursModal && <WorkingHoursForm/>}
+            {showSuggestModal && <SuggestModal/>}
 
             <div className="h-screen w-full flex flex-col">
                 <CalendarHeader />
@@ -32,6 +41,7 @@ const MainCalendar = () => {
                     </div>
                 </div>
             </div>
+
         </React.Fragment>
     );
 }

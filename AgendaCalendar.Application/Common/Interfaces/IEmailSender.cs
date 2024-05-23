@@ -1,5 +1,4 @@
-﻿using MimeKit;
-
+﻿
 namespace AgendaCalendar.Application.Common.Interfaces
 {
     public interface IEmailSender

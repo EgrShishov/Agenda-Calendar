@@ -12,12 +12,9 @@ namespace AgendaCalendar.Domain.Entities
     public class DailyWorkingHours
     {
         public int WorkingHoursId { get; set; }
-
         public WorkingHours WorkingHours { get; set; }
         public DayOfWeek Day { get; set; }
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
     }
-
-
 }

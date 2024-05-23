@@ -5,6 +5,7 @@ import {CalendarService} from "../services/calendarService.ts";
 import {UserService} from "../services/userService.ts";
 import {EventService} from "../services/eventService.ts";
 import {ReminderService} from "../services/reminderService.ts";
+import {useCookies} from "react-cookie";
 
 const allColors = [
     "indigo",
@@ -48,8 +49,11 @@ export default function ContextWrapper(props){
     const [showEventDetails, setShowEventDetails] = useState(false);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showReminderModal, setShowReminderModal] = useState(false);
+    const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([]);
+    const [meetings, setMeetings] = useState([]);
+    const [showSuggestModal, setShowSuggestModal] = useState([]);
 
     const [labelsClasses, setLabelsClasses] = useState(allColors);
     const [usedColors, setUsedColors] = useState([]);
@@ -143,6 +147,8 @@ export default function ContextWrapper(props){
                 setShowCalendarModal,
                 showReminderModal,
                 setShowReminderModal,
+                showWorkingHoursModal,
+                setShowWorkingHoursModal,
                 selectedEvent,
                 setSelectedEvent,
                 setLabels,
@@ -156,6 +162,10 @@ export default function ContextWrapper(props){
                 sharedCalendarsList,
                 setSharedCalendarsList,
                 labelsClasses,
+                meetings,
+                setMeetings,
+                showSuggestModal,
+                setShowSuggestModal
             }}
         >
             { props.children }

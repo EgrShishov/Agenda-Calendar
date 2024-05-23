@@ -2,6 +2,7 @@
 using AgendaCalendar.Application.Meetings.Queries;
 using AgendaCalendar.Application.WorkingHours.Commands;
 using AgendaCalendar.Application.WorkingHours.Queries;
+using AgendaCalendar.Domain.Common.Errors;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Meetings;
 using AgendaCalendar.WEB_API.Contracts.WorkingHours;
@@ -151,6 +152,19 @@ namespace AgendaCalendar.WEB_API.Controllers
 
             return setWorkingHoursResult.Match(
                 hours => Ok(_mapper.Map<WorkingHoursResponse>(hours)),
+                errors => Problem(errors));
+        }
+
+        [HttpGet("avaibale_slots")]
+        public async Task<IActionResult> GetAvaibleSlots()
+        {
+            int userId = User.GetUserId();
+
+            var command = new GetAvaibleSlotsCommand(userId);
+            var avaibleSlotsResult = await _mediator.Send(command);
+
+            return avaibleSlotsResult.Match(
+                slots => Ok(slots),
                 errors => Problem(errors));
         }
     }

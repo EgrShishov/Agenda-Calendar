@@ -3,17 +3,16 @@ using AgendaCalendar.Infrastructure;
 using AgendaCalendar.WEB_API;
 using Hangfire;
 
-var MyAllowSpecificOrigins = "AllowAll";
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPresentation()
                 .AddApplication()
                 .AddInfrastructure(builder.Configuration);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var MyAllowSpecificOrigins = "AllowReactClient";
 
 builder.Services.AddCors(options =>
 {
@@ -32,13 +31,12 @@ builder.Services.AddBackgroundJob(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll");
+app.UseCors("AllowReactClient");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

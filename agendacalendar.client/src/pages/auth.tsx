@@ -170,6 +170,56 @@ const Auth = () => {
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
+    const [selectedDate, setSelectedDate] = useState(new Date('22-05-1901'));
+    const [isUserBirthday, setIsUserBirthday] = useState(false);
+    const [isNoUserBirthday, setIsNoUserBirthday] = useState(false);
+
+
+    // useEffect(() => {
+    //     const randomDate = new Date(
+    //         Math.floor(Math.random() * 2024),
+    //         Math.floor(Math.random() * 12),
+    //         Math.floor(Math.random() * 28) + 1
+    //     );
+    //     setSelectedDate(randomDate);
+    // }, []);
+    //
+    // const handleDateChange = (date) => {
+    //     setSelectedDate(date);
+    //     setIsUserBirthday(false);
+    //     setIsNoUserBirthday(false);
+    // };
+    //
+    // const formatDate = (date) => {
+    //     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    // };
+    //
+    // const binarySearch = (start, end) => {
+    //     if (start > end) {
+    //         setIsNoUserBirthday(true);
+    //         return;
+    //     }
+    //
+    //     const mid = Math.floor((start + end) / 2);
+    //     const midDate = new Date(mid, 0, 1);
+    //
+    //     if (selectedDate <= midDate) {
+    //         binarySearch(start, mid - 1);
+    //     } else {
+    //         binarySearch(mid + 1, end);
+    //     }
+    //
+    //     setSelectedDate(midDate);
+    // };
+    //
+    // const handleUserBirthday = () => {
+    //     setIsUserBirthday(true);
+    // };
+    //
+    // const handleNoBirthday = () => {
+    //     binarySearch(0, 2023);
+    // };
+
 
     return(
         <div className="w-full h-screen flex items-start bg-transperent">
@@ -224,17 +274,18 @@ const Auth = () => {
                                         placeholder="Username"
                                         className="w-full text-black py-3 bg-transparent border-b-2 border-orange-500 outline-none focus:outline-none"
                                     />
-                                    <div style={{ position: 'relative', maxHeight: '200px'}} className="py-3 border-b-2 border-orange-500">
+                                    <div style={{position: 'relative', maxHeight: '200px'}}
+                                         className="py-3 border-b-2 border-orange-500">
                                         <DatePicker
                                             date={birthdayDate}
                                             onDateChange={setBirthdayDate}
                                             format={"yyyy-MM-dd"}
                                             locale={enGB}>
-                                            {({ inputProps, focused }) => (
+                                            {({inputProps, focused}) => (
                                                 <input
                                                     className={'input' + (focused ? ' -focused' : '')}
                                                     {...inputProps}
-                                                    style={{ backgroundColor: "transparent"}}
+                                                    style={{backgroundColor: "transparent"}}
                                                     placeholder="Select your birthday date"
                                                 />
                                             )}
@@ -242,6 +293,24 @@ const Auth = () => {
                                     </div>
                                 </div>
                             )}
+                            {/*<div>*/}
+                            {/*    {isUserBirthday ? (*/}
+                            {/*        <DatePicker*/}
+                            {/*            date={selectedDate}*/}
+                            {/*            onDateChange={handleDateChange}*/}
+                            {/*            format="dd/MM/yyyy"*/}
+                            {/*        />*/}
+                            {/*    ) : isNoUserBirthday ? (*/}
+                            {/*        <p>Sorry, we couldn't find your birthday using binary search.</p>*/}
+                            {/*    ) : (*/}
+                            {/*        <div>*/}
+                            {/*            <p>Is this your birthday? If not, we'll find it using binary search.</p>*/}
+                            {/*            <p>Selected date: {formatDate(selectedDate)}</p>*/}
+                            {/*            <button onClick={handleUserBirthday}>Yes</button>*/}
+                            {/*            <button onClick={handleNoBirthday}>No</button>*/}
+                            {/*        </div>*/}
+                            {/*    )}*/}
+                            {/*</div>*/}
                             <input
                                 type="email"
                                 value={email}

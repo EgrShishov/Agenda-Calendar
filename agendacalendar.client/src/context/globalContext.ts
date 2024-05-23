@@ -8,6 +8,8 @@ const GlobalContext = React.createContext({
     setShowCalendarModal: () => {},
     showReminderModal: false,
     setShowReminderModal: () => {},
+    showWorkingHoursModal: false,
+    setShowWorkingHoursModal: () => {},
     selectedEvent: null,
     setSelectedEvent: () => {},
     labels: [],
@@ -21,6 +23,10 @@ const GlobalContext = React.createContext({
     sharedCalendarsList: [],
     setSharedCalendarsList: () => {},
     labelsClasses: [],
+    meetings: [],
+    setMeetings : () => {},
+    showSuggestModal: false,
+    setShowSuggestModal: () => {}
 });
 
 export default GlobalContext;

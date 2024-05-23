@@ -14,6 +14,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
         private Lazy<IRepository<Meeting>> _meetingRepository;
         private Lazy<IRepository<WorkingHours>> _workHoursRepository;
         private Lazy<IRepository<Invitation>> _invitationsRepository;
+        private Lazy<IRepository<Slot>> _slotsRepository;
 
         public UnitOfWork(AppDbContext dbContext, UserManager<User> userManager)
         {
@@ -27,6 +28,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
             _meetingRepository = new(() => new MeetingsRepository(_dbContext));
             _workHoursRepository = new(() => new WorkingHoursRepository(_dbContext));
             _invitationsRepository = new(() => new InvitationRepository(_dbContext));
+            _slotsRepository = new(() => new SlotRepository(_dbContext));
         }
         public IRepository<Calendar> CalendarRepository => _calendarRepository.Value;
 
@@ -41,6 +43,8 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
         public IRepository<WorkingHours> WorkHoursRepository => _workHoursRepository.Value;
 
         public IRepository<Invitation> InvitationRepository => _invitationsRepository.Value;
+
+        public IRepository<Slot> SlotRepository => _slotsRepository.Value;
 
         public async Task CreateDataBaseAsync() => await _dbContext.Database.EnsureCreatedAsync();
         public async Task DeleteDataBaseAsync() => await _dbContext.Database.EnsureDeletedAsync();

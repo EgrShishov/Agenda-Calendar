@@ -37,15 +37,6 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
                .HasOne(dh => dh.WorkingHours)
                .WithMany(wh => wh.DailyHours)
                .HasForeignKey(dh => dh.WorkingHoursId);
-
-            /* modelBuilder.Entity<Invitation>(e =>
-             {
-                 e.HasKey(e => e.Id);
-
-                 e.Property(e => e.Status)
-                 .HasConversion<string>()
-                 .HasDefaultValue(InvitationStatus.Pending);
-             });*/
         }
 
         public DbSet<Calendar> Calendars { get; set; }
@@ -55,5 +46,6 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
         public DbSet<WorkingHours> WorkingHours { get; set; }
         public DbSet<Meeting> Meetings { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
+        public DbSet<Slot> Slots { get; set; }
     }
 }

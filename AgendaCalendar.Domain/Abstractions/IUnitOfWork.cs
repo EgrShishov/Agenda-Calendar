@@ -11,6 +11,7 @@ namespace AgendaCalendar.Domain.Abstractions
         IRepository<Meeting> MeetingRepository { get; }
         IRepository<WorkingHours> WorkHoursRepository { get; }
         IRepository<Invitation> InvitationRepository { get; }
+        IRepository<Slot> SlotRepository { get; }
 
         public Task DeleteDataBaseAsync();
         public Task CreateDataBaseAsync();
