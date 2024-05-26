@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {MeetingService} from "../services/meetingService.ts";
 import {TextField} from "@mui/material";
 import {format} from "date-fns";
+import {useNavigate} from "react-router-dom";
+import {BookingService} from "../services/bookingService.ts";
 
-const BookingForm = ({bookingDetails, setBookingDetails}) => {
+const BookingForm = ({scheduleDescription, scheduleTitle, bookingDetails, setBookingDetails}) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -11,22 +12,29 @@ const BookingForm = ({bookingDetails, setBookingDetails}) => {
         description: '',
     });
 
+    const Redirect = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [animateIcon, setAnimateIcon] = useState(false);
 
-    const meetingService = new MeetingService();
+    const bookingService = new BookingService();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(bookingDetails);
+        const bookMeeting = async () => {
+            const response = await bookingService.bookMeeting(formData, bookingDetails.slotId);
 
-        //const response = await meetingService.createMeeting();
-        setIsSubmitted(true);
-        setAnimateIcon(true);
+            if(response){
+                setIsSubmitted(true);
+                setAnimateIcon(true);
+            }
+        };
+        bookMeeting();
     };
 
     useEffect(() => {
@@ -50,7 +58,7 @@ const BookingForm = ({bookingDetails, setBookingDetails}) => {
                     </span>
                     <span className="text-2xl font-bold text-black/60">Meeting successfully booked!</span>
                     <button
-                        onClick={() => setBookingDetails(false)}
+                        onClick={() => setBookingDetails(null)}
                         className="hover:bg-black/60 bg-green-400 px-6 py-2 rounded text-black hover:text-white
                         hover:scale-105 transition ease-out duration-200 transform">
                         Got it!
@@ -58,8 +66,21 @@ const BookingForm = ({bookingDetails, setBookingDetails}) => {
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-4 p-4">
-                    <span className="mb-2">Date: {format(bookingDetails.date, 'dd MMM yyyy')}</span>
-                    <span className="mb-4">Time: {bookingDetails.time}</span>
+                    <div className="flex flex-col ">
+                         <span
+                             className="text-2xl font-bold text-black/60"
+                         >
+                        {scheduleTitle}
+                        </span>
+                        <span
+                            className="text-xl font-normal text-gray-600"
+                        >
+                            {scheduleDescription}
+                        </span>
+                        <span className="">Date: {format(bookingDetails.date, 'dd MMM yyyy')}</span>
+                        <span className="">Time: {bookingDetails.time}</span>
+                    </div>
+                    <hr/>
                     <TextField
                         label="First Name"
                         name="firstName"

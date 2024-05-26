@@ -3,6 +3,8 @@ import {enGB} from "date-fns/locale"
 import {useEffect, useState} from "react";
 import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import BookingForm from "./bookingForm.tsx";
+import {useNavigate} from "react-router-dom";
+import {BookingService} from "../services/bookingService.ts";
 
 
 const BookingCalendar = () => {
@@ -15,40 +17,56 @@ const BookingCalendar = () => {
     const [bookingDetails, setBookingDetails] = useState(null);
     const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
-    useEffect(() => {
-        const mockSlots = [
-            { date: '2024-05-23', times: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'] },
-            { date: '2024-05-24', times: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'] },
-            { date: '2024-05-27', times: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'] },
-            { date: '2024-05-28', times: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'] },
-            { date: '2024-05-29', times: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'] },
-        ];
+    const Redirect = useNavigate();
 
+    const bookingService = new BookingService();
+
+    const [mockSlots, setMockSlots] = useState([]);
+    useEffect(() => {
+        const getSlots = async () =>{
+            const slots = await bookingService.getAvaibaleSlots('e.shishov99@yandex.ru');
+            setMockSlots(slots);
+        };
+        getSlots();
+    },[]);
+
+    useEffect(() => {
         const startDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
         setWeekStart(startDate);
 
-        const slots = [];
+        const slotsByDate = {};
+        mockSlots.forEach(slot => {
+            const dateKey = format(new Date(slot.date), 'yyyy-MM-dd');
+            if (!slotsByDate[dateKey]) {
+                slotsByDate[dateKey] = { date: new Date(slot.date), times: [], isBooked: slot.isBooked };
+            }
+            slotsByDate[dateKey].times.push(...slot.times);
+        });
+
+        const slotsArray = [];
         for (let i = 0; i < 7; i++) {
             const date = addDays(startDate, i);
             const formattedDate = format(date, 'yyyy-MM-dd');
-            const daySlots = mockSlots.find(slot => slot.date === formattedDate);
-            slots.push({ date, times: daySlots ? daySlots.times : [] });
+            slotsArray.push({ date,
+                times: slotsByDate[formattedDate] ? slotsByDate[formattedDate].times : [],
+                isBooked: slotsByDate[formattedDate] ? slotsByDate[formattedDate].isBooked : false
+            });
         }
 
-        setAvailableSlots(slots);
+        setAvailableSlots(slotsArray);
 
         setScheduleDescription('test description');
         setScheduleOwnerName('Егор Шишов');
         setScheduleTitle('Agenda consultation');
-    }, [selectedDate]);
 
-    const handleSlotClick = (date, time) => {
-        setBookingDetails({ date, time });
+    }, [selectedDate, mockSlots]);
+
+    const handleSlotClick = (date, time, slotId) => {
+        setBookingDetails({ date, time, slotId });
     };
 
     const handleBookingSubmit = (e) => {
         e.preventDefault();
-        // Process booking details
         alert(`Booking confirmed for ${format(bookingDetails.date, 'dd MMM yyyy')} at ${bookingDetails.time}`);
         setBookingDetails(null);
     };
@@ -135,7 +153,7 @@ const BookingCalendar = () => {
                                             className="block w-full px-2 py-2 border border-orange-500
                                             bg-white-500 hover:bg-gray-100 hover:scale-105 transition ease-out duration-200 transform
                                             text-sm text-orange-400 rounded mb-1"
-                                            onClick={() => handleSlotClick(slot.date, time)}
+                                            onClick={() => handleSlotClick(slot.date, time, index)}
                                         >
                                             {time}
                                         </button>
@@ -149,8 +167,9 @@ const BookingCalendar = () => {
                     {bookingDetails && (
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
                             <div className="bg-white p-6 rounded shadow-md w-1/3">
-                                <h3 className="text-lg font-semibold mb-4">Book Appointment</h3>
                                 <BookingForm
+                                    scheduleDescription={scheduleDescription}
+                                    scheduleTitle={scheduleTitle}
                                     bookingDetails={bookingDetails}
                                     setBookingDetails={setBookingDetails}
                                 />

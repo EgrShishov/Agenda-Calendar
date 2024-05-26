@@ -1,14 +1,12 @@
 import { environment } from "../environments/environment.development.ts";
 import axios from '../../axios-config.ts';
 import {MeetingModel} from "../models/meetingModel.ts";
-import {WorkingHoursModel} from "../models/workingHoursModel.ts";
-
 
 export class MeetingService{
     baseUrl = environment.apiUrl;
 
-    async getMeetings(){
-        const response = await axios.get(`${this.baseUrl}meeting/all`);
+    async getMeetings(userId: number){
+        const response = await axios.get(`${this.baseUrl}meeting/all?userId=${userId}`);
         return response.data;
     }
 
@@ -27,18 +25,18 @@ export class MeetingService{
         return response.data;
     }
 
-    async acceptMeeting(meetingId: number){
-        const response = await axios.post(`${this.baseUrl}meeting/accept?meetingId=${meetingId}`);
+    async acceptMeeting(meetingId: number, userId: number){
+        const response = await axios.post(`${this.baseUrl}meeting/accept?meetingId=${meetingId}&userId=${userId}`);
         return response.data;
     }
 
-   async declineMeeting(meetingId: number){
-       const response = await axios.post(`${this.baseUrl}meeting/decline?meetingId=${meetingId}`);
+   async declineMeeting(meetingId: number, userId: number){
+       const response = await axios.post(`${this.baseUrl}meeting/decline?meetingId=${meetingId}&userId=${userId}`);
        return response.data;
    }
 
-   async invite(meetingId: number){
-       const response = await axios.post(`${this.baseUrl}meeting/invite?meetingId=${meetingId}`);
+   async invite(meetingId: number, userId: number){
+       const response = await axios.post(`${this.baseUrl}meeting/invite?meetingId=${meetingId}&userId=${userId}`);
        return response.data;
    }
 
@@ -47,13 +45,14 @@ export class MeetingService{
        return response.data;
    }
 
-   async getUserWorkingHours(){
-       const response = await axios.get(`${this.baseUrl}meeting/working_hours`);
+   async getUserWorkingHours(userId: number){
+       const response = await axios.get(`${this.baseUrl}meeting/working_hours?userId=${userId}}`);
        return response.data;
    }
 
-   async setWorkingHours(hours: WorkingHoursModel){
+   async setWorkingHours(hours){
        const response = await axios.post(`${this.baseUrl}meeting/working_hours/set`, hours);
-       return response.data;
+       return response;
    }
+
 }

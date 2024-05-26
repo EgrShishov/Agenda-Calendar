@@ -1,7 +1,13 @@
-﻿namespace AgendaCalendar.WEB_API.Contracts.WorkingHours
+﻿
+namespace AgendaCalendar.WEB_API.Contracts.WorkingHours
 {
     public record SetWorkingHoursRequest(
         DayOfWeek Day,
-        Dictionary<DayOfWeek, TimeSpan> StartTimes,
-        Dictionary<DayOfWeek, TimeSpan> EndTimes);
+        List<DailyHours> DailyHours
+    );
+
+    public record DailyHours(
+        DayOfWeek Day,
+        DateTime StartTime,
+        DateTime EndTime);
 }

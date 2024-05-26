@@ -48,12 +48,6 @@ const CreateButton = () => {
             setShowCalendarModal(false);
             setShowReminderModal(false);
             setShowWorkingHoursModal(true);
-        } else if (item == 'suggest'){
-            setShowEventDetails(false);
-            setShowCalendarModal(false);
-            setShowReminderModal(false);
-            setShowWorkingHoursModal(false);
-            setShowSuggestModal(true);
         }
         handleClose();
     };
@@ -79,7 +73,6 @@ const CreateButton = () => {
                 <MenuItem onClick={() => handleAddItem('event')}>Event</MenuItem>
                 <MenuItem onClick={() => handleAddItem('reminder')}>Reminder</MenuItem>
                 <MenuItem onClick={() => handleAddItem('meetings')}>Meetings schedule</MenuItem>
-                <MenuItem onClick={() => handleAddItem('suggest')}>Suggest meeting</MenuItem>
             </Menu>
         </React.Fragment>
     );

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgendaCalendar.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddWorkingHoursAndMeetingsModels : Migration
+    public partial class AddSlotsAndMeetingsAndWorkingHoursModels : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,23 +44,32 @@ namespace AgendaCalendar.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Slots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Times = table.Column<List<string>>(type: "text[]", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    IsBooked = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Slots", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WorkingHours",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
                     Day = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WorkingHours", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WorkingHours_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,14 +103,16 @@ namespace AgendaCalendar.Infrastructure.Migrations
                 name: "DailyWorkingHours",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     WorkingHoursId = table.Column<int>(type: "integer", nullable: false),
                     Day = table.Column<int>(type: "integer", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: true)
+                    StartTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DailyWorkingHours", x => new { x.WorkingHoursId, x.Day });
+                    table.PrimaryKey("PK_DailyWorkingHours", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DailyWorkingHours_WorkingHours_WorkingHoursId",
                         column: x => x.WorkingHoursId,
@@ -115,6 +127,11 @@ namespace AgendaCalendar.Infrastructure.Migrations
                 column: "MeetingId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DailyWorkingHours_WorkingHoursId",
+                table: "DailyWorkingHours",
+                column: "WorkingHoursId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invitations_MeetingId",
                 table: "Invitations",
                 column: "MeetingId");
@@ -127,11 +144,6 @@ namespace AgendaCalendar.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Meetings_UserId",
                 table: "Meetings",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WorkingHours_UserId",
-                table: "WorkingHours",
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
@@ -154,6 +166,9 @@ namespace AgendaCalendar.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Invitations");
+
+            migrationBuilder.DropTable(
+                name: "Slots");
 
             migrationBuilder.DropTable(
                 name: "WorkingHours");

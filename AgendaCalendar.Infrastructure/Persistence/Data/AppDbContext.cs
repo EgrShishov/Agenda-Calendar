@@ -30,13 +30,13 @@ namespace AgendaCalendar.Infrastructure.Persistence.Data
                 .HasKey(u => u.UserId);
             modelBuilder.ApplyUtcDateTimeConverter();
 
-            modelBuilder.Entity<DailyWorkingHours>()
-                .HasKey(dh => new { dh.WorkingHoursId, dh.Day });
-
-            modelBuilder.Entity<DailyWorkingHours>()
-               .HasOne(dh => dh.WorkingHours)
-               .WithMany(wh => wh.DailyHours)
-               .HasForeignKey(dh => dh.WorkingHoursId);
+            modelBuilder.Entity<WorkingHours>(e =>
+            {
+                e.HasKey(wh => wh.Id);
+                e.HasMany(wh => wh.DailyHours)
+                    .WithOne(dh => dh.WorkingHours)
+                    .HasForeignKey(dh => dh.WorkingHoursId);
+            });
         }
 
         public DbSet<Calendar> Calendars { get; set; }

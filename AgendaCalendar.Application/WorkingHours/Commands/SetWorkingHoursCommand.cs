@@ -17,16 +17,28 @@ namespace AgendaCalendar.Application.WorkingHours.Commands
                 return Errors.User.NotFound;
             }
 
+            var list = request.dailyHours.Select(dh => new DailyWorkingHours
+            {
+                Day = dh.Day,
+                StartTime = dh.StartTime,
+                EndTime = dh.EndTime
+            }).ToList();
+
             var newWorkingHours = new Domain.Entities.WorkingHours
             {
                 UserId = request.userId,
                 Day = request.day,
-                DailyHours = request.dailyHours
+                DailyHours = request.dailyHours.Select(dh => new DailyWorkingHours
+                {
+                    Day = dh.Day,
+                    StartTime = dh.StartTime,
+                    EndTime = dh.EndTime
+                }).ToList()
             };
 
-            newWorkingHours = await unitOfWork.WorkHoursRepository.AddAsync(newWorkingHours);
+            var settedHours = await unitOfWork.WorkHoursRepository.AddAsync(newWorkingHours);
             await unitOfWork.SaveAllAsync();
-            return newWorkingHours;
+            return settedHours;
         }
     }
 }

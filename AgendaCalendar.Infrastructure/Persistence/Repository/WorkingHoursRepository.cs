@@ -15,7 +15,7 @@ namespace AgendaCalendar.Infrastructure.Persistence.Repository
 
         public async Task<WorkingHours> AddAsync(WorkingHours entity, CancellationToken cancellationToken = default)
         {
-            var working_hours = await _dbContext.AddAsync(entity);
+            var working_hours = await _dbContext.WorkingHours.AddAsync(entity);
             return working_hours.Entity;
         }
 

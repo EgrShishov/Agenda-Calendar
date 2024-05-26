@@ -6,10 +6,13 @@ import {LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {MeetingService} from "../services/meetingService.ts";
 import GlobalContext from "../context/globalContext.ts";
-import {WorkingHoursModel} from "../models/workingHoursModel.ts";
 
 const WorkingHoursForm = () => {
     const daysOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+    const convertToIndex = (day) => {
+        return daysOfWeek.indexOf(day) ? daysOfWeek.indexOf(day) : -1;
+    };
 
     const {setShowWorkingHoursModal} = useContext(GlobalContext);
 
@@ -25,7 +28,7 @@ const WorkingHoursForm = () => {
         Su: false
     });
 
-    const [newPeriod, setNewPeriod] = useState({
+    const [periods, setPeriods] = useState({
         Mo: { startTime: '09:00', endTime: '17:00' },
         Tu: { startTime: '09:00', endTime: '17:00' },
         We: { startTime: '09:00', endTime: '17:00' },
@@ -45,15 +48,19 @@ const WorkingHoursForm = () => {
         Su: [{ startTime: '09:00', endTime: '17:00' }]
     });
 
-    const handleTimeChange = (day, key, value) => {
-        // if (!isNoFreeTime) {
-        //     setWorkingHours((prev) => ({
-        //         ...prev,
-        //         [day]: { ...prev[day], [key]: value.format('HH:mm') },
-        //     }));
-        // } else {
-        //     setNewPeriod((prev) => ({ ...prev, [key]: value.format('HH:mm') }));
-        // }
+    const handleTimeChange = (day, periodIndex, key, value) => {
+        setWorkingHours((prev) => ({
+            ...prev,
+            [day]: prev[day].map((period, index) => {
+                if (index === periodIndex) {
+                    return {
+                        ...period,
+                        [key]: value.format('HH:mm')
+                    };
+                }
+                return period;
+            })
+        }));
     };
 
     const handleNoFreeTimeClick = (day, index) => {
@@ -73,11 +80,25 @@ const WorkingHoursForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const workingHours : WorkingHoursModel = {
+        const dailyHours = Object.entries(workingHours).flatMap(([day, periods]) =>
+            periods.map(period => ({
+                day: convertToIndex(day) == -1 ? 0 : convertToIndex(day),
+                startTime: period.startTime ? new Date(`1970-01-01T${period.startTime}:00`).toISOString() : '',
+                endTime: period.endTime ? new Date(`1970-01-01T${period.endTime}:00`).toISOString() : ''
+            }))
+        );
 
+        const request = {
+            day: 0,
+            dailyHours: dailyHours
         };
-        //const response = await meetingService.setWorkingHours();
-        console.log(e);
+        console.log(request);
+        const response = await meetingService.setWorkingHours(request);
+        if(response.status === 200){
+            setShowWorkingHoursModal(false);
+        } else {
+            console.error(response.data);g
+        }
     };
 
     return (

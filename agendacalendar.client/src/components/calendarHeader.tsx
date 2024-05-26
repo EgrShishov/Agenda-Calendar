@@ -10,14 +10,18 @@ const CalendarHeader = () => {
     const [currentView, setCurrentView] = useState('dayGridMonth');
 
     useEffect(() => {
-        const updateCurrentView = () => {
-            setCurrentView(calendarRef.current.getApi().view.type);
-        };
+        if (calendarRef.current) {
+            const updateCurrentView = () => {
+                setCurrentView(calendarRef.current.getApi().view.type);
+            };
 
-        if (calendarRef && calendarRef.current) {
-            calendarRef.current.getApi().on('viewDidMount', updateCurrentView);
+            const calendarApi = calendarRef.current.getApi();
+            calendarApi.on('viewDidMount', updateCurrentView);
+
             return () => {
-                calendarRef.current.getApi().off('viewDidMount', updateCurrentView);
+                if (calendarRef.current) {
+                    calendarRef.current.getApi().off('viewDidMount', updateCurrentView);
+                }
             };
         }
     }, [calendarRef]);

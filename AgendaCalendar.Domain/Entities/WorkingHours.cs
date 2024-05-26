@@ -4,17 +4,16 @@ namespace AgendaCalendar.Domain.Entities
     public class WorkingHours : Entity
     {
         public int UserId { get; set; }
-        public User User { get; set; }
         public DayOfWeek Day { get; set; }
-        public List<DailyWorkingHours> DailyHours { get; set; } 
+        public List<DailyWorkingHours> DailyHours { get; set; } = new();
     }
 
-    public class DailyWorkingHours
+    public class DailyWorkingHours : Entity
     {
         public int WorkingHoursId { get; set; }
         public WorkingHours WorkingHours { get; set; }
         public DayOfWeek Day { get; set; }
-        public TimeSpan? StartTime { get; set; }
-        public TimeSpan? EndTime { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
     }
 }

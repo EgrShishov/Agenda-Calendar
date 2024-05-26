@@ -18,6 +18,10 @@ const formatWeekdays = (byweekday) => {
     return byweekday.map((day, idx) => daysOfWeek[idx]).join(', ');
 };
 
+const truncate = (str, maxLength) => {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
 const formatRecurrencePattern = (recurrenceRule) => {
     const { freq, interval, byweekday, dtstart, until } = recurrenceRule;
 
@@ -335,7 +339,7 @@ const EventDetails = () => {
                                             className="border-0 text-gray-600 text-xl mx-3 font-semibold pb-2
                                             w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                                         >
-                                            {title}
+                                            {truncate(title, 30)}
                                         </span>
                                     )}
                                 </div>

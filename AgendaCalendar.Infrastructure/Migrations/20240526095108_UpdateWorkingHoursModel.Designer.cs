@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgendaCalendar.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240522174732_AddWorkingHoursAndMeetingsModels")]
-    partial class AddWorkingHoursAndMeetingsModels
+    [Migration("20240526095108_UpdateWorkingHoursModel")]
+    partial class UpdateWorkingHoursModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,19 +60,27 @@ namespace AgendaCalendar.Infrastructure.Migrations
 
             modelBuilder.Entity("AgendaCalendar.Domain.Entities.DailyWorkingHours", b =>
                 {
-                    b.Property<int>("WorkingHoursId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Day")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan?>("EndTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time without time zone");
 
-                    b.Property<TimeSpan?>("StartTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time without time zone");
 
-                    b.HasKey("WorkingHoursId", "Day");
+                    b.Property<int>("WorkingHoursId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkingHoursId");
 
                     b.ToTable("DailyWorkingHours");
                 });
@@ -212,6 +220,32 @@ namespace AgendaCalendar.Infrastructure.Migrations
                     b.ToTable("Reminders");
                 });
 
+            modelBuilder.Entity("AgendaCalendar.Domain.Entities.Slot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("boolean");
+
+                    b.Property<List<string>>("Times")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Slots");
+                });
+
             modelBuilder.Entity("AgendaCalendar.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -290,8 +324,6 @@ namespace AgendaCalendar.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("WorkingHours");
                 });
@@ -542,17 +574,6 @@ namespace AgendaCalendar.Infrastructure.Migrations
                     b.HasOne("AgendaCalendar.Domain.Entities.Meeting", null)
                         .WithMany("Participants")
                         .HasForeignKey("MeetingId");
-                });
-
-            modelBuilder.Entity("AgendaCalendar.Domain.Entities.WorkingHours", b =>
-                {
-                    b.HasOne("AgendaCalendar.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AgendaCalendar.Domain.Entities.Calendar", b =>

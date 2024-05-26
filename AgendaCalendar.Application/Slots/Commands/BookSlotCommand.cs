@@ -1,49 +1,63 @@
 ﻿using AgendaCalendar.Application.Common.Interfaces;
 
-namespace AgendaCalendar.Application.Meetings.Commands
+namespace AgendaCalendar.Application.Slots.Commands
 {
-    public sealed record InviteUserToMeetingCommand(int meetingId, int userId) : IRequest<ErrorOr<Meeting>> { }
+    public sealed record BookSlotCommand(
+        string firstName,
+        string lastName,
+        string email,
+        string description,
+        int slotId) : IRequest<ErrorOr<Meeting>> { }
 
-    public class InviteUserToMeetingCommandHandler(IUnitOfWork unitOfWork, IEmailSender emailSender) 
-        : IRequestHandler<InviteUserToMeetingCommand, ErrorOr<Meeting>>
+    public class BookSlotCommandHandler(IUnitOfWork unitOfWork, IEmailSender emailSender) : IRequestHandler<BookSlotCommand, ErrorOr<Meeting>>
     {
-        public async Task<ErrorOr<Meeting>> Handle(InviteUserToMeetingCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Meeting>> Handle(BookSlotCommand request, CancellationToken cancellationToken)
         {
-            var meeting = await unitOfWork.MeetingRepository.GetByIdAsync(request.meetingId);
-            var user = await unitOfWork.UserRepository.GetByIdAsync(request.userId);
-
-            if (meeting == null)
-            {
-                return Errors.Meetings.NotFound;
-            }
-
+            var user = await unitOfWork.UserRepository.GetUserByEmailAsync(request.email);
             if (user == null)
             {
                 return Errors.User.NotFound;
             }
 
-            var existingInvitations = await unitOfWork.InvitationRepository
-                .ListAsync(i => i.MeetingId == request.meetingId && i.UserId == request.userId);
-
-            Invitation existingInvitation = null;
-            if (existingInvitations.Any())
+            var slot = await unitOfWork.SlotRepository.GetByIdAsync(request.slotId);
+            if (slot == null) 
             {
-                existingInvitation = existingInvitations.First();
+                return Errors.Slot.NotFound;
             }
 
-            if (existingInvitation != null)
+            if (slot.IsBooked)
             {
-                return Errors.Meetings.AlreadyInvited;
+                return Errors.Slot.AlreadyBooked;
             }
 
-            var invitation = new Invitation
+            slot.IsBooked = true;
+
+            await unitOfWork.SlotRepository.UpdateAsync(slot);
+
+            TimeOnly startTime;
+            TimeOnly endTime;
+
+            TimeOnly.TryParse(slot.Times.First(), out startTime);
+            TimeOnly.TryParse(slot.Times.First(), out endTime);
+
+            var meeting = new Meeting
             {
-                MeetingId = request.meetingId,
-                UserId = request.userId,
-                Status = InvitationStatus.Pending
+                Title = $"Meeting with {request.email}",
+                Description = request.description,
+                StartTime = slot.Date + startTime.ToTimeSpan(),
+                EndTime = slot.Date + endTime.ToTimeSpan() + TimeSpan.FromHours(1),
+                UserId = user.Id,
+                Invitations = new List<Invitation>
+                {
+                    new Invitation
+                    {
+                        MeetingId = slot.Id,
+                        UserId = user.Id,
+                        Status = InvitationStatus.Pending
+                    }
+                }
             };
 
-            //tokens?
             string yourDomain = "https://localhost:7127";
             string subject = $"Meeting scheduled: {meeting.Title} ({user.UserName}) - {meeting.StartTime} - {meeting.EndTime}";
             string body = $@"
@@ -115,11 +129,11 @@ namespace AgendaCalendar.Application.Meetings.Commands
                             <p><strong>Start Time:</strong> {meeting.StartTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
                             <p><strong>End Time:</strong> {meeting.EndTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
                             <p>
-                                <form action='{yourDomain}/api/meetings/accept' method='post' style='display:inline;'>
+                                <form action='{yourDomain}/api/meetings/accept?meetingId={meeting.Id}' method='post' style='display:inline;'>
                                     <input type='hidden' name='meetingId' value='{meeting.Id}' />
                                     <button type='submit' class='button'>Accept Meeting</button>
                                 </form>
-                                <form action='{yourDomain}/api/meetings/decline' method='post' style='display:inline;'>
+                                <form action='{yourDomain}/api/meetings/decline?meetingId={meeting.Id}' method='post' style='display:inline;'>
                                     <input type='hidden' name='meetingId' value='{meeting.Id}' />
                                     <button type='submit' class='button'>Decline Meeting</button>
                                 </form>
@@ -132,13 +146,12 @@ namespace AgendaCalendar.Application.Meetings.Commands
                 </body>
                 </html>";
 
-            await emailSender.SendMessageAsync(user.Email, subject, body); 
+            await emailSender.SendMessageAsync(user.Email, subject, body);
 
-            await unitOfWork.InvitationRepository.AddAsync(invitation);
+            var addedMeeting = await unitOfWork.MeetingRepository.AddAsync(meeting);
+
             await unitOfWork.SaveAllAsync();
-
-            return meeting;
+            return addedMeeting;
         }
     }
-
 }

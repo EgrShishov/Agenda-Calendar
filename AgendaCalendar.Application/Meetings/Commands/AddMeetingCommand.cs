@@ -30,8 +30,8 @@ namespace AgendaCalendar.Application.Meetings.Commands
                         return Errors.Meetings.TimeIsOutsideOfWorkingHours;
                     }
 
-                    if (request.startTime.TimeOfDay < dailyHour.StartTime.Value ||
-                        request.endTime.TimeOfDay > dailyHour.EndTime.Value)
+                    if (TimeOnly.FromTimeSpan(request.startTime.TimeOfDay) < dailyHour.StartTime.Value ||
+                        TimeOnly.FromTimeSpan(request.endTime.TimeOfDay) > dailyHour.EndTime.Value)
                     {
                         return Errors.Meetings.TimeIsOutsideOfWorkingHours;
                     }

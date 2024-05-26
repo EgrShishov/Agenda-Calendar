@@ -2,7 +2,6 @@
 using AgendaCalendar.Application.Meetings.Queries;
 using AgendaCalendar.Application.WorkingHours.Commands;
 using AgendaCalendar.Application.WorkingHours.Queries;
-using AgendaCalendar.Domain.Common.Errors;
 using AgendaCalendar.Domain.Entities;
 using AgendaCalendar.WEB_API.Contracts.Meetings;
 using AgendaCalendar.WEB_API.Contracts.WorkingHours;
@@ -11,11 +10,13 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgendaCalendar.Application.Slots.Queries;
+using AgendaCalendar.Application.Slots.Commands;
+using AgendaCalendar.WEB_API.Contracts.Slots;
 
 namespace AgendaCalendar.WEB_API.Controllers
 {
     [Route("api/meeting")]
-    [Authorize]
     public class MeetingController : ApiController
     {
         private readonly IMediator _mediator;
@@ -79,10 +80,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetUserMeetings()
+        public async Task<IActionResult> GetUserMeetings(int userId)
         {
-            int userId = User.GetUserId();
-
             var result = await _mediator.Send(new UserMeetingsListQuery(userId));
 
             return result.Match(
@@ -91,10 +90,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("invite")]
-        public async Task<IActionResult> InviteUserToMeeting(int meetingId)
+        public async Task<IActionResult> InviteUserToMeeting(int meetingId, int userId)
         {
-            int userId = User.GetUserId();
-
             var command = new InviteUserToMeetingCommand(meetingId, userId);
             var inviteResult = await _mediator.Send(command);
 
@@ -104,10 +101,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("accept")]
-        public async Task<IActionResult> AcceptMeeting(int meetingId)
+        public async Task<IActionResult> AcceptMeeting(int meetingId, int userId)
         {
-            int userId = User.GetUserId();
-
             var command = new AcceptMeetingInviteCommand(meetingId, userId);
             var acceptResult = await _mediator.Send(command);
 
@@ -117,10 +112,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpPost("decline")]
-        public async Task<IActionResult> DeclineMeeting(int meetingId)
+        public async Task<IActionResult> DeclineMeeting(int meetingId, int userId)
         {
-            int userId = User.GetUserId();
-
             var command = new DeclineMeetingInviteCommand(meetingId, userId);
             var declineResult = await _mediator.Send(command);
 
@@ -130,10 +123,8 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("working_hours")]
-        public async Task<IActionResult> GetWorkingHours()
+        public async Task<IActionResult> GetWorkingHours(int userId)
         {
-            int userId = User.GetUserId();
-
             var command = new GetUserWorkingHoursQuery(userId);
             var workingHoursResult = await _mediator.Send(command);
 
@@ -146,25 +137,32 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> SetWorkingHours(SetWorkingHoursRequest request)
         {
             int userId = User.GetUserId();
+            Console.WriteLine(request);
 
             var command = _mapper.Map<SetWorkingHoursCommand>((request, userId));
             var setWorkingHoursResult = await _mediator.Send(command);
 
-            return setWorkingHoursResult.Match(
-                hours => Ok(_mapper.Map<WorkingHoursResponse>(hours)),
+            if (setWorkingHoursResult.IsError)
+            {
+                return Problem(setWorkingHoursResult.Errors);
+            }
+
+            var generateSlotsCommand = new GenerateSlotsCommand(userId);
+            var generateSlotsResult = await _mediator.Send(generateSlotsCommand);
+
+            return generateSlotsResult.Match(
+                slots => Ok(),
                 errors => Problem(errors));
         }
 
         [HttpGet("avaibale_slots")]
-        public async Task<IActionResult> GetAvaibleSlots()
+        public async Task<IActionResult> GetAvaibleSlots(string email)
         {
-            int userId = User.GetUserId();
-
-            var command = new GetAvaibleSlotsCommand(userId);
+            var command = new GetAvaibaleSlotsQuery(email);
             var avaibleSlotsResult = await _mediator.Send(command);
 
             return avaibleSlotsResult.Match(
-                slots => Ok(slots),
+                slots => Ok(_mapper.Map<List<SlotResponse>>(slots)),
                 errors => Problem(errors));
         }
     }

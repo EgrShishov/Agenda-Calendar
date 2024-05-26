@@ -1,8 +1,9 @@
 import {EventService} from "../services/eventService.ts";
 import {useEffect, useState, useContext} from "react";
 import GlobalContext from "../context/globalContext.ts";
+import MeetingsSchedule from "./meetingsSchedule.tsx";
 
-const UpcomingEvents = () => {
+const   UpcomingEvents = () => {
 
     const eventService = new EventService();
     const {events} = useContext(GlobalContext);
@@ -55,10 +56,6 @@ const UpcomingEvents = () => {
                 ) : (
                     <p>No upcoming events</p>
                 )}
-            </div>
-            <div className="border border-gray-300 rounded p-2 mt-10">
-                <p className="text-lg font-bold mb-2">Schedule</p>
-
             </div>
         </div>
     )

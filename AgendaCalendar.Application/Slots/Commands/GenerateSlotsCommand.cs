@@ -24,8 +24,8 @@ namespace AgendaCalendar.Application.Slots.Commands
                     var currentDate = date;
                     while (currentDate <= date.AddMonths(1)) // Generate slots for a month, but in future change to user request
                     {
-                        var startTime = currentDate.Date + dailyHours.StartTime.Value;
-                        var endTime = currentDate.Date + dailyHours.EndTime.Value;
+                        var startTime = currentDate.Date + dailyHours.StartTime.Value.ToTimeSpan();
+                        var endTime = currentDate.Date + dailyHours.EndTime.Value.ToTimeSpan();
 
                         for (var time = startTime; time < endTime; time = time.AddMinutes(60)) // 60-minute slots, but in future change to user request
                         {
@@ -42,7 +42,7 @@ namespace AgendaCalendar.Application.Slots.Commands
                 }
             }
 
-            foreach(var slot in slots)
+            foreach (var slot in slots)
             {
                 await unitOfWork.SlotRepository.AddAsync(slot);
             }

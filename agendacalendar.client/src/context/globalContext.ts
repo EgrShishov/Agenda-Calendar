@@ -26,7 +26,7 @@ const GlobalContext = React.createContext({
     meetings: [],
     setMeetings : () => {},
     showSuggestModal: false,
-    setShowSuggestModal: () => {}
+    setShowSuggestModal: () => {},
 });
 
 export default GlobalContext;

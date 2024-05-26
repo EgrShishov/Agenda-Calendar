@@ -53,7 +53,7 @@ export default function ContextWrapper(props){
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([]);
     const [meetings, setMeetings] = useState([]);
-    const [showSuggestModal, setShowSuggestModal] = useState([]);
+    const [showSuggestModal, setShowSuggestModal] = useState(false);
 
     const [labelsClasses, setLabelsClasses] = useState(allColors);
     const [usedColors, setUsedColors] = useState([]);
@@ -103,7 +103,7 @@ export default function ContextWrapper(props){
             }
         };
         fetchShared();
-    }, []);
+    });
 
     useEffect(() => {
         if (!showEventDetails) {
@@ -165,7 +165,7 @@ export default function ContextWrapper(props){
                 meetings,
                 setMeetings,
                 showSuggestModal,
-                setShowSuggestModal
+                setShowSuggestModal,
             }}
         >
             { props.children }
