@@ -15,7 +15,7 @@ namespace AgendaCalendar.Infrastructure.Background
             _unitOfWork = unitOfWork;
             _mediator = mediator;
 
-            //RecurringJob.AddOrUpdate("CheckingReminder", () => CheckRemindersForSending(), Cron.MinuteInterval(1));
+            RecurringJob.AddOrUpdate("CheckingReminder", () => CheckRemindersForSending(), Cron.MinuteInterval(1));
         }
 
         public async Task<IReadOnlyList<Reminder>> CheckRemindersForSending()

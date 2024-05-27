@@ -1,10 +1,12 @@
-﻿namespace AgendaCalendar.Application.Slots.Queries
-{
-    public sealed record GetAvaibaleSlotsQuery(string email) : IRequest<ErrorOr<List<Slot>>> { }
+﻿using AgendaCalendar.Application.Slots.Common;
 
-    public class GetAvaibaleSlotsCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAvaibaleSlotsQuery, ErrorOr<List<Slot>>>
+namespace AgendaCalendar.Application.Slots.Queries
+{
+    public sealed record GetAvaibaleSlotsQuery(string email) : IRequest<ErrorOr<ScheduleResult>> { }
+
+    public class GetAvaibaleSlotsCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAvaibaleSlotsQuery, ErrorOr<ScheduleResult>>
     {
-        public async Task<ErrorOr<List<Slot>>> Handle(GetAvaibaleSlotsQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<ScheduleResult>> Handle(GetAvaibaleSlotsQuery request, CancellationToken cancellationToken)
         {
             var user = await unitOfWork.UserRepository.GetUserByEmailAsync(request.email);
             if(user == null)
@@ -18,8 +20,16 @@
                 return Errors.Slot.NotFound;
             }
 
+            //var schedule = await unit
+            string title = "meetings schedule";
+            string description = "description";
+
             List<Slot> avaible_slots = slots.ToList();
-            return avaible_slots;
+            return new ScheduleResult(
+                avaible_slots,
+                title,
+                description,
+                user.UserName);
         }
     }
 }

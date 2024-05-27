@@ -7,6 +7,7 @@ using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using AgendaCalendar.Domain.Common.Errors;
 using AgendaCalendar.Application.Authentication.Queries;
+using AgendaCalendar.Application.Users.Queries.AgendaCalendar.Application.Users.Queries;
 
 namespace AgendaCalendar.WEB_API.Controllers
 {

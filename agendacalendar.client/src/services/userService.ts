@@ -19,8 +19,4 @@ export class UserService{
         return response;
     }
 
-    async logout(){
-
-    }
-
 }

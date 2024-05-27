@@ -7,7 +7,8 @@ import {useNavigate} from "react-router-dom";
 import {BookingService} from "../services/bookingService.ts";
 
 
-const BookingCalendar = () => {
+const BookingCalendar = ({email}) => {
+
     const [scheduleTitle, setScheduleTitle] = useState('');
     const [scheduleDescription, setScheduleDescription] = useState('');
     const [scheduleOwnerName, setScheduleOwnerName] = useState('');
@@ -17,17 +18,26 @@ const BookingCalendar = () => {
     const [bookingDetails, setBookingDetails] = useState(null);
     const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
+    const [message, setMessage] = useState('');
     const Redirect = useNavigate();
 
     const bookingService = new BookingService();
 
     const [mockSlots, setMockSlots] = useState([]);
     useEffect(() => {
-        const getSlots = async () =>{
-            const slots = await bookingService.getAvaibaleSlots('e.shishov99@yandex.ru');
-            setMockSlots(slots);
+        const getSchedule = async () =>{
+            const response = await bookingService.getAvaibaleSlots(email);
+
+            if(response) {
+                setMockSlots(response.slots);
+                setScheduleDescription(response.description);
+                setScheduleOwnerName(response.userName);
+                setScheduleTitle(response.title);
+            } else {
+                setMessage(response);
+            }
         };
-        getSlots();
+        getSchedule();
     },[]);
 
     useEffect(() => {
@@ -55,10 +65,6 @@ const BookingCalendar = () => {
 
         setAvailableSlots(slotsArray);
 
-        setScheduleDescription('test description');
-        setScheduleOwnerName('Егор Шишов');
-        setScheduleTitle('Agenda consultation');
-
     }, [selectedDate, mockSlots]);
 
     const handleSlotClick = (date, time, slotId) => {
@@ -67,7 +73,6 @@ const BookingCalendar = () => {
 
     const handleBookingSubmit = (e) => {
         e.preventDefault();
-        alert(`Booking confirmed for ${format(bookingDetails.date, 'dd MMM yyyy')} at ${bookingDetails.time}`);
         setBookingDetails(null);
     };
 
@@ -102,9 +107,14 @@ const BookingCalendar = () => {
                     <span className="flex-1 text-xl font-normal text-black/60">
                         {scheduleDescription}
                     </span>
-                    <span className="flex text-xl font-medium text-black/60">
-                    <span className="text-orange-400">Agenda</span> Calendar
-                </span>
+                    <span
+                        className="flex text-xl font-medium text-black/60
+                        hover:scale-105 transition ease-out hover:text-black/60 hover:font-bold"
+                    >
+                        <a href="http://localhost:5173/u">
+                            <span className="text-orange-400">Agenda</span> Calendar
+                        </a>
+                    </span>
                 </div>
             </div>
 
@@ -153,7 +163,7 @@ const BookingCalendar = () => {
                                             className="block w-full px-2 py-2 border border-orange-500
                                             bg-white-500 hover:bg-gray-100 hover:scale-105 transition ease-out duration-200 transform
                                             text-sm text-orange-400 rounded mb-1"
-                                            onClick={() => handleSlotClick(slot.date, time, index)}
+                                            onClick={() => handleSlotClick(slot.date, time, idx)}
                                         >
                                             {time}
                                         </button>

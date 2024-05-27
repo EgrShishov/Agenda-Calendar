@@ -21,13 +21,13 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("available-slots")]
-        public async Task<IActionResult> GetAvailableSlots(string email)
+        public async Task<IActionResult> GetAvaibleSlots(string email)
         {
             var command = new GetAvaibaleSlotsQuery(email);
             var avaibleSlotsResult = await _mediator.Send(command);
 
             return avaibleSlotsResult.Match(
-                slots => Ok(_mapper.Map<List<SlotResponse>>(slots)),
+                response => Ok(_mapper.Map<ScheduleResponse>(response)),
                 errors => Problem(errors));
         }
 

@@ -16,7 +16,6 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
                 .Map(dest => dest.email, src => src.request.email)
                 .Map(dest => dest.slotId, src => src.slotId);
 
-
             config.NewConfig<Slot, SlotResponse>()
                 .Map(dest => dest.Times, src => src.Times)
                 .Map(dest => dest.Date, src => src.Date)

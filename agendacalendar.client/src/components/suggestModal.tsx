@@ -6,7 +6,7 @@ import {TextField} from "@mui/material";
 import {MeetingService} from "../services/meetingService.ts";
 
 const SuggestModal = () => {
-    const {showSuggestModal, setShowSuggestModal, setSlots} = useContext(GlobalContext);
+    const {showSuggestModal, setShowSuggestModal} = useContext(GlobalContext);
 
     const [email, setEmail] = useState('');
     const Redirect = useNavigate();
@@ -16,7 +16,7 @@ const SuggestModal = () => {
         //const slotsResponse = await meetingService.getAvaibaleSlots(email);
         //console.log(slotsResponse);
         //setSlots(slotsResponse);
-        Redirect('/u/meetings');
+        Redirect(`/u/meetings/${encodeURIComponent(email)}`);
         setShowSuggestModal(false);
     };
 

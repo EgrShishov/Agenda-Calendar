@@ -27,8 +27,8 @@ const MeetingsSchedule = ({ meetings }) => {
                     <h3 className="text-lg font-semibold text-gray-700 break-words">{meeting.title}</h3>
                     <p className="text-sm text-gray-600 break-words">{meeting.description}</p>
                     <p className="text-sm text-gray-500">{format(new Date(meeting.startTime), 'HH:mm')} - {format(new Date(meeting.endTime), 'HH:mm')}</p>
-                    <p className="text-sm text-gray-600 break-words">Participants: {meeting.participants.map(p => p.name).join(', ')}</p>
-                    {meeting.invitationStatus === 'Declined' && <p className="text-red-500 font-bold">Cancelled</p>}
+                   {/* <p className="text-sm text-gray-600 break-words">Participants: {meeting.participants.map(p => p.name).join(', ')}</p>
+                    {meeting.invitationStatus === 'Declined' && <p className="text-red-500 font-bold">Cancelled</p>}*/}
                 </div>
             ));
     };

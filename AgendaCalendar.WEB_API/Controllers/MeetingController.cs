@@ -17,6 +17,7 @@ using AgendaCalendar.WEB_API.Contracts.Slots;
 namespace AgendaCalendar.WEB_API.Controllers
 {
     [Route("api/meeting")]
+    [Authorize]
     public class MeetingController : ApiController
     {
         private readonly IMediator _mediator;
@@ -80,8 +81,10 @@ namespace AgendaCalendar.WEB_API.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetUserMeetings(int userId)
+        public async Task<IActionResult> GetUserMeetings()
         {
+            int userId = User.GetUserId();
+
             var result = await _mediator.Send(new UserMeetingsListQuery(userId));
 
             return result.Match(
@@ -137,7 +140,6 @@ namespace AgendaCalendar.WEB_API.Controllers
         public async Task<IActionResult> SetWorkingHours(SetWorkingHoursRequest request)
         {
             int userId = User.GetUserId();
-            Console.WriteLine(request);
 
             var command = _mapper.Map<SetWorkingHoursCommand>((request, userId));
             var setWorkingHoursResult = await _mediator.Send(command);
@@ -152,17 +154,6 @@ namespace AgendaCalendar.WEB_API.Controllers
 
             return generateSlotsResult.Match(
                 slots => Ok(),
-                errors => Problem(errors));
-        }
-
-        [HttpGet("avaibale_slots")]
-        public async Task<IActionResult> GetAvaibleSlots(string email)
-        {
-            var command = new GetAvaibaleSlotsQuery(email);
-            var avaibleSlotsResult = await _mediator.Send(command);
-
-            return avaibleSlotsResult.Match(
-                slots => Ok(_mapper.Map<List<SlotResponse>>(slots)),
                 errors => Problem(errors));
         }
     }

@@ -5,8 +5,8 @@ import {MeetingModel} from "../models/meetingModel.ts";
 export class MeetingService{
     baseUrl = environment.apiUrl;
 
-    async getMeetings(userId: number){
-        const response = await axios.get(`${this.baseUrl}meeting/all?userId=${userId}`);
+    async getMeetings(){
+        const response = await axios.get(`${this.baseUrl}meeting/all`);
         return response.data;
     }
 

@@ -129,12 +129,10 @@ namespace AgendaCalendar.Application.Slots.Commands
                             <p><strong>Start Time:</strong> {meeting.StartTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
                             <p><strong>End Time:</strong> {meeting.EndTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
                             <p>
-                                <form action='{yourDomain}/api/meetings/accept?meetingId={meeting.Id}' method='post' style='display:inline;'>
-                                    <input type='hidden' name='meetingId' value='{meeting.Id}' />
+                                <form action='{yourDomain}/api/meeting/accept?meetingId={meeting.Id}' method='post' style='display:inline;'>
                                     <button type='submit' class='button'>Accept Meeting</button>
                                 </form>
-                                <form action='{yourDomain}/api/meetings/decline?meetingId={meeting.Id}' method='post' style='display:inline;'>
-                                    <input type='hidden' name='meetingId' value='{meeting.Id}' />
+                                <form action='{yourDomain}/api/meeting/decline?meetingId={meeting.Id}' method='post' style='display:inline;'>
                                     <button type='submit' class='button'>Decline Meeting</button>
                                 </form>
                             </p>

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import CalendarHeader from "../components/calendarHeader.tsx";
 import Sidebar from "../components/sidebar.tsx";
 import Calendar from "../components/calendar.tsx";
@@ -10,6 +10,7 @@ import UpcomingEvents from "../components/upcomingEvents.tsx";
 import WorkingHoursForm from "../components/workingHoursForm.tsx";
 import SuggestModal from "../components/suggestModal.tsx";
 import MeetingsSchedule from "../components/meetingsSchedule.tsx";
+import {MeetingService} from "../services/meetingService.ts";
 
 const MainCalendar = () => {
     const {
@@ -36,7 +37,20 @@ const MainCalendar = () => {
         setShowReminderModal(false);
     };
 
-    const meetings = [
+    const meetingService = new MeetingService();
+    const [meetings, setMeetings] = useState([]);
+
+    useEffect(() => {
+        const fetchMeetings = async () => {
+            const response = await meetingService.getMeetings();
+            if(response){
+                setMeetings(response);
+            }
+        };
+        fetchMeetings();
+    }, [isSidebarOpen]);
+
+   /* const meetings = [
         {
             id: 1,
             title: "Team Meeting",
@@ -125,7 +139,7 @@ const MainCalendar = () => {
             "isCancelled": true,
             "invitations": []
         }
-    ]
+    ]*/
 
     return (
         <React.Fragment>
