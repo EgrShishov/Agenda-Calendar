@@ -25,13 +25,13 @@ export class MeetingService{
         return response.data;
     }
 
-    async acceptMeeting(meetingId: number, userId: number){
-        const response = await axios.post(`${this.baseUrl}meeting/accept?meetingId=${meetingId}&userId=${userId}`);
+    async acceptMeeting(meetingId: number){
+        const response = await axios.get(`${this.baseUrl}meeting/accept?meetingId=${meetingId}`);
         return response.data;
     }
 
-   async declineMeeting(meetingId: number, userId: number){
-       const response = await axios.post(`${this.baseUrl}meeting/decline?meetingId=${meetingId}&userId=${userId}`);
+   async declineMeeting(meetingId: number){
+       const response = await axios.get(`${this.baseUrl}meeting/decline?meetingId=${meetingId}`);
        return response.data;
    }
 

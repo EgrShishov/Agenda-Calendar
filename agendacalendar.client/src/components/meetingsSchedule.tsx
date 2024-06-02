@@ -1,14 +1,15 @@
 import {addDays, endOfWeek, format, startOfWeek} from "date-fns";
 import GlobalContext from "../context/globalContext.ts";
 import {useContext} from "react";
+import {MeetingService} from "../services/meetingService.ts";
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'Pending':
+        case 0:
             return 'bg-yellow-100 border-l-4 border-yellow-500';
-        case 'Accepted':
+        case 1:
             return 'bg-green-100 border-l-4 border-green-500';
-        case 'Declined':
+        case 2:
             return 'bg-red-100 border-l-4 border-red-500';
         default:
             return 'bg-blue-100 border-l-4 border-blue-500';
@@ -17,6 +18,19 @@ const getStatusColor = (status) => {
 
 const MeetingsSchedule = ({ meetings }) => {
     const {setShowSuggestModal} = useContext(GlobalContext);
+
+    console.log(meetings);
+    const meetingService = new MeetingService();
+
+    const handleAccept = async (meetingId) => {
+        const response = await meetingService.acceptMeeting(meetingId);
+        console.log(response);
+    };
+
+    const handleDecline = async (meetingId) => {
+        const response = await meetingService.declineMeeting(meetingId);
+        console.log(response);
+    };
 
     const renderMeetings = (day) => {
         return meetings
@@ -29,6 +43,21 @@ const MeetingsSchedule = ({ meetings }) => {
                     <p className="text-sm text-gray-500">{format(new Date(meeting.startTime), 'HH:mm')} - {format(new Date(meeting.endTime), 'HH:mm')}</p>
                    {/* <p className="text-sm text-gray-600 break-words">Participants: {meeting.participants.map(p => p.name).join(', ')}</p>
                     {meeting.invitationStatus === 'Declined' && <p className="text-red-500 font-bold">Cancelled</p>}*/}
+                    {meeting.invitationStatus === 2 && <p className="text-red-500 font-bold">Cancelled</p>}
+                    {meeting.invitationStatus === 0 && (
+                        <div className="mt-2 flex-1 gap-y-2">
+                            <button
+                                onClick={() => handleAccept(meeting.id)}
+                                className="px-4 py-2 mr-2 text-white bg-green-500 rounded hover:bg-green-700">
+                                Подтвердить
+                            </button>
+                            <button
+                                onClick={() => handleDecline(meeting.id)}
+                                className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-700">
+                                Отклонить
+                            </button>
+                        </div>
+                    )}
                 </div>
             ));
     };

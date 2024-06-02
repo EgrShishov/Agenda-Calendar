@@ -14,7 +14,7 @@ namespace AgendaCalendar.Application.Slots.Queries
                 return Errors.User.NotFound;
             }
 
-            var slots = await unitOfWork.SlotRepository.ListAsync(s => s.UserId == user.Id && !s.IsBooked && s.Times.Any());
+            var slots = await unitOfWork.SlotRepository.ListAsync(s => s.UserId == user.Id);
             if (!slots.Any())
             {
                 return Errors.Slot.NotFound;

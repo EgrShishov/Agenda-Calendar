@@ -11,6 +11,10 @@ import WorkingHoursForm from "../components/workingHoursForm.tsx";
 import SuggestModal from "../components/suggestModal.tsx";
 import MeetingsSchedule from "../components/meetingsSchedule.tsx";
 import {MeetingService} from "../services/meetingService.ts";
+import {CalendarService} from "../services/calendarService.ts";
+import {UserService} from "../services/userService.ts";
+import {EventService} from "../services/eventService.ts";
+import {ReminderService} from "../services/reminderService.ts";
 
 const MainCalendar = () => {
     const {
@@ -19,11 +23,14 @@ const MainCalendar = () => {
         showReminderModal,
         showWorkingHoursModal,
         showSuggestModal,
+        setUsedColors,
         setShowSuggestModal,
         setShowWorkingHoursModal,
         setShowEventDetails,
         setShowCalendarModal,
-        setShowReminderModal
+        setShowReminderModal,
+        setSharedCalendarsList,
+        setCalendarsList
     } = useContext(GlobalContext);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,6 +45,11 @@ const MainCalendar = () => {
     };
 
     const meetingService = new MeetingService();
+    const calendarService = new CalendarService();
+    const userService = new UserService();
+    const eventService = new EventService();
+    const reminderService = new ReminderService();
+
     const [meetings, setMeetings] = useState([]);
 
     useEffect(() => {
@@ -49,6 +61,42 @@ const MainCalendar = () => {
         };
         fetchMeetings();
     }, [isSidebarOpen]);
+
+    useEffect(() => {
+        const fetchCalendars = async () => {
+            try {
+                const calendars = await calendarService.getCalendars();
+                setCalendarsList(calendars.map((calendar) => {
+                    return {
+                        calendar,
+                        checked: true
+                    }
+                }));
+
+                const usedColors = calendars.map(calendar => calendar.calendarColor);
+                setUsedColors(usedColors);
+            } catch (error) {
+                console.error('Error fetching calendars:', error);
+            }
+        };
+        fetchCalendars();
+    },[]);
+
+    useEffect(() => {
+        const fetchShared = async () =>
+        {
+            const calendars = await calendarService.getShared();
+            if(calendars){
+                setSharedCalendarsList(calendars.map((calendar) => {
+                    return {
+                        calendar,
+                        checked: true
+                    }
+                }));
+            }
+        };
+        fetchShared();
+    });
 
    /* const meetings = [
         {

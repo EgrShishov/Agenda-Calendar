@@ -50,6 +50,45 @@ namespace AgendaCalendar.Application.Meetings.Commands
                 <!DOCTYPE html>
                 <html>
                 <head>
+                 <script>
+                        function acceptMeeting(meetingId) {{
+                            fetch(`https://localhost:7127/api/meeting/accept?meetingId=${{meeting.Id}}`, {{
+                                method: 'GET',
+                                headers: {{
+                                    'Content-Type': 'application/json'
+                                }}
+                            }})
+                            .then(response => {{
+                                if (response.ok) {{
+                                    alert('Meeting accepted!');
+                                }} else {{
+                                    alert('Произошла ошибка при подтверждении действия.');
+                                }}
+                            }})
+                            .catch(error => {{
+                                alert('Произошла ошибка при подтверждении действия.');
+                            }});
+                        }}
+
+                        function declineMeeting(meetingId) {{
+                            fetch(`https://localhost:7127/api/meeting/decline?meetingId=${{meeting.Id}}`, {{
+                                method: 'GET',
+                                headers: {{
+                                    'Content-Type': 'application/json'
+                                }}
+                            }})
+                            .then(response => {{
+                                if (response.ok) {{
+                                    alert('Meeting declined!');
+                                }} else {{
+                                    alert('Произошла ошибка при подтверждении действия.');
+                                }}
+                            }})
+                            .catch(error => {{
+                                alert('Произошла ошибка при подтверждении действия.');
+                            }});
+                        }}
+                    </script>
                     <style>
                         body {{
                             font-family: Arial, sans-serif;
@@ -114,16 +153,8 @@ namespace AgendaCalendar.Application.Meetings.Commands
                             <p><strong>Description:</strong> {meeting.Description}</p>
                             <p><strong>Start Time:</strong> {meeting.StartTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
                             <p><strong>End Time:</strong> {meeting.EndTime.ToString("dddd, MMMM d, yyyy h:mm tt")}</p>
-                            <p>
-                                <form action='{yourDomain}/api/meetings/accept' method='post' style='display:inline;'>
-                                    <input type='hidden' name='meetingId' value='{meeting.Id}' />
-                                    <button type='submit' class='button'>Accept Meeting</button>
-                                </form>
-                                <form action='{yourDomain}/api/meetings/decline' method='post' style='display:inline;'>
-                                    <input type='hidden' name='meetingId' value='{meeting.Id}' />
-                                    <button type='submit' class='button'>Decline Meeting</button>
-                                </form>
-                            </p>
+                            <button onclick=acceptMeeting({meeting.Id})>AcceptMeeting</button>
+                            <button onclick=declineMeeting({meeting.Id})>Decline Meeting</button>
                         </div>
                         <div class='footer'>
                             <p>&copy; 2024 AgendaCalendar. All rights reserved.</p>

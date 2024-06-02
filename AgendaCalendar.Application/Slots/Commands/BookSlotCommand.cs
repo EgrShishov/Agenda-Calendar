@@ -13,12 +13,6 @@ namespace AgendaCalendar.Application.Slots.Commands
     {
         public async Task<ErrorOr<Meeting>> Handle(BookSlotCommand request, CancellationToken cancellationToken)
         {
-            var user = await unitOfWork.UserRepository.GetUserByEmailAsync(request.email);
-            if (user == null)
-            {
-                return Errors.User.NotFound;
-            }
-
             var slot = await unitOfWork.SlotRepository.GetByIdAsync(request.slotId);
             if (slot == null) 
             {
@@ -33,6 +27,12 @@ namespace AgendaCalendar.Application.Slots.Commands
             slot.IsBooked = true;
 
             await unitOfWork.SlotRepository.UpdateAsync(slot);
+
+            var user = await unitOfWork.UserRepository.GetByIdAsync(slot.UserId);
+            if (user == null)
+            {
+                return Errors.User.NotFound;
+            }
 
             TimeOnly startTime;
             TimeOnly endTime;

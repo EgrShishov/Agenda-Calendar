@@ -3,6 +3,7 @@
 namespace AgendaCalendar.WEB_API.Contracts.Meetings
 {
     public record MeetingResponse(
+        int id,
         string title,
         string description,
         DateTime startTime,

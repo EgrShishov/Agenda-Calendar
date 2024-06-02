@@ -58,58 +58,16 @@ export default function ContextWrapper(props){
     const [labelsClasses, setLabelsClasses] = useState(allColors);
     const [usedColors, setUsedColors] = useState([]);
 
-    const calendarService = new CalendarService();
-    const userService = new UserService();
-    const eventService = new EventService();
-    const reminderService = new ReminderService();
-
-
-    useEffect(() => {
-        const availableColors = allColors.filter(color => !usedColors.includes(color));
-        setLabelsClasses(availableColors);
-    }, [usedColors]);
-
-    useEffect(() => {
-        const fetchCalendars = async () => {
-            try {
-                const calendars = await calendarService.getCalendars();
-                setCalendarsList(calendars.map((calendar) => {
-                    return {
-                        calendar,
-                        checked: true
-                    }
-                }));
-
-                const usedColors = calendars.map(calendar => calendar.calendarColor);
-                setUsedColors(usedColors);
-            } catch (error) {
-                console.error('Error fetching calendars:', error);
-            }
-        };
-        fetchCalendars();
-    },[]);
-
-    useEffect(() => {
-        const fetchShared = async () =>
-        {
-            const calendars = await calendarService.getShared();
-            if(calendars){
-                setSharedCalendarsList(calendars.map((calendar) => {
-                    return {
-                        calendar,
-                        checked: true
-                    }
-                }));
-            }
-        };
-        fetchShared();
-    });
-
     useEffect(() => {
         if (!showEventDetails) {
             setSelectedEvent(null);
         }
     }, [showEventDetails]);
+
+    useEffect(() => {
+        const availableColors = allColors.filter(color => !usedColors.includes(color));
+        setLabelsClasses(availableColors);
+    }, [usedColors, calendarsList]);
 
     function updateLabel(obj){
         setCalendarsList(calendarsList.map((calobj) =>  {
@@ -166,6 +124,7 @@ export default function ContextWrapper(props){
                 setMeetings,
                 showSuggestModal,
                 setShowSuggestModal,
+                setUsedColors
             }}
         >
             { props.children }

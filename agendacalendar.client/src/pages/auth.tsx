@@ -151,6 +151,7 @@ const Auth = () => {
                 console.log('server error');
             }
         } catch(error){
+            console.log(error);
             const errorData = error.response.data;
             if (errorData.errorCodes.includes('Auth.FailedToAuth')){
                 setErrorMessage('Failed to authorize through third-party service. Google');

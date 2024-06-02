@@ -13,7 +13,7 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
                 .Map(dest => dest.title, src => src.title)
                 .Map(dest => dest.userName, src => src.userName)
                 .Map(dest => dest.slots, src => src.slots
-                .Select(slt => new SlotResponse(slt.IsBooked, new List<TimeOnly> { TimeOnly.Parse(slt.Times[0]) }, slt.Date))
+                .Select(slt => new SlotResponse(slt.Id, slt.IsBooked, new List<TimeOnly> { TimeOnly.Parse(slt.Times[0]) }, slt.Date))
                 );
         }
     }

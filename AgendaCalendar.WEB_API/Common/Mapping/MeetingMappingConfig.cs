@@ -35,7 +35,8 @@ namespace AgendaCalendar.WEB_API.Common.Mapping
                 .Map(dest => dest.day, src => src.request.Day)
                 .Map(dest => dest.userId, src => src.userId);
 
-            config.NewConfig<Meeting, MeetingResponse>();
+            config.NewConfig<Meeting, MeetingResponse>()
+                .Map(dest => dest.id, src => src.Id);
         }
     }
 }

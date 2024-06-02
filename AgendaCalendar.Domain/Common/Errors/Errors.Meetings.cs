@@ -21,6 +21,10 @@ namespace AgendaCalendar.Domain.Common.Errors
             public static Error AlreadyInvited => Error.Conflict(
                 code: "Meeting.AlreadyInvited",
                 description: "User already invited");
+
+            public static Error SelfSchedule => Error.Validation(
+                code: "Meeting.SelfSchedule",
+                description: "You can'not book your own schedule");
         }
     }
 }

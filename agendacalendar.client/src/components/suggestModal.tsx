@@ -3,19 +3,14 @@ import GlobalContext from "../context/globalContext.ts";
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import {useNavigate} from "react-router-dom";
 import {TextField} from "@mui/material";
-import {MeetingService} from "../services/meetingService.ts";
 
 const SuggestModal = () => {
     const {showSuggestModal, setShowSuggestModal} = useContext(GlobalContext);
 
     const [email, setEmail] = useState('');
     const Redirect = useNavigate();
-    const meetingService = new MeetingService();
 
     const handleSuggestSubmit = async () => {
-        //const slotsResponse = await meetingService.getAvaibaleSlots(email);
-        //console.log(slotsResponse);
-        //setSlots(slotsResponse);
         Redirect(`/u/meetings/${encodeURIComponent(email)}`);
         setShowSuggestModal(false);
     };

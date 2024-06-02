@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using AgendaCalendar.Application.Slots.Queries;
 using AgendaCalendar.Application.Slots.Commands;
 using AgendaCalendar.WEB_API.Contracts.Slots;
+using AgendaCalendar.Domain.Common.Errors;
 
 namespace AgendaCalendar.WEB_API.Controllers
 {
@@ -103,9 +104,11 @@ namespace AgendaCalendar.WEB_API.Controllers
                 errors => Problem(errors));
         }
 
-        [HttpPost("accept")]
-        public async Task<IActionResult> AcceptMeeting(int meetingId, int userId)
+        [HttpGet("accept")]
+        public async Task<IActionResult> AcceptMeeting(int meetingId)
         {
+            int userId = User.GetUserId();
+
             var command = new AcceptMeetingInviteCommand(meetingId, userId);
             var acceptResult = await _mediator.Send(command);
 
@@ -114,9 +117,11 @@ namespace AgendaCalendar.WEB_API.Controllers
                 errors => Problem(errors));
         }
 
-        [HttpPost("decline")]
-        public async Task<IActionResult> DeclineMeeting(int meetingId, int userId)
+        [HttpGet("decline")]
+        public async Task<IActionResult> DeclineMeeting(int meetingId)
         {
+            int userId = User.GetUserId();
+
             var command = new DeclineMeetingInviteCommand(meetingId, userId);
             var declineResult = await _mediator.Send(command);
 
